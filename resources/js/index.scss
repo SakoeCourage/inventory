@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+@import "./scss/reboot";
+// Component Styles
+@import "./scss/helper/hr_vr";
+@import "./scss/responsive";
+@import './App.css';
+#grossVolume {
+    min-height: 150px !important;
+}
+
+// Pricing page
+.price-type {
+    transform: translateX(-50%);
+}
+
+svg {
+    display: inline-block;
+}
+
+@keyframes animScaleX {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.175);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes animScale {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.175);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes animRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.animated-scaleX {
+    animation: animScale 45s 1s ease-in-out infinite;
+}
+
+.animated-scale {
+    animation: animScale 45s 1s ease-in-out infinite;
+}
+
+.animated-rotate {
+    animation: animRotate 8s 0s ease-in-out infinite;
+}
+
+.background-radial-gradient {
+    background-color: hsl(219, 40%, 15%);
+    background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+    // animation: animScale 45s 1s ease-in-out infinite
+}
+
+#radius-shape-1 {
+    height: 220px;
+    width: 220px;
+    top: -80px;
+    left: -130px;
+    background: radial-gradient(#44006b, #ad1fff);
+    overflow: hidden;
+}
+
+#radius-shape-2 {
+    border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+    bottom: -140px;
+    right: -190px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(#44006b, #ad1fff);
+    overflow: hidden;
+}
+
+.bg-glass {
+    background-color: hsla(0, 0%, 100%, 0.9) !important;
+    backdrop-filter: saturate(200%) blur(25px);
+}
+
+.progressVisualPart {
+    transition: width 2s;
+}
+
+.cricle-radial-gradient {
+    background-color: hsl(219, 40%, 15%);
+    background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+    // animation: animScale 45s 1s ease-in-out infinite
+}

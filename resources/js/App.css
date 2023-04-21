@@ -1,0 +1,83 @@
+.addleftline {
+    position: relative;
+    @apply px-2 text-blue-950
+}
+
+.addleftline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 2px;
+    @apply inset-y-0 bg-blue-950/30
+}
+
+.addleftlinered {
+    position: relative;
+}
+
+.addleftlinered::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 2px;
+    @apply inset-y-0 !bg-blue-950/10
+}
+
+.model-list:hover .icon-delete {
+    display: block;
+}
+
+.model-item:nth-child(odd) {
+    @apply bg-gray-200/40
+}
+
+.decoration-none {
+    text-decoration: none;
+}
+
+.shadow-medium {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+}
+
+.product-list:nth-child(odd) {
+    @apply rounded-md border border-dashed !bg-gray-100/80 border-gray-400/70
+}
+
+.product-list:nth-child(even) {
+    @apply rounded-md border border-dashed !bg-gray-50/60 border-gray-400/40
+}
+
+.product-search-result li {
+    @apply p-1 px-2 rounded-md cursor-pointer
+}
+
+.product-search-result li:hover * {
+    @apply !text-blue-950
+}
+
+.product-search-result li:nth-child(even) {
+    @apply bg-gray-200/20
+}
+
+.product-search-result li:nth-child(odd) {
+    @apply bg-gray-200/50
+}
+
+.hidescroll {
+    padding: 17px 0 17px 17px;
+    overflow-y: scroll;
+    mask-image: linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px);
+    mask-size: 100% 20000px;
+    mask-position: left bottom;
+    -webkit-mask-image: linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px);
+    -webkit-mask-size: 100% 20000px;
+    -webkit-mask-position: left bottom;
+    transition: mask-position 0.3s, -webkit-mask-position 0.3s;
+}
+
+.hidescroll:hover {
+    -webkit-mask-position: left top;
+    mask-position: left top;
+}

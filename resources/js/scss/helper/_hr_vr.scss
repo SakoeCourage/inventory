@@ -1,0 +1,23 @@
+hr:not([size]) {
+    height: 1px;
+}
+hr {
+    margin: 1rem 0;
+    color: inherit;
+    background-color: currentColor;
+    border: 0;
+    opacity: .25;
+}
+
+.hr-horizontal {
+    background: transparent;
+    margin: .5rem 0;
+    background-image: linear-gradient(90deg,transparent,rgba(0,0,0,0.4),transparent);
+}
+.hr-vertial {
+    width: 1px;
+    height: auto !important;
+    margin: .5rem 0;
+    background: transparent;
+    background-image: linear-gradient(180deg,transparent,rgba(0,0,0,0.4),transparent);
+}

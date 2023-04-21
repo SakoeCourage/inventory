@@ -1,0 +1,9 @@
+.animated-scaleX {
+    animation: animScale 45s 1s ease-in-out infinite;
+  }
+
+@keyframes animScale {
+    0% {transform: scale(1);}
+    50% {transform: scale(1.175);}
+    100% {transform: scale(1);}
+}
