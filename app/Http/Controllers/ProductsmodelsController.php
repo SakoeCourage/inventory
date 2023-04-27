@@ -46,18 +46,8 @@ class ProductsmodelsController extends Controller
     public function searchProductWithModels(Product $product)
     {
         return [
-            'products' => $product->with('models')->filter(request()->only(['search', 'sort']))
-                ->latest()->paginate(10)->withQueryString()
-                // ->through(fn ($currentproduct) =>
-                // [
-                //     'id' => $currentproduct->id,
-                //     'updated_at' => $currentproduct->updated_at,
-                //     'product_name' => $currentproduct->product_name,
-                //     'quantity_in_stock' => $currentproduct->quantity_in_stock,
-                //     'basic_quantity' => $currentproduct->basicQuantity->symbol
-
-                // ])
-                ,
+            'products' => $product->with(['models','category:id,category'])->deepSearch(request()->only(['search', 'sort']))
+                ->latest()->paginate(10)->withQueryString(),
             'filters' => request()->only(['search', 'sort'])
         ];
     }

@@ -10,6 +10,9 @@ import { Icon } from '@iconify/react'
 import Api from '../../api/Api'
 import dayjs from 'dayjs'
 import Button from '../../components/inputs/Button'
+import { handleScrolltoError } from '../../api/Util'
+import { SnackbarProvider, useSnackbar } from 'notistack'
+
 
 function EmptyList({ setShowProductSearchModal, AddEmptyRecordToList }) {
     return <nav className='w-full min-h-[27rem] relative flex items-center justify-center'>
@@ -35,7 +38,8 @@ function Newstock() {
     const [showProductSearchModal, setShowProductSearchModal] = useState(false)
     const [newStockList, addToNewStockList] = useState([])
     const [suppliers, setSuppliers] = useState([])
-    const [errors,setErrors] = useState({})
+    const [errors, setErrors] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
     const [stockMetaData, setStockMetaData] = useState({
         record_date: null,
         purchase_invoice_number: null,
@@ -48,6 +52,7 @@ function Newstock() {
         cost_per_unit: null,
         cost_per_collection: null
     }
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar()
     const getAllProductsAndModels = () => {
         Api.get('/product/all/products/models')
             .then(res => {
@@ -68,38 +73,60 @@ function Newstock() {
         getAllProductsAndModels()
     }, [])
 
-    const getAllSuppliers = () =>{
-        Api.get('/supplier/all').then(res=>{
+    const getAllSuppliers = () => {
+        Api.get('/supplier/all').then(res => {
             setSuppliers(res.data)
-        }).catch(err=>{
+        }).catch(err => {
             console.log(err)
         })
     }
 
-    useEffect(() => {
-        console.log(newStockList)
-    }, [newStockList])
 
 
     useEffect(() => {
-        console.log(stockMetaData)
-    }, [stockMetaData])
-
-    useEffect(() => {
-      getAllSuppliers()
+        getAllSuppliers()
     }, [])
-    
+
+
+
+    const checkForAnyWrongPricingIcon = () => {
+        const errorIcon = document.querySelectorAll('.attention-icon')
+        if (errorIcon.length > 0) {
+            handleScrolltoError(errorIcon, 'attention-icon', 'outlet')
+            throw new Error('invalid pricing')
+        }
+
+    }
+
+    const resetForm = () => {
+        setStockMetaData({
+            record_date: null,
+            purchase_invoice_number: '',
+            supplier: null
+        })
+        addToNewStockList([])
+    }
+
     const handleSubmit = () => {
-        Api.post('/stock/new',{...stockMetaData,new_stock_products:newStockList})
-        .then(res=>{
-            console.log(res.data)
-        })
-        .catch(err=>{
-            console.log(err?.response?.data?.message)
-           if(err.response?.status === 422){
-            setErrors(err.response?.data?.errors)
-           }
-        })
+        checkForAnyWrongPricingIcon()
+        setIsLoading(true)
+        Api.post('/stock/new', { ...stockMetaData, new_stock_products: newStockList })
+            .then(res => {
+                setIsLoading(false)
+                resetForm()
+                enqueueSnackbar('New Stock Added', { variant: 'success' })
+            })
+            .catch(err => {
+                if (err.response?.status === 422) {
+                    setErrors(err.response?.data?.errors)
+                    setIsLoading(false)
+                    setTimeout(() => {
+                        const miuiError = document.querySelectorAll('.Mui-error')
+                        handleScrolltoError(miuiError, 'Mui-error', 'outlet')
+                    }, 200);
+
+                }
+            })
     }
 
 
@@ -127,7 +154,7 @@ function Newstock() {
                             productsFromDB={productsFromDB}
                             modelsFromDB={modelsFromDB}
                             addToNewStockList={addToNewStockList}
-                            errors = {errors}
+                            errors={errors}
                         />
                         :
                         <EmptyList setShowProductSearchModal={setShowProductSearchModal}
@@ -140,15 +167,15 @@ function Newstock() {
                 <div className='bg-white w-full border border-gray-400/70 rounded-md min-h-[12rem]  flex flex-col gap-4 p-4'>
                     <nav className=' border-b border-b-gray-300 border-dashed uppercase'>New stock information</nav>
                     <nav className=' flex lg:flex-row flex-col gap-3'>
-                        <FormInputDate error={errors?.record_date} value={stockMetaData.record_date && dayjs(stockMetaData.record_date)} onChange={(e)=>setStockMetaData(cv=>cv={...cv,record_date:dayjs(e.target.value).format('YYYY-MM-DD')})} className="w-full" label='Record Date' />
-                        <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e)=>setStockMetaData(cv=>cv={...cv,purchase_invoice_number:e.target.value})} className="w-full" label='Purchase Invoice Number' />
+                        <FormInputDate error={errors?.record_date} value={stockMetaData.record_date && dayjs(stockMetaData.record_date)} onChange={(e) => setStockMetaData(cv => cv = { ...cv, record_date: dayjs(e.target.value).format('YYYY-MM-DD') })} className="w-full" label='Record Date' />
+                        <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e) => setStockMetaData(cv => cv = { ...cv, purchase_invoice_number: e.target.value })} className="w-full" label='Purchase Invoice Number' />
                     </nav>
                     <nav className=' flex lg:flex-row flex-col gap-3'>
-                        <FormInputSelect error={errors?.supplier} onChange={(e)=>setStockMetaData(cv=>cv={...cv,supplier:e.target.value})}  value={stockMetaData.supplier} options={Boolean(suppliers.length) && [...suppliers.map(({id,supplier_name})=>{return({name:supplier_name,value:id})})]} className="w-full" label="Select Supplier" />
+                        <FormInputSelect error={errors?.supplier} onChange={(e) => setStockMetaData(cv => cv = { ...cv, supplier: e.target.value })} value={stockMetaData.supplier} options={Boolean(suppliers.length) && [...suppliers.map(({ id, supplier_name }) => { return ({ name: supplier_name, value: id }) })]} className="w-full" label="Select Supplier" />
                     </nav>
                 </div>
                 <div className='bg-white w-full border border-gray-400/70 rounded-md p-2 flex flex-col'>
-                    <Button onClick={()=>handleSubmit()} text="Add Current Data to Stock" className=" !min-w-full" />
+                    <Button processing={isLoading} onClick={() => handleSubmit()} text="Add Current Data to Stock" className=" !min-w-full" />
                 </div>
             </main>
         </div>

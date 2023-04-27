@@ -52,6 +52,12 @@ class Productsmodels extends Model
     }
 
 
+    public function basicQuantity()
+    {
+        return $this->product()->first()->basicQuantity;
+    }
+
+
     public function collectionType()
     {
         return $this->belongsTo(CollectionType::class, 'collection_method', 'id');

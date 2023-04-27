@@ -5,7 +5,7 @@ const FormInputText = ({label, name, type, onChange, variant, value, onClick, ..
   return (
     <TextField
           // id="outlined-basic"
-          min={0}
+          inputProps={props?.inputProps}
           label={label}
           type={type}
           name={name}

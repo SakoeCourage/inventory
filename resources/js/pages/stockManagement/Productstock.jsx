@@ -63,7 +63,7 @@ function Productstock() {
 
 
     return (
-        <div className='flex min-h-full gap-4'>
+        <div className='flex min-h-full  gap-4 p-6 max-w-[90rem] mx-auto'>
             {isLoading && <div className='fixed inset-0 flex items-center justify-center bg-white/40 z-40'>
                 <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
             </div>}
@@ -106,7 +106,7 @@ function Productstock() {
                         setShowStockingModal={setShowStockingModal}
                     />
                 </div>
-                <div className=' mt-12 text-sm'>
+                <div className=' mt-12 text-sm w-full'>
                     <Productstockhistory
                         currentModelID={currentModelID}
                         getStockHIstory={getStockHIstory}

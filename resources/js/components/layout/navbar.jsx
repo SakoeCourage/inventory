@@ -19,7 +19,7 @@ const Navbar = ({ setFullSideBar }) => {
   };
   return (
     <div className='flex justify-between items-center h-full px-4'>
-      <IconButton onClick={() => setFullSideBar(prev => !prev)} size="small"><Icon className='text-gray-300' icon="ic:outline-menu-open" fontSize={26} /></IconButton>
+      <IconButton onClick={() => setFullSideBar(prev => !prev)} size="small"><Icon className='text-gray-300 hidden xl:block' icon="ic:outline-menu-open" fontSize={26} /></IconButton>
       <div>
         <div className='flex items-center gap-1'>
           <IconButton

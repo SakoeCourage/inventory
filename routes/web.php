@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/models/{id}/stock/data',[App\Http\Controllers\ProductstockhistoryController::class,'show']);
+Route::get('/sale/all',
+    function(){
+ 
+    }
+);
 
 Route::get('/{any}', function () {
     return view('index');

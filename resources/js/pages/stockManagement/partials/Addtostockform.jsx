@@ -28,7 +28,11 @@ function Addtostockform({ stockData, fetchAllData, setShowStockingModal }) {
       .then(res => {
         setShowStockingModal({ option: null })
         fetchAllData()
-      }).catch(err => setErrors(err.response?.data?.errors))
+      }).catch(err => 
+     {   console.log(err)
+        setErrors(err.response?.data?.errors)}
+        
+        )
   }
 
 

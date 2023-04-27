@@ -7,7 +7,8 @@ import SideModal from '../../components/layout/sideModal'
 import ProductForm from './productForm'
 import Api from '../../api/Api'
 import axios, { Axios } from 'axios'
-
+import FormInputSelect from '../../components/inputs/FormInputSelect'
+import { addOrUpdateUrlParam } from '../../api/Util'
 
 const ProductDefinition = () => {
   const [searchKey, setSearchKey] = useState('')
@@ -15,9 +16,11 @@ const ProductDefinition = () => {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [filters, setFilters] = useState([])
+  const [fullUrl, setFullUrl] = useState(null)
   const [selectItems, setSelectItems] = useState({
     basicQuantityFromDB: null,
     collectionTypesFromDb: null,
+    categoriesFromDb: null
   })
   const [edit, setEdit] = useState({
     open: false,
@@ -33,31 +36,26 @@ const ProductDefinition = () => {
     setOpenModal(true)
   }
 
-  const handleProductSearch = () => {
-    if (searchKey) {
-      setIsLoading(true)
-      Api.get(`/product/all?search=${searchKey}`).then(res => {
-        const { products, filters } = res.data
-        setData(products)
-        setFilters(filters)
-        setIsLoading(false)
-      }).catch(err => {
-        console.log(err)
-      })
-    }
-  }
+
 
   const fetchAllProducts = (url) => {
     setIsLoading(true)
     Api.get(url ?? '/product/all').then(res => {
-      const { products, filters } = res.data
+      const { products, filters,full_url } = res.data
       setData(products)
       setFilters(filters)
+      setFullUrl(full_url)
       setIsLoading(false)
     })
       .catch(err => {
         console.log(err.response)
       })
+  }
+
+  const handleProductSearch = () => {
+    if (searchKey && fullUrl) {
+        fetchAllProducts(addOrUpdateUrlParam(fullUrl,'search',searchKey))
+    }
   }
 
   const getBasicQuantities = () => {
@@ -66,14 +64,18 @@ const ProductDefinition = () => {
   const getCollectionTypes = () => {
     return Api.get('/toselect/collectiontypes')
   }
+  const getCategories = () => {
+    return Api.get('/toselect/categories')
+  }
 
   const fetchDataToSelect = () => {
     setIsLoading(true)
-    axios.all([getBasicQuantities(), getCollectionTypes()])
-      .then(axios.spread(function (res_basic_quantities, res_collection_types) {
+    axios.all([getBasicQuantities(), getCollectionTypes(), getCategories()])
+      .then(axios.spread(function (res_basic_quantities, res_collection_types, res_categories) {
         setSelectItems({
           basicQuantityFromDB: res_basic_quantities.data,
           collectionTypesFromDb: res_collection_types.data,
+          categoriesFromDb: res_categories.data,
         })
 
       }
@@ -86,39 +88,49 @@ const ProductDefinition = () => {
   }, [])
 
   return (
-    <div className='container mx-auto text-sm'>
-      <h3 className='pb-3'>Product definition</h3>
-      <Card className='py-6'>
-        <div>
-          <div className='flex justify-between items-center px-6 pb-6'>
-            <div className="flex items-center gap-3">
-              <div className='border rounded-lg flex items-center justify-between w-96'>
-                <input onKeyDown={(e) => { e.key === 'Enter' && handleProductSearch() }} className='bg-transparent outline-none px-4 w-full' placeholder='Search product...' value={searchKey} onChange={(e) => setSearchKey(e.target.value)} type="search" />
-                <button onClick={() => handleProductSearch()} className='bg-gray-300 px-3 py-2 grid place-content-center text-gray-600'>
-                  <Icon icon="ic:round-search" fontSize={30} />
-                </button>
+    <div className='text-sm h-max '>
+      <div className='bg-info-600 h-[35vh] px-10 overflow-visible '>
+        <div className='max-w-6xl mx-auto h-full '>
+          <h3 className='pb-3 text-info-100 ml-4 text-lg '><span className="mr-4">Product definition</span>
+            <Icon icon="bi:plus-circle" />
+          </h3>
+          <Card className='py-6 pb-36'>
+
+            <div className='flex justify-between items-center px-6 pb-6'>
+              <div className="flex items-center gap-3 w-full">
+                <div className='border rounded-lg flex items-center justify-between !w-96'>
+                  <input onKeyDown={(e) => { e.key === 'Enter' && handleProductSearch() }} className='bg-transparent outline-none px-4 w-full' placeholder='Search product...' value={searchKey} onChange={(e) => setSearchKey(e.target.value)} type="search" />
+                  <button onClick={() => handleProductSearch()} className='bg-gray-300 px-3 py-2 grid place-content-center text-gray-600'>
+                    <Icon icon="ic:round-search" fontSize={30} />
+                  </button>
+                </div>
+                <FormInputSelect className="w-56 " type="text"  value={filters?.category} label="Filter by Category" options={selectItems?.categoriesFromDb ? [...selectItems.categoriesFromDb.map(entry => { return ({ name: entry.category, value: entry.id }) })]: []} name="Basic selling unit"
+                  // value={formValues.category}
+                  onChange={(e) =>{fullUrl && fetchAllProducts(addOrUpdateUrlParam(fullUrl,'category',e.target.value))}}
+                />
+                {(filters?.search || filters?.category) != null && <Button
+                  onClick={() => { setSearchKey(''); fetchAllProducts() }}
+                  text="reset"
+                />}
               </div>
-              {filters?.search != null && <Button
-                onClick={() => { setSearchKey(''); fetchAllProducts() }}
-                text="reset"
-              />}
+              <Button info onClick={() => { setEdit(val => val = { ...val, data: null }); setOpenModal(true) }}>
+                <div className='flex items-center gap-2 text-xs'>
+                  <Icon icon="streamline:money-cashier-tag-codes-tags-tag-product-label" fontSize={22} />
+                  <span>Add A product</span>
+                </div>
+              </Button>
+
             </div>
-            <Button primary onClick={() => { setEdit(val => val = { ...val, data: null }); setOpenModal(true) }}>
-              <div className='flex items-center gap-2'>
-                <Icon icon="streamline:money-cashier-tag-codes-tags-tag-product-label" fontSize={22} />
-                <span>New product</span>
-              </div>
-            </Button>
-          </div>
+            <ProductsTable data={data} products={data.data}
+              isLoading={isLoading}
+              setFilters={setFilters}
+              setIsLoading={setIsLoading}
+              updateProduct={updateProduct}
+              setData={setData}
+            />
+          </Card>
         </div>
-        <ProductsTable data={data} products={data.data}
-          isLoading={isLoading}
-          setFilters={setFilters}
-          setIsLoading={setIsLoading}
-          updateProduct={updateProduct}
-          setData={setData}
-        />
-      </Card>
+      </div>
       <SideModal
         open={openModal}
         showDivider

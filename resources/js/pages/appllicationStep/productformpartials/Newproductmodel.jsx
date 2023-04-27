@@ -20,7 +20,7 @@ function Newproductmodel(props) {
     const [choosenmodels, setChoosenModel] = useState([])
 
     useEffect(() => {
-        if (props.models !== []) {
+        if (props.models?.length !== 0) {
             if (props.editIndex === null) {
                 props.models.forEach(model => setChoosenModel(cv => cv = [...cv, model.model_name]))
             } else {

@@ -8,15 +8,17 @@ import ProductModelListItem from './productformpartials/ProductModelListItem';
 import FormInputSelect from '../../components/inputs/FormInputSelect';
 import Api from '../../api/Api';
 import Loadingspinner from '../../components/Loaders/Loadingspinner';
+import { AnimatePresence, motion } from 'framer-motion';
+import { SlideUpAndDownAnimation } from '../../api/Util';
 
-
-const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,fetchAllProducts,data }) => {
+const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal, setEdit, fetchAllProducts, data }) => {
   const [errors, setErrors] = useState({})
   const [processing, setProcessing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formValues, setFormValues] = React.useState({
     product_name: '',
     basic_selling_quantity: '',
+    category: '',
     product_models: []
   })
   const [editIndex, setEditIndex] = useState(null)
@@ -31,7 +33,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,f
 
   const handelNewProductModel = (modelData) => {
     let model = formValues.product_models
-    model = [modelData,...model ]
+    model = [modelData, ...model]
     setFormValues(cv => cv = { ...cv, product_models: model })
     setShowNewModelForm(false)
   }
@@ -44,7 +46,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,f
     e.preventDefault()
     setProcessing(true)
     Api.post('/product/new', formValues).then(res => {
-     
+
       setProcessing(false)
       handleOnSucess();
     })
@@ -80,6 +82,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,f
         setFormValues({
           product_models: models,
           product_name: product.product_name,
+          category: product.category_id,
           basic_selling_quantity: basic_selling_quantity.name
         })
         setIsLoading(false)
@@ -110,26 +113,31 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,f
           error={errors.product_name && errors?.product_name}
         />
 
-        <FormInputSelect type="text" required label="Basic unit of sale" options={selectItems?.basicQuantityFromDB && [...selectItems.basicQuantityFromDB.map(entry => { return ({ name: entry.name, value: entry.name }) })]} name="Basic selling unit"
+        <FormInputSelect type="text" required label="Basic unit of sale" options={selectItems?.basicQuantityFromDB ? [...selectItems.basicQuantityFromDB.map(entry => { return ({ name: entry.name, value: entry.name }) })]: []} name="Basic selling unit"
           value={formValues.basic_selling_quantity}
           onChange={(e) => setFormValues(cv => cv = { ...cv, basic_selling_quantity: e.target.value })}
-          helperText={errors.basic_selling_quanity && errors?.basic_selling_quanity}
-          error={errors.basic_selling_quanity && errors?.basic_selling_quanity}
+          helperText={errors.basic_selling_quantity && errors?.basic_selling_quantity}
+          error={errors.basic_selling_quantity && errors?.basic_selling_quantity}
+        />
+
+        <FormInputSelect type="text" required label="Category of Product" options={selectItems?.categoriesFromDb ? [...selectItems.categoriesFromDb.map(entry => { return ({ name: entry.category, value: entry.id }) })]: []} name="Basic selling unit"
+          value={formValues.category}
+          onChange={(e) => setFormValues(cv => cv = { ...cv, category: e.target.value })}
+          helperText={errors.category && errors?.category}
+          error={errors.category && errors?.category}
         />
 
         <Fieldset className={`${errors.product_models && '!border-red-400 !rounded-md'}`}>
-          <nav className='text-sm text-indigo-900 border-b mb-1 flex items-center justify-between w-full py-2'>
+          <nav className='text-sm text-info-600 border-b mb-1 flex items-center justify-between w-full py-2'>
             <span>Products type pricing model</span>
-            <button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} className='text-indigo-600 font-medium'>
+            <button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} className='text-info-600 font-medium'>
               <span className='mr-2'>Add new model</span>
               <Icon fontSize='1.2rem' icon="mdi:plus-circle-outline" />
             </button>
           </nav>
           {!Boolean(formValues.product_models.length) ? <nav className="py-2 rounded-md flex items-center justify-center min-h-[7rem]">
             <nav className='my-32 flex items-center flex-col'>
-              <button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} className=' active:ring-1 active:ring-offset-1 active:ring-blue-700 my-4   bg-blue-200 p-2 text-blue-950 text-md ring-blue-300 ring ring-offset-1'>
-                New pricing model
-              </button>
+              <Button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} neutral text='new pricing model'/>
             </nav>
           </nav> : <nav className='flex flex-col gap-2 h-full'> {formValues.product_models.map((model, i) => {
             return (
@@ -140,8 +148,8 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,f
                 setIndexToEdit={(index) => setEditIndex(index)}
                 key={i} index={i}
                 removable={Boolean(!edit?.data)}
-                />
-                
+              />
+
             )
           })}
           </nav>
@@ -150,23 +158,32 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal,setEdit,f
 
         <div className='flex justify-end gap-2'>
           <Button onClick={() => setOpenModal(false)} type="button" text="Cancel" neutral />
-          {edit?.data ? <Button processing={processing} onClick={(e) => EditCurrentProduct(e)} type="submit" text="Save Changes" primary />
+          {edit?.data ? <Button info processing={processing}  onClick={(e) => EditCurrentProduct(e)} type="submit" text="Save Changes"  />
             :
-            <Button processing={processing} type="submit" onClick={(e) => submitNewProduct(e)} text="Save" primary />}
+            <Button processing={processing} type="submit" onClick={(e) => submitNewProduct(e)} text="Save" info />}
         </div>
       </div>
       {/* Product Model form with overlay */}
-      {(showNewModelForm || editIndex !== null) &&
-        <div className="absolute inset-0 bg-white/50  backdrop-grayscale-0 backdrop-blur-sm  z-30 flex items-end justify-center">
-          <Newproductmodel
-            editIndex={editIndex}
-            handleModelEdit={handleModelEdit}
-            basic_selling_quantity={formValues.basic_selling_quantity}
-            selectItems={selectItems} models={formValues.product_models}
-            handelNewProductModel={handelNewProductModel}
-            setShowNewModelForm={() => { setShowNewModelForm(false); setEditIndex(null) }}
-          />
-        </div>}
+
+      <AnimatePresence>
+        {(showNewModelForm || editIndex !== null) &&
+          <motion.div
+            variants={SlideUpAndDownAnimation}
+            initial="initial"
+            animate="animate"
+            exit='exit'
+            className="absolute inset-0 bg-white/50  backdrop-grayscale-0 backdrop-blur-sm  z-30 flex items-end justify-center">
+            <Newproductmodel
+              editIndex={editIndex}
+              handleModelEdit={handleModelEdit}
+              basic_selling_quantity={formValues.basic_selling_quantity}
+              selectItems={selectItems} models={formValues.product_models}
+              handelNewProductModel={handelNewProductModel}
+              setShowNewModelForm={() => { setShowNewModelForm(false); setEditIndex(null) }}
+            />
+          </motion.div>}
+      </AnimatePresence>
+
     </div>
   )
 }

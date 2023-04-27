@@ -19,19 +19,30 @@ class Product extends Model
     {
         return $this->hasMany(Productsmodels::class);
     }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {
+            // $related_model = Productsmodels::where('model_name', 'Like', '%' . $search . '%')->get('product_id');
+            $query->where('product_name', 'Like', '%' . $search . '%');
+            // ->orWhereIn('id',$related_model->toArray());
+        })->when($filters['category'] ?? false, function ($query, $category) {
+            $query->where('category_id', $category);
+        });
+    }
+
+    public function scopeDeepSearch($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function ($query, $search) {
             $related_model = Productsmodels::where('model_name', 'Like', '%' . $search . '%')->get('product_id');
             $query->where('product_name', 'Like', '%' . $search . '%')
-            ->orWhereIn('id',$related_model->toArray());
-        })->when($filters['sort'] ?? false, function ($query, $sort) {
-            if ($sort === 'created_asc') {
-                $query->orderBy('created_at', 'asc');
-            } else if ($sort === 'created_desc') {
-                $query->orderBy('created_at', 'desc');
-            }
+                ->orWhereIn('id', $related_model->toArray());
+        })->when($filters['category'] ?? false, function ($query, $category) {
+            $query->where('category_id', $category);
         });
     }
 }

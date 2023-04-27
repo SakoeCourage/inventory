@@ -18,7 +18,7 @@ function Stocksupplierstable({ currentModelID ,supplierdata,getSuppliersPerGiven
     }, [])
 
     return (
-        <div className='flex flex-col min-h-full h-full grow relative'>
+        <div className='flex flex-col min-h-full h-full grow relative min-w-full'>
             {isLoading && <div className='absolute inset-0 flex items-center justify-center bg-white/40 z-40'>
                 <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
             </div>}

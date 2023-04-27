@@ -18,7 +18,9 @@ class DatabaseSeeder extends Seeder
             CollectionTypeSeeder::class,
             BasicSellingQuantitySeeder::class,
             ProductSeeder::class,
-            SupplierSeeder::class
+            SupplierSeeder::class,
+            CategorySeeder::class,
+            UpdateProductsWithCategories::class,
         ]);
     }
 }

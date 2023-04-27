@@ -16,10 +16,10 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Product $product)
+    public function index(Product $product,Request $request)
     {
         return [
-            'products' => $product->filter(request()->only(['search', 'sort']))
+            'products' => $product->filter(request()->only(['search', 'category']))
                 ->latest()->paginate(10)->withQueryString()
                 ->through(fn ($currentproduct) =>
                 [
@@ -27,10 +27,11 @@ class ProductController extends Controller
                     'updated_at' => $currentproduct->updated_at,
                     'product_name' => $currentproduct->product_name,
                     'quantity_in_stock' => $currentproduct->quantity_in_stock,
-                    'basic_quantity' => $currentproduct->basicQuantity->symbol
-
+                    'basic_quantity' => $currentproduct->basicQuantity->symbol,
+                    'category_name' => $currentproduct->category->category
                 ]),
-            'filters' => request()->only(['search', 'sort'])
+            'filters' => $request->only(['search', 'category']),
+            'full_url' =>trim($request->fullUrlWithQuery(request()->only('search','category')))
         ];
     }
     /**
@@ -69,13 +70,15 @@ class ProductController extends Controller
     {
         $request->validate([
             'product_name' => ['required', 'string', 'unique:products,product_name'],
-            'basic_selling_quantity' => ['required', 'string'],
+            'basic_selling_quantity' => ['required'],
+            'category' => ['required'],
             'product_models' => ['required', 'array', 'min:1']
         ]);
 
         DB::transaction(function () use ($request) {
             $newproduct =  Product::create([
                 'product_name' => $request->product_name,
+                'category_id' => $request->category,
                 'basic_selling_quantity_id' => BasicSellingQuantity::where('name', $request->basic_selling_quantity)->firstOrFail()->id,
                 'has_models' => true,
                 'quantity_in_stock' => 0
@@ -104,7 +107,7 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $product);
         return [
-            'product' => $product->get(['id', 'product_name', 'quantity_in_stock'])->first(),
+            'product' => $product->get(['id', 'product_name', 'quantity_in_stock','category_id'])->first(),
             'basic_selling_quantity' => $product->first()->basicQuantity,
             'models' => $product->first()->models->map(function ($model) {
                 return [
@@ -137,12 +140,15 @@ class ProductController extends Controller
         $request->validate([
             'product_name' => ['required', 'string', 'unique:products,product_name,'.$product->id],
             'basic_selling_quantity' => ['required', 'string'],
-            'product_models' => ['required', 'array', 'min:1']
+            'product_models' => ['required', 'array', 'min:1'],
+            'category' => ['required'],
         ]);
 
         DB::transaction(function () use ($request, $product) {
             $product->update([
                 'product_name' => $request->product_name,
+                'product_name' => $request->product_name,
+                'category_id' => $request->category,
                 'basic_selling_quantity_id' => BasicSellingQuantity::where('name', $request->basic_selling_quantity)->firstOrFail()->id,
             ]);
 

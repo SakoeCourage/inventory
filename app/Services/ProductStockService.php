@@ -10,8 +10,7 @@ use App\Enums\StockActionEnum;
 
 class ProductStockService
 {
-
-
+ 
     public function increasestock($request)
     {
 
@@ -35,6 +34,11 @@ class ProductStockService
     {
         DB::transaction(function () use ($request) {
             $product_model = Productsmodels::find($request->productsmodel_id);
+            if($request->quantity > $product_model->quantity_in_stock){
+              throw \Illuminate\Validation\ValidationException::withMessages([
+                    'out_of_stock' => $product_model
+                ]);
+            }
             $product_model->decrement('quantity_in_stock', $request->quantity);
             $last_record = Productstockhistory::where('productsmodel_id', $request->productsmodel_id)->get()->last();
             $newStockHistory = Productstockhistory::create([

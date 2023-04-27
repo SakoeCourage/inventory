@@ -1,6 +1,7 @@
 import dayjs from "dayjs"
 import relativeTime from 'dayjs/plugin/relativeTime';
-
+import Scroll from 'react-scroll'
+// var Scroll = require('react-scroll');
 dayjs.extend(relativeTime);
 
 export function diffForHumans(date) {
@@ -53,6 +54,29 @@ export function removeURLParameter(param, url) {
         "");
 }
 
+export function getUriWithParam(baseUrl, params) {
+    const Url = new URL(baseUrl);
+    const urlParams = new URLSearchParams(Url.search);
+    for (const key in params) {
+        if (params[key] !== undefined) {
+            urlParams.set(key, params[key]);
+        }
+    }
+    Url.search = urlParams.toString();
+    return Url.toString();
+};
+
+export  function addOrUpdateUrlParam(uri, paramKey, paramVal) {
+    var re = new RegExp("([?&])" + paramKey + "=[^&#]*", "i");
+    if (re.test(uri)) {
+      uri = uri.replace(re, '$1' + paramKey + "=" + paramVal);
+    } else {
+      var separator = /\?/.test(uri) ? "&" : "?";
+      uri = uri + separator + paramKey + "=" + paramVal;
+    }
+    return uri;
+  }
+
 
 export function handleValidation(schema, formData) {
     let validationErrors = {}
@@ -76,3 +100,52 @@ export function handleValidation(schema, formData) {
         })
     })
 }
+
+
+var scroller = Scroll.scroller;
+
+export function handleScrolltoError(element,elementclassname, containerId = null) {
+    setTimeout(() => {
+        const warnicon = element[0]
+        warnicon.classList.remove('u--flash')
+        scroller.scrollTo(elementclassname, {
+            duration: 500,
+            delay: 10,
+            smooth: true,
+            containerId: containerId ?? 'outlet',
+            offset: -70,
+        })
+        warnicon.classList.add('u--flash')
+    }, 50);
+
+
+}
+
+
+export const SlideUpAndDownAnimation = {
+    initial:{ opacity: 0, translateY: '100vh' },
+    animate:{
+        opacity: 1,
+        translateY: '0',
+        transition: {
+            type: 'spring',
+            mass: 0.1,
+            damping: 8
+        }
+    },
+    exit:{ opacity: 0, translateY: '100vh', transition: { duration: 0.2 } }
+};
+
+
+export function updateQueryParam(url, param, value) {
+    var urlObj = new URL(url);
+    var searchParams = urlObj.searchParams;
+    
+    if (searchParams.has(param)) {
+      searchParams.set(param, value);
+    } else {
+      searchParams.append(param, value);
+    }
+    
+    return urlObj.toString();
+  }

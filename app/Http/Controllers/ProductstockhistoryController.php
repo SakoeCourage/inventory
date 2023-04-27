@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Productstockhistory;
 use App\Models\Productsmodels;
+use App\Models\Stockhistory;
 use App\Models\Supplier;
 use App\Services\ProductStockService;
 use Illuminate\Http\Request;
@@ -65,6 +67,24 @@ class ProductstockhistoryController extends Controller
                     'productsmodel_id' => request()->productsmodel_id
                 ]);
             }
+            $product_model = Productsmodels::find(request()->productsmodel_id);
+            $product = Productsmodels::find(request()->productsmodel_id)->product;
+            // product_id":71,"model_id":1253,"quantity":3681,"cost_per_unit":"9.2","cost_per_collection":"32.32","in_collection":true
+            Stockhistory::create([
+                'stock_products' => [
+                    ['product_id' => $product->id ,
+                     'model_id' => $product_model->id,
+                     'quantity' => request()->quantity,
+                     'cost_per_unit' => $product_model->cost_per_unit,
+                     'cost_per_collection' => $product_model->cost_per_collection,
+                     'in_collection' =>(Boolean)$product_model->in_collection,
+                    ]
+                ],
+                // remember to append auth user name
+                'purchase_invoice_number' => 'User Stock Addition - ',
+                'supplier_id' => null,
+                'record_date' =>now()
+                ]);
             $productStockServie->increaseStock((object)[
                 'description' => request()->description,
                 'action_type' => 'addition',
@@ -113,7 +133,7 @@ class ProductstockhistoryController extends Controller
     {
         $model = Productsmodels::where('id', $id);
         return [
-            'model' => $model->get(['id', 'model_name', 'unit_price', 'quantity_in_stock', 'in_collection', 'price_per_collection', 'quantity_per_collection'])->firstOrFail(),
+            'model' => $model->get(['id', 'model_name', 'unit_price', 'quantity_in_stock', 'in_collection', 'price_per_collection', 'quantity_per_collection','cost_per_unit','cost_per_collection'])->firstOrFail(),
             'collection_method' => $model->first()->in_collection == 1 ? $model->first()->collectionType->type : '',
             'product' => $model->first()->product,
             'basic_quantity' => $model->first()->product()->first()->basicQuantity->symbol,

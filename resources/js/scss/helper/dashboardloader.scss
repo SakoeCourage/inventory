@@ -1,0 +1,44 @@
+$animation-duration: 1.8s;
+.dashboardloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 10px;
+    border-radius: 5px;
+    animation: load $animation-duration ease-in-out infinite;
+    @apply bg-info-400;
+    &:before,
+    &:after {
+        position: absolute;
+        display: block;
+        content: "";
+        animation: load $animation-duration ease-in-out infinite;
+        height: 10px;
+        border-radius: 5px;
+    }
+    &:before {
+        top: -20px;
+        left: 10px;
+        width: 40px;
+        @apply bg-info-200
+    }
+    &:after {
+        bottom: -20px;
+        width: 35px;
+        @apply bg-info-400
+    }
+}
+
+@keyframes load {
+    0% {
+        transform: translateX(40px);
+    }
+    50% {
+        transform: translateX(-30px);
+    }
+    100% {
+        transform: translateX(40px);
+    }
+}

@@ -8,7 +8,7 @@ import Button from '../../../components/inputs/Button'
 import ClickAwayListener from 'react-click-away-listener'
 
 function Searchresultitem({ product, handleSelected }) {
-
+  console.log(product)
   return <li className='flex items-center gap-2 my-1' onClick={() => handleSelected({ product_id: product.product_id, model_id: product?.model_id })}>
     {product.key === 'in_product' ? <nav className=' p-2 border grid place-items-center rounded-md border-gray-200'>
       <Icon className='text-gray-400' icon="mdi:tag-outline" fontSize={'1.45rem'} />
@@ -18,8 +18,12 @@ function Searchresultitem({ product, handleSelected }) {
       </nav>
     }
     <nav>
-      {product.key === 'in_product' ? <span className=' text-gray-500 font-medium'>{product.product_name}</span> :
-        <span className=' text-gray-500 font-medium'>{product.model_name} <span className='font-normal text-sm'>in</span> <span className='font-normal text-sm'>{product.product_name}</span></span>
+      {product.key === 'in_product' ? <span className=' text-gray-500 font-semibold '>{product.product_name}
+        <span className='font-normal text-sm ml-1'>in </span> <span className=' text-sm font-normal'>{product?.category}</span>
+      </span> :
+        <span className=' text-gray-500 font-medium'>
+          <span className='font-normal text-sm'>{product.product_name} <Icon icon="ion:chevron-forward-sharp" /> </span>
+            <span className="font-semibold">{product.model_name}</span> <span className='font-normal text-sm'>in</span> <span className=' text-sm font-normal'>{product?.category}</span> </span>
       }
     </nav>
   </li>
@@ -44,7 +48,8 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
             currentEntry = [...currentEntry,
             {
               key: 'in_product', product_name: product.product_name,
-              product_id: product.id
+              product_id: product.id,
+              category: product?.category?.category
             }]
 
           }
@@ -58,7 +63,8 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
                 product_name: product.product_name,
                 product_id: product.id,
                 model_name: model.model_name,
-                model_id: model.id
+                model_id: model.id,
+                category: product?.category?.category
               }]
 
             }
@@ -72,18 +78,24 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
 
 
   const handleSearch = (searchkey) => {
-    setProcessing(true)
-    Api.get('product/all/withmodels?search=' + searchkey)
-      .then(res => {
-        setfilteredProducts([])
-        const { products, filters } = res.data
-        setProducts(products)
-        setFilters(filters)
-        setProcessing(false)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    if (searchkey) {
+      setProcessing(true)
+      Api.get('product/all/withmodels?search=' + searchkey)
+        .then(res => {
+          setfilteredProducts([])
+          const { products, filters } = res.data
+          console.log(products)
+          setProducts(products)
+          setFilters(filters)
+          setProcessing(false)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    } else if (searchkey == '') {
+      setProcessing(false)
+    }
+
   }
   const fetchMoreData = () => {
     Api.get(products.next_page_url)
@@ -103,10 +115,10 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
   }, [])
 
   const handleSelected = ({ product_id, model_id }) => {
-      let newLineProduct = emptyListRecord
-      newLineProduct = {...newLineProduct,product_id:product_id,model_id:model_id}
-      addToNewStockList([...newStockList,newLineProduct])
-      setShowProductSearchModal(false)
+    let newLineProduct = emptyListRecord
+    newLineProduct = { ...newLineProduct, product_id: product_id, model_id: model_id, productsmodel_id: model_id }
+    addToNewStockList([...newStockList, newLineProduct])
+    setShowProductSearchModal(false)
   }
 
 

@@ -33,9 +33,11 @@ class StockhistoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request,ProductStockService $productStockService)
+    public function store(Request $request, ProductStockService $productStockService)
     {
-     
+
+
+
         $request->validate([
             'record_date' => ['required', 'date_format:Y-m-d'],
             'purchase_invoice_number' => ['required'],
@@ -43,44 +45,48 @@ class StockhistoryController extends Controller
             'new_stock_products' => ['required', 'array', 'min:1'],
             'new_stock_products.*.product_id' => ['required'],
             'new_stock_products.*.in_collection' => ['required', 'boolean'],
-            'new_stock_products.*.model_id' => ['required'],
-            'new_stock_products.*.quantity' => ['required', 'numeric','min:0','not_in:0'],
-            'new_stock_products.*.cost_per_collection' => ['required:if:new_stock_products.*.in_collection,=,true', 'numeric', 'min:0','not_in:0'],
-            'new_stock_products.*.cost_per_unit' => ['required_if:new_stock_products.*.in_collection,=,false', 'numeric', 'min:0','not_in:0'],
+            'new_stock_products.*.model_id' => ['required', 'distinct'],
+            'new_stock_products.*.quantity' => ['required', 'numeric', 'min:0', 'not_in:0'],
+            'new_stock_products.*.cost_per_collection' => ['Required_if:new_stock_products.*.in_collection,true', 'nullable', 'numeric', 'min:0'],
+            'new_stock_products.*.cost_per_unit' => ['Required_if:new_stock_products.*.in_collection,false', 'numeric', 'min:0', 'not_in:0'],
         ]);
 
 
-        DB::transaction(function()use($request,$productStockService){
-             $currentSupplierName = Supplier::find($request->supplier)->supplier_name;
-                // increase the stock values using the productstockservice
-                // foreach one of the products add to productsupplier table the suppplier id and the product model_id
-                // then add all the product and supplier to stockhistory table
-                Stockhistory::create([
-                    'supplier_id'=> $request->supplier,
-                    'record_date'=> $request->record_date,
-                    'stock_products'=> $request->new_stock_products,
+        DB::transaction(function () use ($request, $productStockService) {
+            $currentSupplierName = Supplier::find($request->supplier)->supplier_name;
+            /**
+             * increase the stock values using the productstockservice
+             * foreach one of the products add to productsupplier table the suppplier id and the product model_id
+             * then add all the product and supplier to stockhistory table
+             */
+
+            Stockhistory::create([
+                'supplier_id' => $request->supplier,
+                'record_date' => $request->record_date,
+                'stock_products' => $request->new_stock_products,
+                'purchase_invoice_number' => $request->purchase_invoice_number
+            ]);
+            foreach ($request->new_stock_products as $newStock) {
+                $currentmodel = Productsmodels::find($newStock['model_id']);
+                Productsupplier::firstOrCreate([
+                    'supplier_id' => $request->supplier,
+                    'productsmodel_id' => $newStock['model_id']
+                ], [
+                    'supplier_id' => $request->supplier,
+                    'productsmodel_id' => $newStock['model_id']
                 ]);
-                foreach ($request->new_stock_products as $newStock) {
-                    $currentmodel = Productsmodels::find($newStock['model_id']);
-                    Productsupplier::firstOrCreate([
-                        'supplier_id'=>$request->supplier,
-                        'productsmodel_id'=>$newStock['model_id']
-                    ],[
-                        'supplier_id'=>$request->supplier,
-                        'productsmodel_id'=>$newStock['model_id']
-                    ]);
-                    $productStockService->increasestock((Object)[
-                        'productsmodel_id'=> $newStock['model_id'],
-                        'quantity'=> $newStock['quantity'],
-                        'description'=> 'new stock from a supplier '. $currentSupplierName,
-                    ]);
-                    $currentmodel->update([
-                        'cost_per_collection' =>  $newStock['cost_per_collection'],
-                        'cost_per_unit' =>  $newStock['cost_per_unit']
-                    ]);
-                }
+                $productStockService->increasestock((object)[
+                    'productsmodel_id' => $newStock['model_id'],
+                    'quantity' => $newStock['quantity'],
+                    'description' => 'new stock from a supplier ' . $currentSupplierName,
+                ]);
+                $currentmodel->update([
+                    'cost_per_collection' =>  $newStock['cost_per_collection'],
+                    'cost_per_unit' =>  $newStock['cost_per_unit']
+                ]);
+            }
         });
-        
+
         return $request;
     }
 

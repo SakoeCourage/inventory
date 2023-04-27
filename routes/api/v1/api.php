@@ -21,10 +21,11 @@ route::group(['namespace'=>'api\v1'],function(){
         return $request->user();
     });
     Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'authenticate']);
-    
+    Route::get('/dashboard/data',[\App\Http\Controllers\DashboardController::class, 'index']);
     Route::group(['prefix'=>'toselect'],function(){
         Route::get('/basicquantities',[\App\Http\Controllers\BasicSellingQuantityController::class,'toselect']);
         Route::get('/collectiontypes',[\App\Http\Controllers\CollectionTypeController::class,'toselect']);
+        Route::get('/categories',[\App\Http\Controllers\CategoryController::class,'toselect']);
     });
     Route::group(['prefix'=>'product'],function(){
         Route::get('/all',[App\Http\Controllers\ProductController::class,'index']);
@@ -43,9 +44,22 @@ route::group(['namespace'=>'api\v1'],function(){
     Route::group(['prefix'=>'supplier'],function(){
         Route::get('/model/{model}',[App\Http\Controllers\ProductsupplierController::class,'getSupplierPergivenProductModel']);
         Route::get('/all',[App\Http\Controllers\SupplierController::class, 'index']);
+        Route::get('/to-table',[App\Http\Controllers\SupplierController::class, 'toSupplierTable']);
+        Route::post('/updateorcreate',[App\Http\Controllers\SupplierController::class, 'edit']);
+        Route::post('/delete/{supplier}',[App\Http\Controllers\SupplierController::class, 'destroy']);
     });
     Route::group(['prefix'=>'stock'],function(){
         Route::post('/new',[App\Http\Controllers\StockhistoryController::class, 'store']);
+    });
+    Route::group(['prefix'=>'category'],function(){
+        Route::get('/all',[App\Http\Controllers\CategoryController::class, 'index']);
+        Route::post('/updateorcreate',[App\Http\Controllers\CategoryController::class, 'edit']);
+        Route::post('/delete/{category}',[App\Http\Controllers\CategoryController::class, 'destroy']);
+    });
+    Route::group(['prefix'=>'sale'],function(){
+        Route::post('/new',[App\Http\Controllers\SaleController::class, 'store']);
+        Route::get('/all',[App\Http\Controllers\SaleController::class, 'index']);
+        Route::get('/get/{sale}',[App\Http\Controllers\SaleController::class, 'show']);
     });
 
 

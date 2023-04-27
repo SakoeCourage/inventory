@@ -3,6 +3,7 @@ import Productcollection from '../../../components/Productcollection'
 import { dateReformat } from '../../../api/Util'
 import dayjs from 'dayjs'
 import { TablePagination } from '@mui/material'
+import { Icon } from '@iconify/react'
 function Stockhistorytable({ stockHistorys, stockData, handleChangePage }) {
     return (
         <div className='flex flex-col min-h-full h-full  grow '>
@@ -45,7 +46,12 @@ function Stockhistorytable({ stockHistorys, stockData, handleChangePage }) {
                                 <td className="px-6 py-3 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <h1 className="mb-0 !text-sm">
+                                            {dt.action_type == 'addition' ?
+                                                <Icon fontSize={16} icon="mdi:arrow-up" className=' text-green-700 transition-all' /> :
 
+                                                <Icon fontSize={16} icon="mdi:arrow-up" className=' text-red-700 transition-all transform rotate-180' />
+
+                                            }
                                         </h1>
                                     </div>
                                 </td>

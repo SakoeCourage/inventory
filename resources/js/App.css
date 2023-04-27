@@ -81,3 +81,280 @@
     -webkit-mask-position: left top;
     mask-position: left top;
 }
+
+.u--flash {
+    -webkit-animation: flash 2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    -moz-animation: flash 2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    -o-animation: flash 2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    animation: flash 2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+}
+
+@-webkit-keyframes flash {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+    25%,
+    75% {
+        opacity: 0;
+    }
+}
+
+@-moz-keyframes flash {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+    25%,
+    75% {
+        opacity: 0;
+    }
+}
+
+@-o-keyframes flash {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+    25%,
+    75% {
+        opacity: 0;
+    }
+}
+
+@keyframes flash {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+    25%,
+    75% {
+        opacity: 0;
+    }
+}
+
+.customer-cart-list .customer-cart-list-item {
+    @apply relative border-b border-black/20 shadow
+}
+
+.customer-cart-list .customer-cart-list-item::before {
+    content: attr(data-index);
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    left: -30px;
+    top: 0;
+    color: red;
+    @apply inset-y-0 bg-red-400 my-auto flex items-center justify-center text-white rounded-full z-10
+}
+
+.customer-cart-list .customer-cart-list-item::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    left: -15px;
+    top: 0;
+    @apply inset-y-0 bg-red-400 z-0 isolate
+}
+
+.customer-cart-list .customer-cart-list-item .item {
+    @apply rounded-md p-2
+}
+
+.customer-cart-list .customer-cart-list-item:nth-child(odd) {
+    @apply bg-red-50/30
+}
+
+.customer-cart-list .customer-cart-list-item:nth-child(even) {
+    @apply bg-orange-50/10
+}
+
+.add-border-below {
+    position: relative;
+}
+
+.add-border-below.current {
+    @apply translate-x-1 -translate-y-1 bg-white/90 text-info-600
+}
+
+.add-border-below:hover::before,
+.add-border-below.current::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    @apply -translate-x-1 translate-y-1 -z-20 isolate bg-transparent border-white border-l border-b rounded-md
+}
+
+.card {
+    border-radius: 0.25rem;
+    --bg-opacity: 1;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, var(--bg-opacity));
+    border-width: 1px;
+    --border-opacity: 1;
+    border-color: #e2e8f0;
+    border-color: rgba(226, 232, 240, var(--border-opacity))
+}
+
+.card .card-header {
+    border-bottom-width: 1px;
+    padding: 1.5rem
+}
+
+.card .card-body {
+    padding: 1.5rem
+}
+
+.card .card-footer {
+    border-top-width: 1px;
+    padding: 1.5rem
+}
+
+.report-card:hover .card {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --border-opacity: 1;
+    border-color: #fff;
+    border-color: rgba(255, 255, 255, var(--border-opacity));
+    transform: scale(1.01);
+}
+
+.report-card:hover .footer {
+    padding: 0;
+    border-width: 0
+}
+
+.report-card .footer,
+.report-card .card {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms
+}
+
+.bar-chart {
+    background: transparent linear-gradient(62deg, #00369e 0%, #005cfd 53%, #a18dff 100%) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 4px 6px #0000001f;
+    border-radius: 8px;
+}
+
+.chart-vistior {
+    margin-top: 30px;
+}
+
+.chart-vistior h5 {
+    margin: 0px;
+    font-weight: 700;
+}
+
+.ant-typography.lastweek {
+    color: #8c8c8c;
+    font-weight: 600;
+}
+
+.chart-visitor-count h4 {
+    margin: 0px;
+    font-weight: 700;
+}
+
+.chart-visitor-count span {
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 600;
+}
+
+.linechart h5 {
+    font-weight: 700;
+    margin: 0px;
+}
+
+.linechart {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sales ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.sales ul li:first-child span.anticon {
+    color: #b37feb;
+}
+
+.sales ul li:last-child span.anticon {
+    color: #1890ff;
+}
+
+.sales ul li {
+    color: #8c8c8c;
+    margin-bottom: 3px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.bar-chart line.apexcharts-xaxis-tick {
+    stroke: transparent;
+}
+
+.bar-chart line.apexcharts-xaxis-tick {
+    stroke: transparent;
+}
+
+.bar-chart line.apexcharts-xaxis-tick {
+    stroke: transparent;
+}
+
+.full-width path {
+    fill: transparent;
+}
+
+.u--slideUp {
+    -webkit-animation: slideUp 1s;
+    -moz-animation: slideUp 1s;
+    -o-animation: slideUp 1s;
+    animation: slideUp 1s;
+}
+
+@-webkit-keyframes slideUp {
+    0% {
+        -webkit-transform: translate3d(0, 100%, 0);
+    }
+    100% {
+        -webkit-transform: none;
+    }
+}
+
+@-moz-keyframes slideUp {
+    0% {
+        -moz-transform: translate3d(0, 100%, 0);
+    }
+    100% {
+        -moz-transform: none;
+    }
+}
+
+@-o-keyframes slideUp {
+    0% {
+        -o-transform: translate3d(0, 100%, 0);
+    }
+    100% {
+        -o-transform: none;
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translate3d(0, 100%, 0);
+    }
+    100% {
+        transform: none;
+    }
+}
