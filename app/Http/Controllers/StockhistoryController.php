@@ -33,10 +33,8 @@ class StockhistoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, ProductStockService $productStockService)
+    public function store(Request $request, ProductStockService $productStockService,ProductController $pc )
     {
-
-
 
         $request->validate([
             'record_date' => ['required', 'date_format:Y-m-d'],
@@ -86,8 +84,8 @@ class StockhistoryController extends Controller
                 ]);
             }
         });
-
-        return $request;
+        
+        return  $pc->productAndModelsJoin();
     }
 
     /**

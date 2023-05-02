@@ -316,45 +316,60 @@
     fill: transparent;
 }
 
-.u--slideUp {
-    -webkit-animation: slideUp 1s;
-    -moz-animation: slideUp 1s;
-    -o-animation: slideUp 1s;
-    animation: slideUp 1s;
+.loadingwheel {
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 10px;
+    position: relative;
+    padding: 1.5px;
+    background-color: white;
 }
 
-@-webkit-keyframes slideUp {
+.loadingwheel:before {
+    content: '';
+    border-radius: 10px;
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    bottom: -4px;
+    left: -4px;
+}
+
+.loadingwheel .loadingBar {
+    position: absolute;
+    border-radius: 10px;
+    top: 0;
+    right: 100%;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    animation: wheelbar 2s linear infinite;
+    @apply bg-info-600
+}
+
+@keyframes wheelbar {
     0% {
-        -webkit-transform: translate3d(0, 100%, 0);
+        left: 0%;
+        right: 100%;
+        width: 0%;
+    }
+    10% {
+        left: 0%;
+        right: 75%;
+        width: 25%;
+    }
+    90% {
+        right: 0%;
+        left: 75%;
+        width: 25%;
     }
     100% {
-        -webkit-transform: none;
+        left: 100%;
+        right: 0%;
+        width: 0%;
     }
 }
 
-@-moz-keyframes slideUp {
-    0% {
-        -moz-transform: translate3d(0, 100%, 0);
-    }
-    100% {
-        -moz-transform: none;
-    }
-}
-
-@-o-keyframes slideUp {
-    0% {
-        -o-transform: translate3d(0, 100%, 0);
-    }
-    100% {
-        -o-transform: none;
-    }
-}
-
-@keyframes slideUp {
-    0% {
-        transform: translate3d(0, 100%, 0);
-    }
-    100% {
-        transform: none;
-    }
+.loginbox {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }

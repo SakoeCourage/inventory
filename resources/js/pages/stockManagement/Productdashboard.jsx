@@ -12,21 +12,23 @@ import Removefromstockform from './partials/Removefromstockform'
 import Loadingspinner from '../../components/Loaders/Loadingspinner'
 import { Icon } from '@iconify/react'
 import Emptydata from '../../components/formcomponents/Emptydata'
+import { useSearchParams } from 'react-router-dom'
+import Loadingwheel from '../../components/Loaders/Loadingwheel'
 
-
-function Productstock() {
+function Productsdashboard() {
     const [showStockingModal, setShowStockingModal] = useState({
         option: null
     })
-    const [currentModelID, setCurrentModelID] = useState(null)
+   
     const [stockHistorys, setStockHistory] = useState([])
     const [stockData, setStockData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [searchParams, setsearchParams] = useSearchParams()
 
     const getStockData = () => {
-        if (currentModelID) {
+        if (searchParams.get('model')) {
             setIsLoading(true)
-            Api.get(`/product/models/${currentModelID}/stock/data`)
+            Api.get(`/product/models/${searchParams.get('model')}/stock/data`)
                 .then(res => {
                     setStockData(res.data)
                 })
@@ -37,8 +39,8 @@ function Productstock() {
     }
     const getStockHIstory = (url) => {
         setIsLoading(true)
-        if (currentModelID) {
-            Api.get(url ?? `/product/models/${currentModelID}/stock/history`)
+        if (searchParams.get('model')) {
+            Api.get(url ?? `/product/models/${searchParams.get('model')}/stock/history`)
                 .then(res => {
                     setStockHistory(res.data)
                     setIsLoading(false)
@@ -54,23 +56,22 @@ function Productstock() {
         getStockHIstory()
     }
 
+
+
     useEffect(() => {
-        if (currentModelID) {
+        if (searchParams.get('model')) {
             fetchAllData()
         }
-    }, [currentModelID])
+    }, [searchParams.get('model')])
 
 
 
     return (
         <div className='flex min-h-full  gap-4 p-6 max-w-[90rem] mx-auto'>
-            {isLoading && <div className='fixed inset-0 flex items-center justify-center bg-white/40 z-40'>
-                <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-            </div>}
-
+            {isLoading && <Loadingwheel />}
             <SideModal onClose={() => setShowStockingModal({ option: null })}
                 showClose title="Add to Stock " maxWidth='xl'
-                open={Boolean(currentModelID && showStockingModal.option == 'add')}>
+                open={Boolean(searchParams.get('model') && showStockingModal.option == 'add')}>
                 <Addtostockform
                     fetchAllData={fetchAllData}
                     setShowStockingModal={setShowStockingModal}
@@ -80,7 +81,7 @@ function Productstock() {
 
             <SideModal onClose={() => setShowStockingModal({ option: null })}
                 showClose title="Adjust Stock" maxWidth='xl'
-                open={Boolean(currentModelID && showStockingModal.option == 'remove')} >
+                open={Boolean(searchParams.get('model') && showStockingModal.option == 'remove')} >
                 <Removefromstockform
                     fetchAllData={fetchAllData}
                     stockData={stockData}
@@ -90,11 +91,9 @@ function Productstock() {
 
             <div className=' min-w-[17rem] text-sm'>
                 <Productmodellist
-                    currentModelID={currentModelID}
-                    setCurrentModelID={setCurrentModelID}
                 />
             </div>
-            {currentModelID ? <div className=' container mx-auto'>
+            {searchParams.get('model') ? <div className=' container mx-auto'>
                 <div className=' min-h-[15rem] grid grid-cols-1 lg:grid-cols-3 gap-5 text-sm'>
                     <Productdetailcard
                         stockData={stockData}
@@ -108,7 +107,7 @@ function Productstock() {
                 </div>
                 <div className=' mt-12 text-sm w-full'>
                     <Productstockhistory
-                        currentModelID={currentModelID}
+                        currentModelID={searchParams.get('model')}
                         getStockHIstory={getStockHIstory}
                         stockData={stockData}
                         stockHistorys={stockHistorys} />
@@ -127,4 +126,4 @@ function Productstock() {
     )
 }
 
-export default Productstock
+export default Productsdashboard

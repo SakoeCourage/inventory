@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import Button from '../../../components/inputs/Button';
 import { SlideUpAndDownAnimation } from '../../../api/Util';
 import { AnimatePresence } from 'framer-motion';
-
+import Loadingwheel from '../../../components/Loaders/Loadingwheel';
 const Supplierstable = ({ data, setData, isLoading, setIsLoading, setFilters, fetchSupplierData, setShowSupplierForm }) => {
 
   const [deleteSupplierByID, setDeleteSupplierByID] = useState(null)
@@ -40,9 +40,6 @@ const Supplierstable = ({ data, setData, isLoading, setIsLoading, setFilters, fe
     fetchSupplierData()
   }, [])
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
 
 
 
@@ -138,9 +135,7 @@ const Supplierstable = ({ data, setData, isLoading, setIsLoading, setFilters, fe
                 })}
               </tbody>
             </table>
-            {isLoading && <div className=' min-h-[100%] flex items-center justify-center absolute inset-0 bg-gray-100/50 bgack'>
-              <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-            </div>
+            {isLoading && <Loadingwheel />
             }
           </div>
         </div>

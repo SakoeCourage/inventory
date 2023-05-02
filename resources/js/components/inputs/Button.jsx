@@ -2,10 +2,10 @@ import React from 'react'
 import Loadingspinner from '../Loaders/Loadingspinner'
 
 const Button = (props) => {
-  const { onClick, text, otherClasses, type, danger, success, primary, alert, info, disabled, ghost,neutral,processing } = props
+  const { onClick, text, className,otherClasses, type, danger, success, primary, alert, info, disabled, ghost,neutral,processing } = props
   return (
     <button type={type} disabled={disabled || processing}
-      className={`btn  border-none rounded-[5px] ${otherClasses}
+      className={`btn  border-none rounded-[5px] ${otherClasses} ${className}
         ${danger && 'bg-red-600 hover:bg-red-800'}
         ${success && 'bg-green-600 hover:bg-green-800'}
         ${primary && 'bg-primary-600 hover:bg-primary-800'}

@@ -22,7 +22,7 @@ function ProductModelListItem(props) {
       </nav>
       <nav className='flex items-center justify-between bg-gray-50 p-1 rounded-md'>
         <dt>Selling option</dt>
-        <dd>{props.model.in_collection ? 'Sold in collection' : 'Sold in units'}</dd>
+        <dd>{props.model.in_collection ? `Sold in ${props.basic_selling_quantity ?? 'units' } and  ${props.model?.collection_method ?? 'collection'}  ` : `Only Sold in ${props.basic_selling_quantity ?? 'units'}`}</dd>
       </nav>
       {props.model.in_collection && <nav className="gap-2 flex flex-col">
         <nav className='flex items-center justify-between bg-gray-100 p-1 rounded-md'>

@@ -63,6 +63,9 @@ class Productsmodels extends Model
         return $this->belongsTo(CollectionType::class, 'collection_method', 'id');
     }
 
+    public function saleitems(){
+        return $this->hasMany(Saleitem::class,'productsmodel_id');
+    }
 
     public function scopeFilter($query, array $filters)
     {

@@ -1,6 +1,10 @@
 import axios from "axios";
 import cookie from 'js-cookie'
-let baseURL = import.meta.env.VITE_APP_BASE_URL;
+import { useSelector, useDispatch } from "react-redux";
+import { clearCredentials } from "../store/authSlice";
+let baseURL =
+    import.meta.env.VITE_APP_BASE_URL;
+
 
 
 let token = cookie.get('XSRF-TOKEN')
@@ -13,7 +17,9 @@ let Api = axios.create({
 Api.interceptors.response.use(function(response) {
     return response
 }, function(error) {
+
     if (error.response.status === 401 || error.response.status === 419) {
+        console.log(err.response.status)
 
     } else if (error.response.status === 403) {
         alert('you don\'t enough priviledges')

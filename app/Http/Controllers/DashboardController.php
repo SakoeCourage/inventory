@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\Saleitem;
 use App\Models\Stockhistory;
+use App\Smartalgorithms\Outofstock;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -25,22 +26,20 @@ class DashboardController extends Controller
 
     public function getDailySale()
     {
-        $todays_sale_total = Sale::whereDate('created_at', Carbon::today())
-            ->sum('total_amount');
-        $yesterdays_sale_total = Sale::whereDate('created_at', Carbon::yesterday())
-            ->sum('total_amount');
+        $todays_sale_total = Sale::whereDate('created_at', Carbon::today())->get()->sum('total_amount');
+        $yesterdays_sale_total = Sale::whereDate('created_at', Carbon::yesterday())->get()->sum('total_amount');
 
-        $relative_percentage_difference = (($todays_sale_total - $yesterdays_sale_total) / $yesterdays_sale_total) * 100;
+        $relative_percentage_difference = $yesterdays_sale_total ?  (($todays_sale_total - $yesterdays_sale_total) / $yesterdays_sale_total) * 100 : 0;
         return [
             'daily_sale' => $todays_sale_total,
-            'relative_percentage' => $relative_percentage_difference > 0 ? floor($relative_percentage_difference) : null
+            'relative_percentage' => ($relative_percentage_difference > 0 && $relative_percentage_difference <= 100) ? floor($relative_percentage_difference) :  null
         ];
     }
 
     public function getDailyRevenue()
     {
         $non_refunded_sales = Saleitem::whereDate('created_at', Carbon::today())
-            ->where('is_refunded', 0)->sum('profit');
+            ->where('is_refunded', 0)->get()->sum('profit');
 
         return $non_refunded_sales;
     }
@@ -87,35 +86,38 @@ class DashboardController extends Controller
     }
 
     public function generateDailyStats()
-    {
+    {   
+        $outofstock = new Outofstock();
         return [
             'daliy_sale_stats' => $this->getDailySale(),
             'daily_revenue' => $this->getDailyRevenue(),
             'products_cycle' => $this->getProductCycle(),
             'products_value' => $this->getCurrentProductsAndValue(),
-            'line_chart' => $this->generateLineChart()
+            'line_chart' => $this->generateLineChart(),
+            'smart_recommendations' => $outofstock->main()->groupBy('stock_level'),
+            'unattended_products' => $this->getUnattendedProducts()
         ];
     }
 
     public function generateLineChart()
     {
-        $begining_of_week = Carbon::now()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
-        $end_of_week = Carbon::now()->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+        $begining_of_week = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+        $end_of_week = Carbon::now()->endOfWeek(Carbon::SATURDAY)->format('Y-m-d');
         $today = Carbon::now();
         $days = collect();
-        $startOfWeek = $today->startOfWeek();
+        $startOfWeek = $today->startOfWeek(Carbon::SUNDAY);
         for ($date = $startOfWeek; $date->lte($end_of_week); $date->addDay()) {
             $days->push($date->format('D'));
         }
 
         $sales = Sale::whereDate('created_at', '>=', $begining_of_week)
             ->whereDate('created_at', '<=', $today)
-            ->selectRaw(' DATE_FORMAT(created_at,"%a") as day, total_amount * 100 as total_amount')
+            ->selectRaw(' DATE_FORMAT(created_at,"%a") as day, total_amount as total_amount')
             ->get();
 
         $revenue = Saleitem::whereDate('created_at', '>=', $begining_of_week)
             ->whereDate('created_at', '<=', $today)
-            ->selectRaw(' DATE_FORMAT(created_at,"%a") as day, profit * 100 as profit')
+            ->selectRaw(' DATE_FORMAT(created_at,"%a") as day, profit as profit')
             ->get();
 
         $revenue = $days->mapWithKeys(function ($day, $index) use ($revenue) {
@@ -133,21 +135,28 @@ class DashboardController extends Controller
 
         return [
             [
-                'name' => 'sale',
+                'name' => 'Sale',
+                'type' =>'area',
                 'data' => $sales->flatten()
             ],
             [
-                'name' => 'revenue',
+                'name' => 'Revenue',
+                'type' =>'area',
                 'data' => $revenue->flatten()
             ]
         ];
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    
+    public function getUnattendedProducts()
     {
-        //
+        $data = Product::withCount(['models' => function ($query) {
+            $query->where('quantity_in_stock', 0);
+        }])->get();
+   
+        return [
+            'products' => $data->count(),
+            'models'  =>  $data->sum('models_count')
+        ];
     }
 }

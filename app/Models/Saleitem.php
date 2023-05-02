@@ -41,6 +41,6 @@ class Saleitem extends Model
     }
 
     public function productsmodels(){
-        return $this->belongsTo(Productsmodels::class);
+        return $this->belongsTo(Productsmodels::class,'productsmodel_id');
     }
 }

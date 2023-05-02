@@ -114,7 +114,11 @@ function Newstock() {
             .then(res => {
                 setIsLoading(false)
                 resetForm()
+                setErrors({})
                 enqueueSnackbar('New Stock Added', { variant: 'success' })
+                const { products, models } = res.data
+                setProductsFromDB(products)
+                setModelsFromDB(models)
             })
             .catch(err => {
                 if (err.response?.status === 422) {
@@ -168,7 +172,7 @@ function Newstock() {
                     <nav className=' border-b border-b-gray-300 border-dashed uppercase'>New stock information</nav>
                     <nav className=' flex lg:flex-row flex-col gap-3'>
                         <FormInputDate error={errors?.record_date} value={stockMetaData.record_date && dayjs(stockMetaData.record_date)} onChange={(e) => setStockMetaData(cv => cv = { ...cv, record_date: dayjs(e.target.value).format('YYYY-MM-DD') })} className="w-full" label='Record Date' />
-                        <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e) => setStockMetaData(cv => cv = { ...cv, purchase_invoice_number: e.target.value })} className="w-full" label='Purchase Invoice Number' />
+                        <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e) => setStockMetaData(cv => cv = { ...cv, purchase_invoice_number: e.target.value })} className="w-full" label='Purchase Invoice Number or description' />
                     </nav>
                     <nav className=' flex lg:flex-row flex-col gap-3'>
                         <FormInputSelect error={errors?.supplier} onChange={(e) => setStockMetaData(cv => cv = { ...cv, supplier: e.target.value })} value={stockMetaData.supplier} options={Boolean(suppliers.length) && [...suppliers.map(({ id, supplier_name }) => { return ({ name: supplier_name, value: id }) })]} className="w-full" label="Select Supplier" />

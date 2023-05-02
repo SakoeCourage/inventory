@@ -10,6 +10,7 @@ import { addOrUpdateUrlParam } from '../../../../api/Util'
 import dayjs from 'dayjs'
 import SideModal from '../../../../components/layout/sideModal'
 import Viewsaleitem from './Viewsaleitem'
+import Loadingwheel from '../../../../components/Loaders/Loadingwheel'
 
 function Salehistory({ sales, setSales, filters, setFilters }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -21,7 +22,7 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
   })
 
   const fetchSalesData = (url) => {
-    // setIsLoading(true)
+    setIsLoading(true)
     Api.get(url ?? '/sale/all').then(res => {
       const { sales, filters,full_url } = res.data
       setfullUriWithQuery(full_url)
@@ -163,9 +164,7 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
             })}
           </tbody>
         </table>
-        {isLoading && <div className=' min-h-[100%] flex items-center justify-center absolute inset-0 bg-gray-100/50 bgack'>
-          <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-        </div>
+        {isLoading && <Loadingwheel />
         }
       </div>
       <TablePagination className=" !mt-auto "

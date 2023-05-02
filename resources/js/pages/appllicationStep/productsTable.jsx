@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Api from '../../api/Api';
 import { NavLink } from 'react-router-dom';
 import { dateReformat ,formatnumber} from '../../api/Util';
-
+import Loadingwheel from '../../components/Loaders/Loadingwheel';
 
 const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, setFilters }) => {
 
@@ -124,9 +124,7 @@ const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, 
                 })}
               </tbody>
             </table>
-            {isLoading && <div className=' min-h-[100%] flex items-center justify-center absolute inset-0 bg-gray-100/50 bgack'>
-            <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-            </div>
+            {isLoading && <Loadingwheel />
             }
           </div>
         </div>

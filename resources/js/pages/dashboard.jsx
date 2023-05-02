@@ -3,7 +3,8 @@ import Statsview from './dashboardcomponents/Statsview'
 import LineChart from './dashboardcomponents/Linechart'
 import Api from '../api/Api'
 import { AnimatePresence } from 'framer-motion'
-
+import SmartRecommendations from './dashboardcomponents/SmartRecommendations'
+import Loadingwheel from '../components/Loaders/Loadingwheel'
 import Dasboardloader from '../components/Loaders/Dasboardloader'
 const Dashboard = () => {
   const [dashboardData, setDashBoardData] = useState(null)
@@ -26,13 +27,14 @@ const Dashboard = () => {
   return (
     <div className='h-max  relative  '>
       {dashboardData && <div>  <Statsview dashboardData={dashboardData} />
-      <div className='card rounded-md  max-w-[90rem]  mx-auto mt-4 shadow-md p-10 border border-gray-400/40'>
-        <LineChart dashboardData={dashboardData}  />
+      <div className=' max-w-[90rem] flex flex-col lg:flex-row gap-2  mx-auto mt-4 '>
+        <LineChart dashboardData={dashboardData} />
+        <SmartRecommendations unattended_products={dashboardData.unattended_products} smart_recommendations={dashboardData.smart_recommendations} />
       </div>
       </div>}
      
      <Dasboardloader isLoading={isLoading} />
-    
+   
      
     </div>
   )

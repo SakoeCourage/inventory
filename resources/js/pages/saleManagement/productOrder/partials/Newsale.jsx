@@ -11,6 +11,8 @@ import OutofstockUi from './OutofstockUi'
 import { AnimatePresence } from 'framer-motion'
 import Interruptedsale from './Interruptedsale'
 import { SnackbarProvider, useSnackbar } from 'notistack'
+import { handleOutOfStock } from './handleOutofStock'
+import Loadingwheel from '../../../../components/Loaders/Loadingwheel'
 
 
 
@@ -40,33 +42,6 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
         return productsFromDB.find(product => product.id == product_id)
     }
 
-    const handleOutOfStock = async () => {
-        var items_out_of_stock = []
-        formData.items.forEach(item => {
-            if (item?.productsmodel_id && item?.product_id && item?.quantity) {
-                var itemsModelfromDb = modelsFromDB.find(model => model.id == item?.productsmodel_id)
-                if (itemsModelfromDb.quantity_in_stock < item.quantity) {
-                    let product = getProductfromId(itemsModelfromDb?.product_id)
-                    items_out_of_stock = [...items_out_of_stock, {
-                        product_name: product?.product_name,
-                        product_id: product?.id,
-                        basic_selling_quantity: product?.basic_quantity?.name,
-                        quantity_in_stock: itemsModelfromDb?.quantity_in_stock,
-                        quantity_required: item?.quantity,
-                        in_collection: itemsModelfromDb?.in_collection,
-                        collection_type: itemsModelfromDb?.collection_type?.type,
-                        quantity_per_collection: itemsModelfromDb?.quantity_per_collection,
-                        model_name: itemsModelfromDb?.model_name
-                    }]
-                }
-            }
-        })
-        if (items_out_of_stock.length > 0) {
-            return Promise.reject(items_out_of_stock)
-        } else {
-            return Promise.resolve('none out of stock')
-        }
-    }
 
     const handleOnsucess = (data) => {
         const { products, models } = data
@@ -87,9 +62,10 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
 
     const handleSubmit = () => {
         setProcessing(true)
-        handleOutOfStock().then(res => {
+        handleOutOfStock(formData,modelsFromDB,getProductfromId).then(res => {
             Api.post('/sale/new', formData).then(res => {
                 handleOnsucess(res.data)
+                setErrors({})
             }).catch(err => {
                 if (err?.response?.status === 422) {
                     setProcessing(false)
@@ -241,6 +217,7 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
                             </nav>
                         </nav>
                     </nav>
+                  
                     <nav className='max-w-4xl w-full !mx-auto mt-5'>
                         <Button processing={processing} onClick={() => handleSubmit()} info text="Check Out" otherClasses="w-full" />
                     </nav>

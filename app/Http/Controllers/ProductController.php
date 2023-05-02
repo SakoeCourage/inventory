@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\PaginationHelper;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Product $product,Request $request)
+    public function index(Product $product, Request $request)
     {
         return [
             'products' => $product->filter(request()->only(['search', 'category']))
@@ -31,29 +32,29 @@ class ProductController extends Controller
                     'category_name' => $currentproduct->category->category
                 ]),
             'filters' => $request->only(['search', 'category']),
-            'full_url' =>trim($request->fullUrlWithQuery(request()->only('search','category')))
+            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'category')))
         ];
     }
     /**
      * Display a listing of the resource.
      */
-    public function getProductByIdandName($id,$product_name)
+    public function getProductByIdandName($id, $product_name)
     {
-        $product =  Product::where('id',$id)->where('product_name',$product_name)->firstOrFail();
+        $product =  Product::where('id', $id)->where('product_name', $product_name)->firstOrFail();
 
-        return[
+        return [
             'product' => $product,
             'basic_quantity' => $product->basicQuantity
         ];
     }
 
- 
+
     public function productAndModelsJoin()
     {
-      return [
-        'products' => Product::with('basicQuantity')->latest()->get(),
-        'models' => Productsmodels::with('collectionType:id,type')->get()
-      ];
+        return [
+            'products' => Product::with('basicQuantity')->latest()->get(),
+            'models' => Productsmodels::with('collectionType:id,type')->get()
+        ];
     }
 
     /**
@@ -107,7 +108,7 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $product);
         return [
-            'product' => $product->get(['id', 'product_name', 'quantity_in_stock','category_id'])->first(),
+            'product' => $product->get(['id', 'product_name', 'quantity_in_stock', 'category_id'])->first(),
             'basic_selling_quantity' => $product->first()->basicQuantity,
             'models' => $product->first()->models->map(function ($model) {
                 return [
@@ -123,12 +124,30 @@ class ProductController extends Controller
         ];
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
+
+    public function getUnattendedProductsWithCategoriesAndModels()
     {
-        //
+        $products = Product::deepSearch(request()->only('search', 'category'))
+            ->join('productsmodels', 'products.id', '=', 'productsmodels.product_id')
+            ->join('categories', 'products.category_id', 'categories.id')
+            ->where('productsmodels.quantity_in_stock', 0)
+            ->selectRaw(
+               'categories.category,
+                products.product_name,
+                products.id as product_id,
+                productsmodels.id as model_id,
+                productsmodels.model_name ,
+                productsmodels.quantity_in_stock
+                '
+            )
+            ->get()
+            ->groupBy(['category', 'product_name']);
+
+        return [
+            'products' => PaginationHelper::paginate($products, 5),
+            'filters' => request()->only('search', 'category'),
+            'full_url' => trim(request()->fullUrlWithQuery(request()->only('search', 'category')))
+        ];
     }
 
     /**
@@ -138,7 +157,7 @@ class ProductController extends Controller
     {
         // return $product;
         $request->validate([
-            'product_name' => ['required', 'string', 'unique:products,product_name,'.$product->id],
+            'product_name' => ['required', 'string', 'unique:products,product_name,' . $product->id],
             'basic_selling_quantity' => ['required', 'string'],
             'product_models' => ['required', 'array', 'min:1'],
             'category' => ['required'],
@@ -156,7 +175,7 @@ class ProductController extends Controller
                 $product->models()->updateOrCreate(
                     [
                         'id' => $model['id'] ?? null,
-                        
+
                     ],
                     [
                         'model_name' => $model['model_name'],

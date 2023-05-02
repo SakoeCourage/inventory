@@ -1,80 +1,47 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "./pages/layout";
-import { Suspense, lazy } from 'react';
-import { Toaster } from "react-hot-toast";
-import { Icon } from "@iconify/react";
-import Dashboard from "./pages/dashboard";
+import { Suspense, useEffect } from 'react';
 import AppLogin from "./pages/appLogin";
-const ApplicationSetup = lazy(() => import('./pages/appllicationStep/index'))
-const SaleManagement = lazy(() => import('./pages/saleManagement/index'))
-const StockManagement = lazy(() => import('./pages/stockManagement/index'))
-
-
+import Loadingwheel from "./components/Loaders/Loadingwheel";
+import { getUser, getAuth } from "./store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AcessControlPage } from "./pages/authorization/AccessControl";
+import Login from "./components/appLogin/login";
+import { routes } from "./Approutes";
 
 function App() {
+  const dispatch = useDispatch()
+  const auth = useSelector(getAuth)
+
+  useEffect(() => {
+    dispatch(getUser())
+  }, [])
+
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        containerClassName=""
-        containerStyle={{ maxWidth: '100%' }}
-        toastOptions={{
-          // Define default options
-          className: 'truncate pr-4 text-sm',
-          duration: 5000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-
-          // Default options for specific types
-          success: {
-            duration: 4000,
-            theme: {
-              primary: 'green',
-              secondary: 'black',
-            },
-          },
-          error: {
-            duration: 6000,
-            theme: {
-              primary: 'red',
-              secondary: 'black',
-            },
-          },
-        }}
-      />
+    {(auth.loadingState === 'success' && window.document.readyState == 'complete') ?
       <Routes>
-        <Route path="/" index element={<AppLogin/>}/>
         <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/applicationsetup/*" element={
-            <Suspense fallback={<div className='grid justify-center items-center h-screen'>
-              <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-            </div>}>
-              <ApplicationSetup />
-            </Suspense>
-          } />
-          <Route path="/salemanagement/*" element={
-            <Suspense fallback={<div className='grid justify-center items-center h-screen'>
-              <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-            </div>}>
-              <SaleManagement />
-            </Suspense>
-          } />
-          <Route path="/stockmanagement/*" element={
-            <Suspense fallback={<div className='grid justify-center items-center h-screen'>
-              <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-            </div>}>
-              <StockManagement />
-            </Suspense>
-          } />
+          {routes.map((route, i) =>
+            <Route key={i} path={route.path} element={
+              <AcessControlPage abilities={route.permissions}>
+                <Suspense fallback={<Loadingwheel />}>
+                  {route.element}
+                </Suspense>
+              </AcessControlPage>
+            } />)}
         </Route>
+        <Route element={<AppLogin />} >
+          <Route index path="/" element={<Login />} />
+        </Route>
+        <Route path="*" element={<div className=" flex items-center justify-center h-screen font-semibold"> Page not found</div>} />
       </Routes>
+      : 
+      <><Loadingwheel /></>
+    }
     </>
+
   )
 }
 

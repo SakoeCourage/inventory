@@ -60,7 +60,7 @@ function Customercart({ productsFromDB, modelsFromDB ,formData,setFormData,items
 
     return (
         <nav className='flex flex-col py-4 customer-cart-list relative min-h-[15rem]'>
-            {showProductSearchModal && <div className=' fixed inset-0 bg-black/60 z-50 isolate flex flex-col'>
+            {showProductSearchModal && <div className=' fixed inset-0 bg-black/60 z-[70] isolate flex flex-col'>
                 <div className=" max-w-3xl mx-auto w-full">
                     <Productsearch
                         setShowProductSearchModal={setShowProductSearchModal}

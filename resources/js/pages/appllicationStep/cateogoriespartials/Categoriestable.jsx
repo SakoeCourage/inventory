@@ -9,7 +9,7 @@ import Button from '../../../components/inputs/Button';
 import { SlideUpAndDownAnimation } from '../../../api/Util';
 import { AnimatePresence } from 'framer-motion';
 import { SnackbarProvider, useSnackbar } from 'notistack'
-
+import Loadingwheel from '../../../components/Loaders/Loadingwheel';
 const Categoriestable = ({ data, setData, isLoading, setIsLoading, setFilters, fetchCategoriesData, setShowCategoryForm }) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
     const [deleteCategoryByID, setDeleteCategoryByID] = useState(null)
@@ -35,7 +35,7 @@ const Categoriestable = ({ data, setData, isLoading, setIsLoading, setFilters, f
             .catch(err => {
                 enqueueSnackbar(`Failed: ${err?.response?.data?.message} `, { variant: 'error' })
                 console.log(err)
-                setDeleteCategoryByID(null)  
+                setDeleteCategoryByID(null)
             })
     };
 
@@ -156,9 +156,7 @@ const Categoriestable = ({ data, setData, isLoading, setIsLoading, setFilters, f
                                 })}
                             </tbody>
                         </table>
-                        {isLoading && <div className=' min-h-[100%] flex items-center justify-center absolute inset-0 bg-gray-100/50 bgack'>
-                            <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
-                        </div>
+                        {isLoading && <Loadingwheel />
                         }
                     </div>
                 </div>

@@ -1,7 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
+use App\Models\Product;
+use App\Models\Productsmodels;
+
+use function PHPSTORM_META\map;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +19,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/sale/all',
-    function(){
- 
+
+
+Route::get(
+    '/sale/all',
+    function () {
+       
     }
 );
 
 Route::get('/{any}', function () {
     return view('index');
-})->where("any",".*");
-
+})->where("any", ".*");

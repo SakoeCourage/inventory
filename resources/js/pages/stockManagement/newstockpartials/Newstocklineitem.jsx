@@ -126,7 +126,7 @@ function Newstocklineitem({ index, productsFromDB, addToNewStockList, newStockLi
             <nav className='flex w-max items-center gap-4'>
                 {requireAttention && lineItem['model_id'] && <nav className='cursor-pointer attention-icon' onClick={() => setShowPricingModal(true)}>
                     <Tooltip arrow title="Product's pricing needs to be configured properly . Click to Learn more">
-                        <Icon className='text-red-500/90 h-8 w-8 rounded-full hover:ring-2 ring-offset-[0.2px] ring-red-500/90 cursor-pointer transition-all ' fontSize={15} icon="mdi:warning-circle" />
+                        <Icon className='text-red-500/90 h-8 w-8 rounded-full  cursor-pointer transition-all ' fontSize={15} icon="solar:danger-triangle-bold" />
                     </Tooltip>
                 </nav>}
                 <button onClick={() => removeItemFromIndex()} className='flex items-center gap-3 rounded-sm shadow-md p-2 bg-red-50  ring-1 ring-offset-1 ring-red-200/90'>

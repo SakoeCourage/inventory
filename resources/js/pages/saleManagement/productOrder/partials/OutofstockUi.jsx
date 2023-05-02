@@ -12,9 +12,9 @@ function OutofstockUi({ products, setOutOfStockProducts,formData }) {
  
   const navigate = useNavigate()
 
-  const handleNavigate = (pid, pname) => {
+  const handleNavigate = (pid, pname,model_id) => {
      localStorage.setItem('interrupted_sale',JSON.stringify({datetime: new Date(),...formData}))
-    navigate(`/stockmanagement/product/${pid}/${pname}/manage`)
+    navigate(`/stockmanagement/product/${pid}/${pname}/manage?model=${model_id}`)
   }
   return (
     <ClickAwayListener onClickAway={() => setOutOfStockProducts([])}>
@@ -111,7 +111,7 @@ function OutofstockUi({ products, setOutOfStockProducts,formData }) {
                       <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap">
 
                         <Tooltip title="Manage Stock" arrow TransitionComponent={Zoom}>
-                          <button onClick={()=>handleNavigate(product.product_id, product.product_name)}
+                          <button onClick={()=>handleNavigate(product.product_id, product.product_name,product.model_id)}
                             className=" p-1"
                           >
                             <Icon className='' icon="solar:round-arrow-right-up-outline" fontSize={20} />

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Productsmodels;
 use App\Models\Productstockhistory;
 use App\Enums\StockActionEnum;
+use Illuminate\Support\Facades\Auth;
 
 class ProductStockService
 {
@@ -20,10 +21,10 @@ class ProductStockService
             $last_record = Productstockhistory::where('productsmodel_id', $request->productsmodel_id)->get()->last();
             $newStockHistory = Productstockhistory::create([
                 'productsmodel_id' => $request->productsmodel_id,
-                'user_id' => 1,
+                'user_id' => Auth::user()->id,
                 'action_type' => StockActionEnum::Appreciate,
                 'quantity' => $request->quantity,
-                'description' => $request->description ?? 'from ' .'username',
+                'description' => $request->description ?? 'from '.Auth::user()->name,
                 'net_quantity' => $last_record ? $last_record->net_quantity + $request->quantity : $request->quantity
             ]);
             $product_model->product->increment('quantity_in_stock',$newStockHistory->quantity);
@@ -43,7 +44,7 @@ class ProductStockService
             $last_record = Productstockhistory::where('productsmodel_id', $request->productsmodel_id)->get()->last();
             $newStockHistory = Productstockhistory::create([
                 'productsmodel_id' => $request->productsmodel_id,
-                'user_id' => 1,
+                'user_id' => Auth::user()->id,
                 'action_type' => StockActionEnum::Depreciate,
                 'quantity' => $request->quantity,
                 'description' => $request->description ?? 'for sale',

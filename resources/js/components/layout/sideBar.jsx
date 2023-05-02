@@ -20,7 +20,15 @@ const Routes = [
 
 
     ],
-    icon: "solar:hand-money-linear" 
+    icon: "ep:sold-out" 
+  },
+  {
+    name: 'User management', subItems: [
+      { title: 'All Users', link: '/usermanagement/all' },
+      { title: 'User Role and Permissions', link: '/usermanagement/rolesandpermissions' },
+
+    ],
+    icon: "ph:users"
   },
   {
     name: 'Application Setup', subItems: [
@@ -30,15 +38,10 @@ const Routes = [
 
     ],
     icon: "bi:gear"
-  },
+  }
 
-  // {
-  //   name: 'Administrator', subItems: [
-  //     { title: 'User management', link: '/layout/admin/users' },
 
-  //   ],
-  //   icon: "clarity:administrator-solid"
-  // }
+
 ]
 
 

@@ -20,7 +20,8 @@ class ProductSeeder extends Seeder
                 'product_name' => fake()->words(2,true),
                 'basic_selling_quantity_id' => rand(1, 8),
                 'has_models' => true,
-                'quantity_in_stock' => 0
+                'quantity_in_stock' => 0,
+                'category_id' => rand(1,36)
             ]);
     
             for($models=0; $models < rand(15,25); $models ++) {

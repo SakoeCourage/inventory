@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Button from '../../../components/inputs/Button'
 import { Icon } from '@iconify/react'
-import { useParams } from 'react-router-dom'
+import { useParams ,useSearchParams} from 'react-router-dom'
 import Api from '../../../api/Api'
 import Loadingspinner from '../../../components/Loaders/Loadingspinner'
 
-function Productmodellist({setCurrentModelID,currentModelID}) {
+function Productmodellist() {
     const routeParams = useParams()
+    const [searchParams, setsearchParams] = useSearchParams()
     const { productId, productName } = routeParams
     const [data, setData] = useState([])
     const [next_page_url, setnext_page_url] = useState(null)
@@ -44,7 +45,7 @@ function Productmodellist({setCurrentModelID,currentModelID}) {
                 {Boolean(data?.length) &&
                     data.map((dt, i) => {
                         return (
-                            <abbr onClick={()=>setCurrentModelID(dt.id)} key={i} title={dt.model_name} className={`decoration-none p-2 px-4 hover:bg-blue-50 cursor-pointer model-item truncate w-full ${currentModelID === dt.id && 'addleftline !bg-info-100 '}`}> {dt.model_name} </abbr>
+                            <abbr onClick={()=>{setsearchParams({model:dt.id})}} key={i} title={dt.model_name} className={`decoration-none p-2 px-4 hover:bg-blue-50 cursor-pointer model-item truncate w-full ${searchParams.get('model') == dt.id && 'addleftline !bg-info-100 '}`}> {dt.model_name} </abbr>
                         )
                     })
                 }
