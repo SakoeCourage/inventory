@@ -43,6 +43,7 @@
         "react-redux": "^8.0.5",
         "react-scroll": "^1.8.9",
         "react-use-scroll-direction": "^0.1.0",
+        "typed.js": "^2.0.16",
         "vite": "^4.2.0"
     }
 }

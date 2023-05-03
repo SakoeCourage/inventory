@@ -3,7 +3,7 @@ const ApplicationSetup = lazy(() => import('./pages/appllicationStep/index'))
 const SaleManagement = lazy(() => import('./pages/saleManagement/index'))
 const StockManagement = lazy(() => import('./pages/stockManagement/index'))
 const UserManagement = lazy(() => import('./pages/Usermanagement/index'))
-import Dashboard from "./pages/dashboard";
+const Dashboard = lazy(()=>import('./pages/dashboard'));
 
 export const  routes = [
     {
