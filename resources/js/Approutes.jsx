@@ -1,5 +1,5 @@
 import {  lazy } from 'react';
-const UserManagement = lazy(() => import('./pages/Usermanagement/index'))
+// const UserManagement = lazy(() => import('./pages/Usermanagement/index'))
 const ApplicationSetup = lazy(() => import('./pages/appllicationStep/index'))
 const SaleManagement = lazy(() => import('./pages/saleManagement/index'))
 const StockManagement = lazy(() => import('./pages/stockManagement/index'))
@@ -32,10 +32,10 @@ export const  routes = [
       element: <StockManagement />,
       permissions: ['manage stock data']
     },
-    {
-      path: "/usermanagement/*",
-      element: <UserManagement />,
-      permissions: ['manage users']
-    },
+    // {
+    //   path: "/usermanagement/*",
+    //   element: <UserManagement />,
+    //   permissions: ['manage users']
+    // },
   ]
   
