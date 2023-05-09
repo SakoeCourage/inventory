@@ -9,7 +9,7 @@ let baseURL =
 let token = cookie.get('XSRF-TOKEN')
 let Api = axios.create({
     baseURL: `${baseURL}/api/v1`,
-    // 'Authorization': `${token}`,
+    'Authorization': `${token}`,
     withCredentials: true
 })
 
