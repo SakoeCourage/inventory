@@ -1,5 +1,6 @@
 import React from 'react'
 import pic from "../../assets/Untitledinventoryheroimage.png"
+import logo from "../../assets/inventorylog.svg"
 import Typed from 'typed.js';
 const Info = () => {
     const el = React.useRef(null);
@@ -37,6 +38,7 @@ const Info = () => {
             </div>
             <div className="flex flex-col items-center justify-center w-full h-full relative  ">
                 <img src={pic} className='ml-4 mt-5' />
+                
             </div>
         </div>
     )
