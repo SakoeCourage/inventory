@@ -13,9 +13,9 @@ let Api = axios.create({
     withCredentials: true
 })
 
-Api.interceptors.response.use(function(response) {
+Api.interceptors.response.use(function (response) {
     return response
-}, function(error) {
+}, function (error) {
 
     if (error?.response?.status === 401 || error?.response?.status === 419) {
         window.store.dispatch(clearCredentials())
