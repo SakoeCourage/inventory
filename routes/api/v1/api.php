@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'authenticate']);
 
-route::group(['namespace' => 'api\v1', 'middleware' => 'auth:sanctum'], function () {
+route::group(['namespace' => 'api\v1'], function () {
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return [
             'user' => $request->user(),
