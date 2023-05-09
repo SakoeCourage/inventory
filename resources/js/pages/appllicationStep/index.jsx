@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import ProductDefinition from './productDefinition'
 import Productcategories from './Productcategories'
-import Productsuppliers from './ProductSuppliers'
+import Productsuppliers from './Productsuppliers'
 
 const Index = () => {
   return (
