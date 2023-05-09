@@ -17,7 +17,7 @@ let Api = axios.create({
 Api.interceptors.response.use(function (response) {
     return response
 }, function (error) {
-    console.log(err)
+    console.log(error.response)
     if (error?.response?.status === 401 || error?.response?.status === 419) {
         window.store.dispatch(clearCredentials())
     } else if (error?.response?.status === 403) {
