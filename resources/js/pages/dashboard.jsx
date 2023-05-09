@@ -6,6 +6,7 @@ import { AnimatePresence } from 'framer-motion'
 import SmartRecommendations from './dashboardcomponents/SmartRecommendations'
 import Loadingwheel from '../components/Loaders/Loadingwheel'
 import Dasboardloader from '../components/Loaders/Dasboardloader'
+
 const Dashboard = () => {
   const [dashboardData, setDashBoardData] = useState(null)
   const [isLoading,setIsLoading] = useState(false)
