@@ -18,7 +18,7 @@ Api.interceptors.response.use(function(response) {
 }, function(error) {
 
     if (error?.response?.status === 401 || error?.response?.status === 419) {
-        window.store.dispatch(clearCredentials())
+        // window.store.dispatch(clearCredentials())
         console.log(err.response.status)
 
     } else if (error?.response?.status === 403) {
