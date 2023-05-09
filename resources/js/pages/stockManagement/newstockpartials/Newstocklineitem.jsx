@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react'
 import { useEffect } from 'react'
 import { Tooltip } from '@mui/material'
 import { motion, AnimatePresence } from 'framer-motion'
-import ProductPricing from './Productpricing'
+import ProductPricing from './ProductPricing'
 import { SlideUpAndDownAnimation } from '../../../api/Util'
 
 
