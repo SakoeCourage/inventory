@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 function Dasboardloader({isLoading}) {
     return (
         <div
-            className={`bg-white absolute inset-0 h-[calc(100vh-4rem)] w-full z-10   ${!isLoading && 'transition-transform duration-500  translate-y-[-100vh]'} ` }>
+            className={`bg-white absolute inset-0 h-[calc(100vh-var(--navbar-height))] w-full z-10   ${!isLoading && 'transition-transform duration-500  translate-y-[-100vh]'} ` }>
           <div>
           <div className=" dashboardloader">
             </div>

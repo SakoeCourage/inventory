@@ -13,30 +13,30 @@ class Saleitem extends Model
     public function profit(): Attribute
     {
         return Attribute::make(
-            get: fn ($unit_price) => $unit_price / 100,
-            set: fn ($unit_price) => $unit_price * 100,
+            get: fn ($amount) => $amount / 100,
+            set: fn ($amount) => $amount * 100,
         );
     }
     public function amount(): Attribute
     {
         return Attribute::make(
-            get: fn ($unit_price) => $unit_price / 100,
-            set: fn ($unit_price) => $unit_price * 100,
+            get: fn ($amount) => $amount / 100,
+            set: fn ($amount) => $amount * 100,
         );
     }
     public function price(): Attribute
     {
         return Attribute::make(
-            get: fn ($unit_price) => $unit_price / 100,
-            set: fn ($unit_price) => $unit_price * 100,
+            get: fn ($amount) => $amount / 100,
+            set: fn ($amount) => $amount * 100,
         );
     }
     
     public function discountRate(): Attribute
     {
         return Attribute::make(
-            get: fn ($unit_price) => $unit_price / 100,
-            set: fn ($unit_price) => $unit_price * 100,
+            get: fn ($amount) => $amount / 100,
+            set: fn ($amount) => $amount * 100,
         );
     }
 

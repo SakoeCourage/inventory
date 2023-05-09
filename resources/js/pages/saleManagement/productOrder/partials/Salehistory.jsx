@@ -11,6 +11,8 @@ import dayjs from 'dayjs'
 import SideModal from '../../../../components/layout/sideModal'
 import Viewsaleitem from './Viewsaleitem'
 import Loadingwheel from '../../../../components/Loaders/Loadingwheel'
+import { NavLink } from 'react-router-dom'
+import Refundinfo from '../../../../components/inputs/Refundinfo'
 
 function Salehistory({ sales, setSales, filters, setFilters }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -24,9 +26,9 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
   const fetchSalesData = (url) => {
     setIsLoading(true)
     Api.get(url ?? '/sale/all').then(res => {
-      const { sales, filters,full_url } = res.data
+      const { sales, filters, full_url } = res.data
       setfullUriWithQuery(full_url)
-      console.log(sales,filters)
+      console.log(sales, filters)
       setFilters(filters)
       setSales(sales)
       setIsLoading(false)
@@ -66,14 +68,14 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
       </SideModal>}
       <div className='flex items-center gap-4 justify-end my-2'>
         {(filters?.day || filters?.search) &&
-          <Button onClick={() =>{ fetchSalesData(); setFilters([])}} text='reset filters' />
+          <Button onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
         }
         <FormInputsearch
           processing={processing}
           getSearchKey={(value) => { handleSearch(value) }} placeholder='Search cutomer name' className='!w-72 h-14 !mb-0' />
         <FormInputDate
           value={filters?.day ? dayjs(filters?.day) : null}
-          onChange={(e) => fullUriWithQuery &&  fetchSalesData(addOrUpdateUrlParam(fullUriWithQuery, 'day', dayjs(e.target.value).format('YYYY-MM-DD')))}
+          onChange={(e) => fullUriWithQuery && fetchSalesData(addOrUpdateUrlParam(fullUriWithQuery, 'day', dayjs(e.target.value).format('YYYY-MM-DD')))}
           className="!w-full"
         />
       </div>
@@ -114,7 +116,7 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
                   <td className="px-6 py-2 !text-xs whitespace-nowrap">
                     <div className="flex items-center">
                       <h6 className="mb-0 !capitalize ">
-                        {x.sale_invoice}
+                        {x.sale_invoice} {x.refunds_count > 0 && <Refundinfo/>}
                       </h6>
                     </div>
                   </td>
@@ -148,14 +150,21 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
                     </div>
                   </td>
 
-                  <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap">
+                  <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap text-gray-500">
                     <Tooltip title="View details" arrow TransitionComponent={Zoom}>
                       <span
-                        onClick={() => setShowSaleById({id:x.id,title:String(x.sale_invoice)})}
+                        onClick={() => setShowSaleById({ id: x.id, title: String(x.sale_invoice) })}
                         className=" p-1 hover:cursor-pointer"
                       >
-                         <Icon className='' icon="solar:round-arrow-right-up-outline" fontSize={20} />
+                        <Icon className=' text-info-700'  icon="solar:round-arrow-right-up-outline" fontSize={20} />
                       </span>
+                    </Tooltip>
+                    <Tooltip title="Refund Sale" arrow TransitionComponent={Zoom}>
+                      <NavLink to={`/salemanagement/refund?sale=`+x.sale_invoice}
+                        className=" p-1 hover:cursor-pointer"
+                      >
+                        <Icon className=' text-red-700' fontSize={20} icon="heroicons:receipt-refund" />
+                      </NavLink>
                     </Tooltip>
 
                   </td>

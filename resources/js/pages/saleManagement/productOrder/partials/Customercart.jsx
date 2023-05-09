@@ -9,9 +9,6 @@ import ProductLineItem from './ProductLineItem'
 import Button from '../../../../components/inputs/Button'
 
 
-
-
-
 function Customercart({ productsFromDB, modelsFromDB ,formData,setFormData,items,setItems,errors}) {
     const [showProductSearchModal, setShowProductSearchModal] = useState(false)
    

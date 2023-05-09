@@ -147,7 +147,18 @@ function Newstock() {
                     />
                 </div>
             </div>}
+
             <main className=' text-blue-950 max-w-5xl w-full mx-auto  flex flex-col gap-5 min-h-max'>
+                <div className='bg-white w-full border border-gray-400/70 rounded-md min-h-[12rem]  flex flex-col gap-4 p-4'>
+                    <nav className=' border-b border-b-gray-300 border-dashed uppercase'>New stock information</nav>
+                    <nav className=' flex lg:flex-row flex-col gap-3'>
+                        <FormInputDate error={errors?.record_date} value={stockMetaData.record_date && dayjs(stockMetaData.record_date)} onChange={(e) => setStockMetaData(cv => cv = { ...cv, record_date: dayjs(e.target.value).format('YYYY-MM-DD') })} className="w-full" label='Record Date' />
+                        <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e) => setStockMetaData(cv => cv = { ...cv, purchase_invoice_number: e.target.value })} className="w-full" label='Purchase Invoice Number or description' />
+                    </nav>
+                    <nav className=' flex lg:flex-row flex-col gap-3'>
+                        <FormInputSelect error={errors?.supplier} onChange={(e) => setStockMetaData(cv => cv = { ...cv, supplier: e.target.value })} value={stockMetaData.supplier} options={Boolean(suppliers.length) && [...suppliers.map(({ id, supplier_name }) => { return ({ name: supplier_name, value: id }) })]} className="w-full" label="Select Supplier" />
+                    </nav>
+                </div>
                 <div className='bg-white w-full border border-gray-400/70 rounded-md min-h-[30rem] p-4'>
                     <nav className=' border-b border-b-gray-300 border-dashed uppercase'>New stock products</nav>
                     {Boolean(newStockList?.length) ?
@@ -168,16 +179,7 @@ function Newstock() {
                     }
 
                 </div>
-                <div className='bg-white w-full border border-gray-400/70 rounded-md min-h-[12rem]  flex flex-col gap-4 p-4'>
-                    <nav className=' border-b border-b-gray-300 border-dashed uppercase'>New stock information</nav>
-                    <nav className=' flex lg:flex-row flex-col gap-3'>
-                        <FormInputDate error={errors?.record_date} value={stockMetaData.record_date && dayjs(stockMetaData.record_date)} onChange={(e) => setStockMetaData(cv => cv = { ...cv, record_date: dayjs(e.target.value).format('YYYY-MM-DD') })} className="w-full" label='Record Date' />
-                        <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e) => setStockMetaData(cv => cv = { ...cv, purchase_invoice_number: e.target.value })} className="w-full" label='Purchase Invoice Number or description' />
-                    </nav>
-                    <nav className=' flex lg:flex-row flex-col gap-3'>
-                        <FormInputSelect error={errors?.supplier} onChange={(e) => setStockMetaData(cv => cv = { ...cv, supplier: e.target.value })} value={stockMetaData.supplier} options={Boolean(suppliers.length) && [...suppliers.map(({ id, supplier_name }) => { return ({ name: supplier_name, value: id }) })]} className="w-full" label="Select Supplier" />
-                    </nav>
-                </div>
+
                 <div className='bg-white w-full border border-gray-400/70 rounded-md p-2 flex flex-col'>
                     <Button processing={isLoading} onClick={() => handleSubmit()} text="Add Current Data to Stock" className=" !min-w-full" />
                 </div>

@@ -45,19 +45,19 @@ const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, 
             <table className="w-full overflow-hidden">
               <thead className="bg-secondary-200 ">
                 <tr>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Date modified
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Product Category
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Product Name
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Qty In Stock
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Action
                   </th>
 

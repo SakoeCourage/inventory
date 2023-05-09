@@ -35,7 +35,7 @@ class ProductstockhistoryController extends Controller
     public function stockhistory($id)
     {
         return [
-            'history' =>  Productstockhistory::where('productsmodel_id', $id)->filter(request()->only('date'))
+            'history' =>  Productstockhistory::with('author:id,name')->where('productsmodel_id', $id)->filter(request()->only('date'))
             ->latest()->paginate(10)->withQueryString(),
             'filters'=> request()->only('date')
         ];

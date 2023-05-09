@@ -24,7 +24,7 @@ const Info = () => {
         };
     }, []);
     return (
-        <div class="w-full bg-cover hidden lg:block relative max-w-md lg:max-w-2xl lg:w-7/12 mx-2 px-2">
+        <div className="w-full bg-cover hidden lg:block relative max-w-md lg:max-w-2xl lg:w-7/12 mx-2 px-2">
             <div className='bg-pink-100/40 mx-auto h-8 w-max rounded-md px-4 mb-8'>
                 <span ref={el}
                     className='  text-white/70  w-max my-auto  text-center font-thin font-mono  tracking-2 uppercase text-2xl'>
@@ -35,7 +35,7 @@ const Info = () => {
 
                 </nav>
             </div>
-            <div class="flex flex-col items-center justify-center w-full h-full relative  ">
+            <div className="flex flex-col items-center justify-center w-full h-full relative  ">
                 <img src={pic} className='ml-4 mt-5' />
             </div>
         </div>

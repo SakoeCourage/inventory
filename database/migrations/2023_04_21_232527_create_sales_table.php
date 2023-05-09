@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_name');
-            $table->bigInteger('total_amount');
-            $table->string('customer_contact');
-            $table->bigInteger('sub_total');
-            $table->bigInteger('discount_rate')->default(0);
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('paymentmethod_id')->references('id')->on('paymentmethods');
+            $table->string('customer_name')->nullable();
+            $table->bigInteger('total_amount');
+            $table->string('customer_contact')->nullable();
+            $table->bigInteger('sub_total');
+            $table->bigInteger('balance')->nullable()->default(0);
+            $table->bigInteger('amount_paid')->nullable()->default(0);
+            $table->bigInteger('discount_rate')->default(0);
+
         });
     }
 

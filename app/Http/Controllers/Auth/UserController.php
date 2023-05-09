@@ -79,7 +79,6 @@ class UserController extends Controller
                     'lastname' => $user->profile ? $user->profile->lastname : '',
                     'gender' => $user->profile ? $user->profile->gender : '',
                     'contact' => $user->profile ? $user->profile->contact : '',
-                    'contact' => $user->profile ? $user->profile->contact : '',
                     'role' => $user->roles->first()->name,
                 ];
             })->first();

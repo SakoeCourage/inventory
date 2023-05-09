@@ -29,19 +29,19 @@ class DashboardController extends Controller
         $todays_sale_total = Sale::whereDate('created_at', Carbon::today())->get()->sum('total_amount');
         $yesterdays_sale_total = Sale::whereDate('created_at', Carbon::yesterday())->get()->sum('total_amount');
 
-        $relative_percentage_difference = $yesterdays_sale_total ?  (($todays_sale_total - $yesterdays_sale_total) / $yesterdays_sale_total) * 100 : 0;
+        $relative_percentage_difference = $yesterdays_sale_total ? (($todays_sale_total - $yesterdays_sale_total) / $yesterdays_sale_total) * 100 : 0;
         return [
             'daily_sale' => $todays_sale_total,
-            'relative_percentage' => ($relative_percentage_difference > 0 && $relative_percentage_difference <= 100) ? floor($relative_percentage_difference) :  null
+            'relative_percentage' => ($relative_percentage_difference > 0 && $relative_percentage_difference <= 100) ? floor($relative_percentage_difference) : null
         ];
     }
 
     public function getDailyRevenue()
     {
-        $non_refunded_sales = Saleitem::whereDate('created_at', Carbon::today())
-            ->where('is_refunded', 0)->get()->sum('profit');
+        $sales_profits = Saleitem::whereDate('created_at', Carbon::today())
+            ->get()->sum('profit');
 
-        return $non_refunded_sales;
+        return $sales_profits;
     }
 
 
@@ -56,7 +56,7 @@ class DashboardController extends Controller
         $stock_out = Productstockhistory::whereDate('created_at', Carbon::today())->where('description', '!=', 'for sale')
             ->where('action_type', StockActionEnum::Depreciate)->sum('quantity');
         $sale_out = Saleitem::whereDate('created_at', Carbon::today())
-            ->where('is_refunded', 0)->sum('quantity');
+            ->sum('quantity');
 
         return [
             'product_in' => $product_in,
@@ -69,12 +69,12 @@ class DashboardController extends Controller
     {
         $products = Product::all()->count();
         $models = Productsmodels::all();
-        $calculated_by_price_and_collection =  $models->map(function ($model) {
+        $calculated_by_price_and_collection = $models->map(function ($model) {
             $value = '';
-            if ((bool)$model->in_collection) {
-                $value =  (floor($model->quantity_in_stock / $model->quantity_per_collection) * $model->price_per_collection) + ($model->quantity_in_stock % $model->quantity_per_collection * $model->unit_price);
+            if ((bool) $model->in_collection) {
+                $value = (floor($model->quantity_in_stock / $model->quantity_per_collection) * $model->price_per_collection) + ($model->quantity_in_stock % $model->quantity_per_collection * $model->unit_price);
             } else {
-                $value =  ($model->quantity_in_stock * $model->unit_price);
+                $value = ($model->quantity_in_stock * $model->unit_price);
             }
             return $value;
         });
@@ -86,7 +86,7 @@ class DashboardController extends Controller
     }
 
     public function generateDailyStats()
-    {   
+    {
         $outofstock = new Outofstock();
         return [
             'daliy_sale_stats' => $this->getDailySale(),
@@ -122,12 +122,12 @@ class DashboardController extends Controller
 
         $revenue = $days->mapWithKeys(function ($day, $index) use ($revenue) {
             return [
-                $day => number_format((float)$revenue->where('day', $day)->sum('profit'), 2, '.', '')
+                $day => number_format((float) $revenue->where('day', $day)->sum('profit'), 2, '.', '')
             ];
         });
         $sales = $days->mapWithKeys(function ($day, $index) use ($sales) {
             return [
-                $day => number_format((float)$sales->where('day', $day)->sum('total_amount'), 2, '.', '')
+                $day => number_format((float) $sales->where('day', $day)->sum('total_amount'), 2, '.', '')
             ];
         });
 
@@ -136,27 +136,29 @@ class DashboardController extends Controller
         return [
             [
                 'name' => 'Sale',
-                'type' =>'area',
+                'type' => 'area',
                 'data' => $sales->flatten()
             ],
             [
                 'name' => 'Revenue',
-                'type' =>'area',
+                'type' => 'area',
                 'data' => $revenue->flatten()
             ]
         ];
     }
 
-    
+
     public function getUnattendedProducts()
     {
-        $data = Product::withCount(['models' => function ($query) {
-            $query->where('quantity_in_stock', 0);
-        }])->get();
-   
+        $data = Product::withCount([
+            'models' => function ($query) {
+                $query->where('quantity_in_stock', 0);
+            }
+        ])->get();
+
         return [
             'products' => $data->count(),
-            'models'  =>  $data->sum('models_count')
+            'models' => $data->sum('models_count')
         ];
     }
 }

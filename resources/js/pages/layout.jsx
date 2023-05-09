@@ -17,8 +17,6 @@ const Layout = (props) => {
   const outlet = document.querySelector('#outlet')
 
 
-
-
   useEffect(() => {
     if (outlet) {
       outlet.scrollTop = 0
@@ -30,7 +28,7 @@ const Layout = (props) => {
   
 
   return (
-    <SnackbarProvider>
+    <SnackbarProvider maxSnack={1}>
       {auth.auth ? 
       <div className='h-screen w-screen overflow-hidden bg-gray-200/80'>
         <div className='flex h-full'>
@@ -38,7 +36,7 @@ const Layout = (props) => {
             <SideBar fullSideBar={fullSideBar} setFullSideBar={setFullSideBar} />
           </div>
           <div className='w-full min-h-screen overflow-hidden'>
-            <div className='h-16 bg-info-600'>
+            <div className=' h-[var(--navbar-height)] bg-info-600'>
               <Navbar setFullSideBar={setFullSideBar} fullSideBar={fullSideBar} />
             </div>
             <div ref={outlet} id='outlet' className='w-full min-h-max h-full overflow-y-scroll pb-20  '>

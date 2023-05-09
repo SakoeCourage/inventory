@@ -6,13 +6,16 @@ const initialState = {
     loadingState: 'idle',
 }
 
+function removePreloader(){
+    document.querySelector('.pagepreloader').style.display = 'none';
+} 
 
 export const getUser = createAsyncThunk('/user', async () => {
     try {
         const user = await User.auth()
         return user
     } catch (error) {
-        console.log(error)
+        error && console.log(error)
         return error.message
     }
 })
@@ -42,6 +45,7 @@ export const authSlice = createSlice({
             .addCase(getUser.fulfilled, (state, action) => {
                 state.auth = action.payload?.data ?? null
                 state.loadingState = 'success'
+                removePreloader()
             })
             .addCase(getUser.rejected, (state, action) => {
                 state.loadingState = 'failed'
@@ -53,6 +57,6 @@ export const authSlice = createSlice({
     }
 })
 
-export const { clearCredentials } = authSlice.reducer
+export const { clearCredentials } = authSlice.actions
 export const getAuth = (state) => state.auth
 export const loadingState = (state) => state.loadingState

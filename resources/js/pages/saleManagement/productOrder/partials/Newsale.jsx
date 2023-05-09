@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import FormInputText from '../../../../components/inputs/FormInputText'
 import { Icon } from '@iconify/react'
 import Customercart from './Customercart'
-import { Switch } from '@mui/material'
-import { formatcurrency } from '../../../../api/Util'
 import Button from '../../../../components/inputs/Button'
 import Api from '../../../../api/Api'
 import { handleScrolltoError } from '../../../../api/Util'
@@ -11,30 +9,28 @@ import OutofstockUi from './OutofstockUi'
 import { AnimatePresence } from 'framer-motion'
 import Interruptedsale from './Interruptedsale'
 import { SnackbarProvider, useSnackbar } from 'notistack'
-import { handleOutOfStock } from './handleOutofStock'
+import { handleOutOfStock, checkForInterruptedSale, ini_sale, ini_sale_items } from './handlers'
 import Loadingwheel from '../../../../components/Loaders/Loadingwheel'
+import Customerinformation from './Customerinformation'
+import Itemscheckout from './Itemscheckout'
 
 
 
+function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsAndModels, setProductsFromDB, setModelsFromDB }) {
 
-function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setProductsFromDB, setModelsFromDB }) {
+    const initial_sale = { ...ini_sale }
+    const initial_sale_items = { ...ini_sale_items }
+
     const [processing, setProcessing] = useState(false)
     const [errors, setErrors] = useState({})
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-    const [formData, setFormData] = useState({
-        discount_rate: '',
-        customer_fullname: '',
-        customer_contact: '',
-        sub_total: 0,
-        total: 0,
-        items: []
-    })
+    const [formData, setFormData] = useState(initial_sale)
     const [outOfStockProducts, setOutOfStockProducts] = useState([])
     const [interreptedSaleAvailable, setInterruptedSaleAvailable] = useState(false)
     const [saleDiscount, setSaleDiscount] = useState(true)
 
     const [items, setItems] = useState([
-        { product_id: '', productsmodel_id: '', units: '', unit_price: '', amount: '', price_per_collection: '', collections: '' }
+        initial_sale_items
     ])
 
 
@@ -47,22 +43,15 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
         const { products, models } = data
         setProductsFromDB(products)
         setModelsFromDB(models)
-        setFormData({
-            discount_rate: '',
-            customer_fullname: '',
-            customer_contact: '',
-            sub_total: 0,
-            total: 0,
-            items: []
-        })
-        setItems([{ product_id: '', productsmodel_id: '', units: '', unit_price: '', amount: '', price_per_collection: '', collections: '' }])
+        setFormData(initial_sale)
+        setItems([initial_sale_items])
         setProcessing(false)
-        enqueueSnackbar('Sucess', { variant: 'success' })
+        enqueueSnackbar('New sale recorded', { variant: 'success' })
     }
 
     const handleSubmit = () => {
         setProcessing(true)
-        handleOutOfStock(formData,modelsFromDB,getProductfromId).then(res => {
+        handleOutOfStock(formData, modelsFromDB, getProductfromId).then(res => {
             Api.post('/sale/new', formData).then(res => {
                 handleOnsucess(res.data)
                 setErrors({})
@@ -82,14 +71,7 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
         })
     }
 
-    const checkForInterruptedSale = () => {
-        const i_s = localStorage.getItem('interrupted_sale');
-        if (i_s) {
-            setInterruptedSaleAvailable(true)
-        } else {
-            setInterruptedSaleAvailable(false)
-        }
-    }
+
     useEffect(() => {
         items.map((item, i) => {
             if (item.productsmodel_id) {
@@ -136,39 +118,49 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
         setFormData(cv => cv = { ...cv, items: items })
     }, [items])
 
+    const getBalance = useMemo(() => {
+        let bal = 0
+        if (Number(formData.amount_paid && formData.total)) {
+            if (Number(formData.amount_paid) > Number(formData.total)) {
+                bal = Number(Number(formData.amount_paid) - Number(formData.total))
+                setFormData(cv => cv = { ...cv, balance: bal })
+            }
+        }
+        return bal;
+    }, [formData.amount_paid, Number(formData.total)])
+
 
     useEffect(() => {
         if (Boolean(modelsFromDB?.length) && Boolean(modelsFromDB.length)) {
-            checkForInterruptedSale()
+            checkForInterruptedSale(setInterruptedSaleAvailable)
         }
     }, [modelsFromDB, modelsFromDB])
+    useEffect(() => {
+        console.log(formData)
+    }, [formData])
+
 
 
     return (
         <div className=' max-w-6xl mx-auto'>
+            {/* popup on out of stock */}
             {Boolean(outOfStockProducts.length) && <nav className=' bg-black/30 fixed inset-0 z-40 flex items-end'>
                 <AnimatePresence>
                     <OutofstockUi formData={formData} setOutOfStockProducts={setOutOfStockProducts} products={outOfStockProducts} />
                 </AnimatePresence>
             </nav>}
+            {/* popup if found interupted sale */}
             {Boolean(interreptedSaleAvailable) && <nav className=' bg-black/30 fixed inset-0 z-40 flex items-end'>
                 <AnimatePresence>
                     <Interruptedsale setItems={setItems} setFormData={setFormData} setInterruptedSaleAvailable={setInterruptedSaleAvailable} />
                 </AnimatePresence>
             </nav>}
 
-            {/* <nav className=' w-full text-right my-4 text-gray-950 font-medium leading-8 tracking-4 flex items-center justify-end'><span className='mr-3'>New Product Sale</span> <Icon icon="bi:plus-circle" /></nav> */}
+
             <div className='flex flex-col gap-6 h-full'>
-                <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md'>
-                    <nav className=' max-w-4xl mx-auto border-dotted flex items-center gap-2 p-3 text-blue-950/70'>
-                        <Icon icon="mdi:user" /> <span>Customer Information</span>
-                    </nav>
-                    <hr className='border border-gray-200 w-full border-dotted my-0' />
-                    <nav className='flex flex-col lg:flex-row gap-5 w-full p-3 my-5 max-w-4xl mx-auto'>
-                        <FormInputText error={errors['customer_fullname']} value={formData.customer_fullname} onChange={(e) => setFormData(cv => cv = { ...cv, customer_fullname: e.target.value })} className="w-full" label="Customer Full Name" />
-                        <FormInputText error={errors['customer_contact']} value={formData.customer_contact} onChange={(e) => setFormData(cv => cv = { ...cv, customer_contact: e.target.value })} className="w-full" placeholder="(000) 0000 000" label="Customer Contact" />
-                    </nav>
-                </div>
+                <Customerinformation errors={errors} formData={formData} setFormData={setFormData} />
+
+                {/* Cart Section */}
                 <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md pb-5 '>
                     <nav className='  flex items-center gap-2 p-3 text-blue-950/70  max-w-4xl mx-auto mt-'>
                         <Icon icon="material-symbols:shopping-cart" /> <span>Customer Cart</span>
@@ -184,40 +176,19 @@ function Newsale({ productsFromDB, modelsFromDB, getAllProductsAndModels, setPro
                         setItems={setItems}
                     />
                 </div>
-                <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md pb-5 '>
-                    <nav className='  flex items-center gap-2 p-3 text-blue-950/70  max-w-4xl mx-auto'>
-                        <Icon icon="ic:twotone-shopping-cart-checkout" /> <span>Items Check Out</span>
-                    </nav>
-                    <hr className='border border-gray-200 w-full border-dotted my-0' />
-                    <nav className='flex flex-col gap-2 max-w-4xl mx-auto w-full mt-5'>
-                        <nav className="flex items-center justify-between p-2 bg-red-50/50 text-red-950 rounded-md">
-                            <nav>
-                                SUB TOTAL
-                            </nav>
-                            <nav>
-                                {formatcurrency(formData?.sub_total)}
-                            </nav>
-                        </nav>
-                        <nav className="flex items-center justify-between p-2 text-red-950 rounded-md">
-                            <nav className='w-full'>
-                                <FormInputText type='number' inputProps={{ max: 100, min: 0 }} className="w-full" value={formData?.discount_rate} onChange={(e) => setFormData(cv => cv = { ...cv, discount_rate: e.target.value })} label='sale discount' placeholder='(%)' />
-                            </nav>
-                            <nav className='w-full text-sm flex items-center gap-5 justify-end '>
-                                <Switch checked={saleDiscount} onChange={(e) => setSaleDiscount(e.target.checked)} />
-                                <span className={`${saleDiscount ? 'text-red-950' : 'text-gray-700'} `}>{formData?.discount_rate && saleDiscount ? `${formData?.discount_rate ?? 0}% discount is applied` : 'no discount applied'}</span>
 
-                            </nav>
-                        </nav>
-                        <nav className="flex items-center justify-between p-2 bg-red-50/50 text-red-950 rounded-md">
-                            <nav>
-                                TOTAL
-                            </nav>
-                            <nav>
-                                {formatcurrency(formData?.total)}
-                            </nav>
-                        </nav>
-                    </nav>
-                  
+                {/* Items Check out */}
+                <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md pb-5 '>
+                    <Itemscheckout
+                        paymentMethods={paymentMethods}
+                        formData={formData}
+                        setSaleDiscount={saleDiscount}
+                        setFormData={setFormData}
+                        errors={errors}
+                        saleDiscount={saleDiscount}
+                        getBalance={getBalance}
+                    />
+
                     <nav className='max-w-4xl w-full !mx-auto mt-5'>
                         <Button processing={processing} onClick={() => handleSubmit()} info text="Check Out" otherClasses="w-full" />
                     </nav>

@@ -14,4 +14,6 @@ class Stockhistory extends Model
         'stock_products' => 'array',
     ];
 
+  
+
 }

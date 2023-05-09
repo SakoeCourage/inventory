@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Productcollection from '../../../components/Productcollection'
 import { dateReformat } from '../../../api/Util'
 import dayjs from 'dayjs'
 import { TablePagination } from '@mui/material'
 import { Icon } from '@iconify/react'
 function Stockhistorytable({ stockHistorys, stockData, handleChangePage }) {
+    useEffect(() => {
+      console.log(stockHistorys)
+    }, [])
+    
     return (
         <div className='flex flex-col min-h-full h-full  grow '>
             <table className="w-full overflow-hidden">
@@ -123,7 +127,7 @@ function Stockhistorytable({ stockHistorys, stockData, handleChangePage }) {
                                 <td className="px-6 py-3 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <h6 className="mb-0 !text-sm ">
-                                            Sakoe Courage
+                                        {dt.author?.name}
                                         </h6>
                                     </div>
                                 </td>

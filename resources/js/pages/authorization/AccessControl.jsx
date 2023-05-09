@@ -2,11 +2,17 @@ import React from 'react'
 import { getAuth } from '../../store/authSlice'
 import { useSelector } from 'react-redux'
 import Unauthorizedaccess from './Unauthorizedaccess'
+import { Navigate } from 'react-router-dom'
+import { SnackbarProvider, useSnackbar } from 'notistack'
 
 export function AcessControlPage({ abilities, children }) {
-    if(abilities?.length == 0){
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+    if (abilities?.length == 0) {
         return <> {children}</>;
     }
+
+
     if (useSelector(getAuth).loadingState == 'success' && useSelector(getAuth).auth) {
         const { auth } = useSelector(getAuth)
         const { permissions, roles, loadingState } = auth
@@ -17,6 +23,7 @@ export function AcessControlPage({ abilities, children }) {
                 if (permissions.some((permision, i) => permision === ability)) {
                     return <> {children}</>;
                 } else {
+                    // <Navigate to={window.history.back()} />
                     return <><Unauthorizedaccess /></>
                 }
             }
@@ -27,7 +34,7 @@ export function AcessControlPage({ abilities, children }) {
 
 
 export function AccessByPermission({ abilities, children }) {
-    if(abilities?.length == 0){
+    if (abilities?.length == 0) {
         return <> {children}</>;
     }
     if (useSelector(getAuth).loadingState == 'success' && useSelector(getAuth).auth) {

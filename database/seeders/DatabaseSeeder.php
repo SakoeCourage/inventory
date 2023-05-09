@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             BasicSellingQuantitySeeder::class,
             ProductSeeder::class,
             SupplierSeeder::class,
-            CategorySeeder::class
+            CategorySeeder::class,
+            PaymentmethodSeeder::class
         ]);
     }
 }

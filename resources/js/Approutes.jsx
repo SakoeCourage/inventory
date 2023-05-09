@@ -4,11 +4,17 @@ const SaleManagement = lazy(() => import('./pages/saleManagement/index'))
 const StockManagement = lazy(() => import('./pages/stockManagement/index'))
 const UserManagement = lazy(() => import('./pages/Usermanagement/index'))
 const Dashboard = lazy(()=>import('./pages/dashboard'));
+const Myaccount = lazy(()=>import('./pages/myaccount/index'))
 
 export const  routes = [
     {
       path: "/dashboard",
       element: <Dashboard />,
+      permissions: []
+    },
+    {
+      path: "/account",
+      element: <Myaccount />,
       permissions: []
     },
     {

@@ -10,19 +10,30 @@ use Illuminate\Support\Collection;
 use App\Services\ProductStockService;
 use Illuminate\Support\Facades\DB;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
+use Illuminate\Validation\Rule;
 
 class SaleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Sale $sale,Request $request)
-    {   
-       return[
-        'sales' =>  $sale->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->latest()->paginate(10),
-        'filters' => request()->only('search', 'day'),
-        'full_url' =>trim($request->fullUrlWithQuery(request()->only('search','day')))
-       ];
+    public function index(Sale $sale, Request $request)
+    {
+        return [
+            'sales' => $sale->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
+            'filters' => request()->only('search', 'day'),
+            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
+        ];
+    }
+
+
+    public function tosearch(Sale $sale, Request $request)
+    {
+        return [
+            'sales' => $sale->deepfilter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
+            'filters' => request()->only('search', 'day'),
+            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
+        ];
     }
 
     /**
@@ -67,13 +78,16 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request,ProductStockService $productStockService,ProductController $productController)
+    public function store(Request $request, ProductStockService $productStockService, ProductController $productController)
     {
         $request->validate([
-            'customer_fullname' => ['required', 'string', 'max:255'],
-            'customer_contact' => ['required', 'string','min:10' ,'max:10'],
+            'customer_fullname' => ['nullable', 'string', 'max:255'],
+            'customer_contact' => ['nullable', 'string', 'min:10', 'max:10'],
+            'payment_method' => ['required'],
             'sub_total' => ['required'],
-            'discount_rate' => ['nullable'],
+            'balance' => ['nullable'],
+            'amount_paid' => ['nullable', Rule::when(fn() => $request->amount_paid < $request->total, ['min:' . $request->total])],
+            'discount_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'total' => ['required'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required'],
@@ -81,19 +95,24 @@ class SaleController extends Controller
             'items.*.quantity' => ['required', 'min:0', 'not_in:0'],
             'items.*.in_collection' => ['required', 'boolean'],
         ]);
-        DB::transaction(function () use ($request,$productStockService) {
+
+        DB::transaction(function () use ($request, $productStockService) {
             $sale_invoice = IdGenerator::generate(['table' => 'sales', 'field' => 'sale_invoice', 'length' => 14, 'prefix' => 'SALE-' . date('ymd')]);
             $newSale = Sale::create([
                 'customer_contact' => $request->customer_contact,
                 'customer_name' => $request->customer_fullname,
                 'sub_total' => $request->sub_total,
                 'total_amount' => $request->total,
+                'paymentmethod_id' => $request->payment_method,
                 'user_id' => 1,
                 'discount_rate' => $request->discount_rate,
-                'sale_invoice'=>$sale_invoice
+                'balance' => $request->balance ?? 0,
+                'amount_paid' => $request->amount_paid ?? $request->total,
+                'sale_invoice' => $sale_invoice
             ]);
+
             foreach ($request->items as $key => $value) {
-                Saleitem::create([
+                 Saleitem::create([
                     'sale_id' => $newSale->id,
                     'productsmodel_id' => $value['productsmodel_id'],
                     'price' => $value['unit_price'],
@@ -109,8 +128,9 @@ class SaleController extends Controller
                         $value['cost_per_unit']
                     )
                 ]);
-                $productStockService->decreasestock((Object)$value);
+                $productStockService->decreasestock((Object) $value);
             }
+            PaymenthistoryController::Newpayament((object)array_merge($request->toArray(),['sale_id' => $newSale->id]));
         });
         return $productController->productAndModelsJoin();
     }
@@ -123,16 +143,42 @@ class SaleController extends Controller
         return [
             'sale' => $sale,
             'sale_representative' => $sale->salerepresentative->name,
-            'sale_items'=> $sale->saleitems->map(function($value,$key){
-                return[
-                    'amount' =>$value->amount,
-                    'id' =>$value->id,
-                    'unit_price' =>$value->price,
-                    'sale_product'=> Productsmodels::with(['collectionType:id,type','product:id,product_name',])->find($value->productsmodel_id),
+            'payment_method' => $sale->paymentmethod->method,
+            
+            'sale_items' => $sale->saleitems->map(function ($value, $key) {
+                return [
+                    'amount' => $value->amount,
+                    'id' => $value->id,
+                    'unit_price' => $value->price,
+                    'sale_product' => Productsmodels::with(['collectionType:id,type', 'product:id,product_name',])->find($value->productsmodel_id),
                     'basic_selling_quantity' => Productsmodels::find($value->productsmodel_id)->basicQuantity()->symbol,
-                    'quantity'=> $value->quantity
+                    'quantity' => $value->quantity,
+                    'is_refunded' => $value->is_refunded
+
                 ];
             })
+        ];
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function getSaleFromInvoice(Sale $sale)
+    {
+        return [
+            'sale' => $sale,
+            'payment_method'=>$sale->paymentmethod,
+            'line_items' => $sale->saleitems->map(function($value,$key){
+                return [
+                    'sale_item' => $value,
+                    'product_model' => $value->productsmodels,
+                    'product' => $value->productsmodels->product,
+                    'basic_selling_quantity' => $value->productsmodels->product->basicQuantity,
+                    'collection_method' => $value->productsmodels->collectionType,
+
+                ];
+            })
+
         ];
     }
 

@@ -27,3 +27,38 @@ export const handleOutOfStock = async (formData,modelsFromDB,getProductfromId) =
         return Promise.resolve('none out of stock')
     }
 }
+
+
+
+
+export const  checkForInterruptedSale = (setInterruptedSaleAvailable) => {
+    const i_s = localStorage.getItem('interrupted_sale');
+    if (i_s) {
+        setInterruptedSaleAvailable(true)
+    } else {
+        setInterruptedSaleAvailable(false)
+    }
+}
+
+
+
+export const ini_sale = {
+    discount_rate: '',
+    customer_fullname: '',
+    customer_contact: '',
+    sub_total: 0,
+    payment_method: '',
+    amount_paid: '',
+    total: 0,
+    balance: 0,
+    items: []
+}
+export const ini_sale_items = {
+    product_id: '',
+    productsmodel_id: '',
+    units: '',
+    unit_price: '',
+    amount: '',
+    price_per_collection: '',
+    collections: ''
+}

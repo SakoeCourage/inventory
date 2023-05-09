@@ -112,7 +112,7 @@ const Navbar = ({ setFullSideBar }) => {
                 Add another account
               </MenuItem>
             </AccessByPermission>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={()=>{handleClose();navigate('/account')}}>
               <ListItemIcon>
                 <Icon icon="iconamoon:profile-fill" fontSize={20} />
               </ListItemIcon>

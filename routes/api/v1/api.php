@@ -35,6 +35,7 @@ route::group(['namespace' => 'api\v1', 'middleware' => 'auth'], function () {
         Route::get('/collectiontypes', [\App\Http\Controllers\CollectionTypeController::class, 'toselect']);
         Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'toselect']);
         Route::get('/roles', [\App\Http\Controllers\RolesController::class, 'toselect']);
+        Route::get('/paymentmethods', [\App\Http\Controllers\PaymentmethodController::class, 'toselect']);
     });
 
     Route::group(['prefix' => 'product'], function () {
@@ -72,7 +73,9 @@ route::group(['namespace' => 'api\v1', 'middleware' => 'auth'], function () {
     Route::group(['prefix' => 'sale'], function () {
         Route::post('/new', [App\Http\Controllers\SaleController::class, 'store']);
         Route::get('/all', [App\Http\Controllers\SaleController::class, 'index']);
+        Route::get('/to-search-deep', [App\Http\Controllers\SaleController::class, 'tosearch']);
         Route::get('/get/{sale}', [App\Http\Controllers\SaleController::class, 'show']);
+        Route::get('/get/sale-from-invoice/{sale:sale_invoice}', [App\Http\Controllers\SaleController::class, 'getSaleFromInvoice']);
     });
 
     Route::group(['prefix' => 'user'], function () {
@@ -82,11 +85,21 @@ route::group(['namespace' => 'api\v1', 'middleware' => 'auth'], function () {
         Route::get('/get/info/{user}', [App\Http\Controllers\Auth\UserController::class, 'show']);
         Route::post('/delete/{user}', [App\Http\Controllers\Auth\UserController::class, 'destroy']);
         Route::post('/password/reset/{user}', [App\Http\Controllers\Auth\UserController::class, 'resetPassword']);
+        Route::put('/update/credentials', [\App\Http\Controllers\UserprofileController::class, 'update']);
+        Route::put('/update/credentials/validate', [\App\Http\Controllers\UserprofileController::class, 'validationcheck']);
     });
+
     Route::group(['prefix' => 'roles'], function () {
         Route::get('/all', [\App\Http\Controllers\RolesController::class, 'index']);
         Route::post('/updateorcreate', [\App\Http\Controllers\RolesController::class, 'updateOrCreate']);
-        Route::get('/{rolename}/permissions',[\App\Http\Controllers\RolesController::class, 'getPermissionFromRoleName']);
-        Route::post('/permissions/new',[\App\Http\Controllers\RolesController::class, 'applyNewPermissions']);
+        Route::get('/{rolename}/permissions', [\App\Http\Controllers\RolesController::class, 'getPermissionFromRoleName']);
+        Route::post('/permissions/new', [\App\Http\Controllers\RolesController::class, 'applyNewPermissions']);
+    });
+    Route::group(['prefix' => 'payment'], function () {
+        Route::get('/history/all', [\App\Http\Controllers\PaymenthistoryController::class, 'index']);
+    });
+    Route::group(['prefix' => 'refund'], function () {
+        Route::post('/new', [\App\Http\Controllers\RefundsController::class, 'create']);
+        Route::get('/history', [\App\Http\Controllers\RefundsController::class, 'index']);
     });
 });

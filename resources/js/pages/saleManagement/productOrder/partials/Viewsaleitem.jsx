@@ -4,9 +4,11 @@ import { Icon } from '@iconify/react'
 import { dateReformat, formatcurrency } from '../../../../api/Util'
 import Productcollection from '../../../../components/Productcollection'
 import Loadingspinner from '../../../../components/Loaders/Loadingspinner'
+import Refundinfo from '../../../../components/inputs/Refundinfo'
 
 function SaleTable({ saleData }) {
   const { sale, sale_items } = saleData
+
   return <table className="addleftline w-[90%] mx-auto h-max ">
     <thead className="bg-white border-secondary-400/50 border rounded-md ">
       <tr>
@@ -37,7 +39,7 @@ function SaleTable({ saleData }) {
             <td className="px-6 py-3 !text-xs whitespace-nowrap">
               <div className="flex items-center">
                 <h6 className="text-sm font-normal mb-0 !capitalize ">
-                  {i + 1}
+                  {i + 1} {item.is_refunded > 0 && <Refundinfo item/>}
                 </h6>
               </div>
             </td>
@@ -88,6 +90,7 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
     Api.get('/sale/get/' + saleId)
       .then(res => {
         setSalData(res.data)
+        console.log(res.data)
         setIsLoading(false)
       })
       .catch()
@@ -139,6 +142,14 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
           </nav>
           <nav className=' w-full'>
             {saleData?.sale?.discount_rate}%
+          </nav>
+        </nav>
+        <nav className='flex items-center gap-2 p-2 '>
+          <nav className=' w-full'>
+            Payment Method
+          </nav>
+          <nav className=' w-full'>
+            {saleData?.payment_method}
           </nav>
         </nav>
         <nav className='flex items-center gap-2 p-2 bg-gray-100/70 '>

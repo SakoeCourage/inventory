@@ -7,7 +7,7 @@ import { formatcurrency } from '../../../../api/Util'
 
 
 function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductChange, handleValueChange, item, items, removeItemat, errors }) {
-    let getProductsModlesfromProductId = (id) => {
+    let getProductsModelsfromProductId = (id) => {
         return modelsFromDB.filter((data) => data?.product_id == id)
     }
 
@@ -61,7 +61,7 @@ function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductCha
                     className="w-full" label='Select Product' />
                 <FormInputSelect
                  error={errors && errors[`items.${index}.productsmodel_id`]}
-                    options={item['product_id'] ? [...getProductsModlesfromProductId(item['product_id']).map(model => { return ({ name: model['model_name'], value: model['id'] }) })] : []}
+                    options={item['product_id'] ? [...getProductsModelsfromProductId(item['product_id']).map(model => { return ({ name: model['model_name'], value: model['id'] }) })] : []}
                     onChange={(e) => {
                         handleValueChange(index, 'units', '')
                         handleValueChange(index, 'collections', '')
