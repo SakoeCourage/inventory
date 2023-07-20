@@ -28,7 +28,6 @@ const Index = () => {
   const [filters, setFilters] = useState([])
   const [paymentMethods, setPaymentMethods] = useState([])
 
-
   const getPaymentMethods = () => {
     Api.get('/toselect/paymentmethods')
       .then(res => {

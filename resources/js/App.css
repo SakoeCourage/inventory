@@ -382,3 +382,43 @@ input.hidespin::-webkit-inner-spin-button {
 input.hidespin[type=number] {
     -moz-appearance: textfield;
 }
+
+
+.shadow-light {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.report-list-card {
+    transition: transform 0.1s linear;
+}
+
+.report-list-card * {
+    user-select: none;
+}
+
+.report-list-card .icon-goto {
+    display: none;
+}
+
+.report-list-card:hover {
+    transform: scale(1.03);
+}
+
+.report-list-card:hover .icon-goto {
+    display: inline;
+}
+
+table.report-table th {
+    white-space: nowrap;
+}
+
+table.report-table td {
+    @apply py-[1px]
+}
+
+table.report-table th,
+table.report-table td {
+    text-align: left;
+    margin: auto 1rem;
+    @apply px-4
+}

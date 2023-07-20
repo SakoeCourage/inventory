@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'authenticate']);
+Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'authenticate'])->middleware('guest');
 
-route::group(['namespace' => 'api\v1', 'middleware' => 'auth:sanctum'], function () {
+route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/user', function (Request $request) {
         return [
             'user' => $request->user(),
@@ -36,6 +36,7 @@ route::group(['namespace' => 'api\v1', 'middleware' => 'auth:sanctum'], function
         Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'toselect']);
         Route::get('/roles', [\App\Http\Controllers\RolesController::class, 'toselect']);
         Route::get('/paymentmethods', [\App\Http\Controllers\PaymentmethodController::class, 'toselect']);
+        Route::get('/expenses', [\App\Http\Controllers\ExpensedefinitionController::class, 'toselect']);
     });
 
     Route::group(['prefix' => 'product'], function () {
@@ -101,5 +102,21 @@ route::group(['namespace' => 'api\v1', 'middleware' => 'auth:sanctum'], function
     Route::group(['prefix' => 'refund'], function () {
         Route::post('/new', [\App\Http\Controllers\RefundsController::class, 'create']);
         Route::get('/history', [\App\Http\Controllers\RefundsController::class, 'index']);
+    });
+    Route::group(['prefix' => 'expense'], function () {
+        Route::post('/updateorcreate', [\App\Http\Controllers\ExpensedefinitionController::class, 'store']);
+        Route::get('/all', [\App\Http\Controllers\ExpensedefinitionController::class, 'index']);
+        Route::delete('/delete/{expensedefinition}', [\App\Http\Controllers\ExpensedefinitionController::class, 'destroy']);
+        Route::post('/submit', [\App\Http\Controllers\ExpensesController::class, 'create']);
+        Route::get('/submits/all', [\App\Http\Controllers\ExpensesController::class, 'allExpenses']);
+        Route::get('/submits/get/{expenses}', [\App\Http\Controllers\ExpensesController::class, 'show']);
+        Route::post('/take-action/{expenses}',[\App\Http\Controllers\ExpensesController::class, 'takeAction'])->middleware('permission:authorize expense');
+        Route::get('/pending-count',[\App\Http\Controllers\ExpensesController::class, 'getPendingExpenseCount']);
+
+    });
+    Route::group(['prefix' => 'report'],function(){
+        Route::post('/product-sale-report',[\App\Http\Controllers\ReportController::class,'generateProductSaleReport']);
+        Route::post('/income-week-report',[\App\Http\Controllers\Reports\IncomestatementweeklyController::class,'generateWeeklyIncomeStatement']);
+        Route::post('/income-month-report',[\App\Http\Controllers\Reports\IncomestatementmonthlyController::class,'generatemonthlyincomestatement']);
     });
 });

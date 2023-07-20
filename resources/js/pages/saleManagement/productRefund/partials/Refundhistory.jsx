@@ -18,9 +18,9 @@ function Refundhistory() {
 
   const handleChangePage = (event, newPage) => {
     if ((newPage + 1) > refundHistory.current_page) {
-      getSuppliersPerGivenModel(refundHistory.next_page_url)
+      fetchStoreHistory(refundHistory.next_page_url)
     } else {
-      getSuppliersPerGivenModel(refundHistory.prev_page_url)
+      fetchStoreHistory(refundHistory.prev_page_url)
     }
   };
 

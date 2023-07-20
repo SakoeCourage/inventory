@@ -8,7 +8,7 @@ import User from '../../api/User';
 import { getUser, getAuth } from '../../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Loadingwheel from '../Loaders/Loadingwheel';
-
+import Cookies from 'js-cookie';
 
 
 const getTime = () => {
@@ -28,7 +28,7 @@ const getTime = () => {
 export function LoginFormInput(props) {
   const [type, ChangeType] = useState(props?.type ?? '')
   const [showPassword, setShowPassword] = useState(false)
-  const [error,setError] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     showPassword ? ChangeType('text') : ChangeType(props?.type)
@@ -42,7 +42,7 @@ export function LoginFormInput(props) {
     <input value={props?.value} onChange={(e) => { setError(null); props.onChange(e) }} placeholder={props.placeholder ?? ''} type={type} className="border placeholder-gray-400 focus:outline-none
     focus:border-black w-full pt-4 pr-8 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-inherit
     border-gray-300 rounded-md"/>
-    {props.type == 'password' && <button onClick={(e) =>{e.preventDefault(); setShowPassword(!showPassword)}} className='   absolute right-5 top-3'>
+    {props.type == 'password' && <button onClick={(e) => { e.preventDefault(); setShowPassword(!showPassword) }} className='   absolute right-5 top-3'>
       <IconButton>
         {showPassword ? <Tooltip title="Hide Password"><Icon className='text-gray-400' fontSize={20} icon="mdi:eye-off-outline" /></Tooltip> :
           <Tooltip title="Reveal Password">
@@ -53,7 +53,7 @@ export function LoginFormInput(props) {
     </button>}
     <Collapse in={error && true} orientation='vertical'>
       <div className='flex items-center gap-1 text-red-500 text-sm'>
-        <Icon className=' min-w-[1.5rem] min-h-[1.5rem] max-w-[1.5rem] max-h-[1.5rem]' icon="solar:danger-triangle-bold" fontSize={20}  />
+        <Icon className=' min-w-[1.5rem] min-h-[1.5rem] max-w-[1.5rem] max-h-[1.5rem]' icon="solar:danger-triangle-bold" fontSize={20} />
         {error}
       </div>
     </Collapse>
@@ -77,6 +77,7 @@ const LoginForm = () => {
     setIsLoading(true)
     User.login(formValues)
       .then(res => {
+        Cookies.set('BearerToken', res.data?.token)
         dispatch(getUser())
       })
       .catch(err => {

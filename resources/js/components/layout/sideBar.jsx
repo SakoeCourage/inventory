@@ -24,6 +24,17 @@ const Routes = [
     icon: "ep:sold-out" 
   },
   {
+    name: 'Expense',
+    path: '/expenses',
+    icon: 'solar:money-bag-outline'
+  },
+  {
+    name: 'Report', subItems: [
+      { title: 'New Report', link: '/report' }
+    ],
+    icon: "carbon:report"
+  },
+  {
     name: 'User management', subItems: [
       { title: 'All Users', link: '/usermanagement/all' },
       { title: 'User Role and Permissions', link: '/usermanagement/rolesandpermissions' },
@@ -36,6 +47,7 @@ const Routes = [
       { title: 'Product definition', link: '/applicationsetup/products/definition' },
       { title: 'Suppliers', link: '/applicationsetup/products/suppliers' },
       { title: 'Categories', link: '/applicationsetup/products/categories' },
+      { title: 'Expense definitions', link: '/applicationsetup/expense/definition' },
 
     ],
     icon: "bi:gear"

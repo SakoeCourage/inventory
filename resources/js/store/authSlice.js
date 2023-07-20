@@ -1,5 +1,6 @@
 import { configureStore, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import User from '../api/User'
+import Cookies from 'js-cookie';
 
 const initialState = {
     auth: null,
@@ -22,9 +23,11 @@ export const getUser = createAsyncThunk('/user', async () => {
 
 export const Logout = createAsyncThunk('/logout', async () => {
     try {
-        const user = await User.logout()
-        return user
+        const req = await User.logout()
+        Cookies.remove('BearerToken')
+        return req
     } catch (error) {
+        console.log(error)
         return error.message
     }
 

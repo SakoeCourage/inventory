@@ -39,7 +39,7 @@ class UserprofileController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
-        Auth::logout();
+        Auth::guard('web')->logout();
         return response('done');
     }
   

@@ -15,7 +15,7 @@ import { useSearchParams,useNavigate } from 'react-router-dom'
 
 
 
-function Productfetch({ sale_id }) {
+function Productfetch({ sale_id ,setFetchedSaleData}) {
     const [isLoading, setIsLoading] = useState(false)
     const [saleitems, setSaleitems] = useState([])
 
@@ -34,11 +34,12 @@ function Productfetch({ sale_id }) {
                     const { sale_items } = res.data
                     console.log(res.data)
                     setSaleitems(sale_items)
+                    setFetchedSaleData(true)
                     setIsLoading(false)
                 })
                 .catch(err => {
                     if (err) {
-                        console.log(err)
+                        
                     }
                 })
         }
@@ -55,7 +56,6 @@ function Productfetch({ sale_id }) {
             <Loadingspinner />
         </div>}
 
-       
 
         {!isLoading &&
             <div className=' flex flex-col gap-1 w-full min-h-[10rem] '>
@@ -95,6 +95,7 @@ function Productfetch({ sale_id }) {
 
 function Indexscreen() {
     const [isLoading, setIsLoading] = useState(false)
+    const [fetchedSaleData, setFetchedSaleData] = useState(false)
     const [processing, setProcessing] = useState(false)
     const [sales, setSales] = useState([])
     const [filters, setFilters] = useState([])
@@ -145,10 +146,12 @@ function Indexscreen() {
         }
     }
 
+
     useEffect(() => {
         getSales()
     }, [])
 
+  
     return (
         <div className=''>
             <section className='  mx-auto bg-info-600   '>
@@ -185,8 +188,7 @@ function Indexscreen() {
                                     </nav>
 
                                 } >
-                                    <Productfetch sale_id={sale.id} />
-
+                                    <Productfetch setFetchedSaleData={setFetchedSaleData}   sale_id={sale.id} />
                                 </Productspopup>
                               
                             </span>

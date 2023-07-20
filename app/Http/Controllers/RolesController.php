@@ -28,7 +28,7 @@ class RolesController extends Controller
             ]
         );
         if ($request->id) {
-            $roleName = Role::findById($request->id)->name;
+            $roleName = Role::where('id',$request->id)->firstOrFail()->name;
             if ($roleName === 'Super Admin') {
                 throw new \Exception('Unable to make changes to ' . $roleName);
             }
@@ -54,7 +54,7 @@ class RolesController extends Controller
     public function getPermissionFromRoleName($rolename)
     {
         return [
-            'rolePermissions' => Role::findByName($rolename)->permissions()->get(['name'])->pluck('name'),
+             'rolePermissions' => Role::where('name',$rolename)->firstOrFail()->permissions()->get(['name'])->pluck('name'),
             'permissions' => Permission::orderBy('created_at')->get(['name'])->pluck('name')
         ];
     }
@@ -64,6 +64,6 @@ class RolesController extends Controller
         if ((String)$request->roleName === 'Super Admin') {
             throw new \Exception("Unable to make changes to " . $request->roleName);
         }
-        return Role::findByName($request->roleName)->syncPermissions($request->permissions);
+        return Role::where('name',$request->roleName)->firstOrFail()->syncPermissions($request->permissions);
     }
 }

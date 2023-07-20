@@ -8,7 +8,7 @@ use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 
 
-readonly class Outofstock
+class Outofstock
 {
     private  DateTime $two_weeks_ago;
 
@@ -17,7 +17,6 @@ readonly class Outofstock
 
     public function __construct()
     {
-
         $this->two_weeks_ago = Carbon::now()->subWeek(2);
         $this->get_recent_sale_items = Saleitem::with(['productsmodels' => ['product']])->whereDate('created_at', '>=', $this->two_weeks_ago)->latest()->get();
     }

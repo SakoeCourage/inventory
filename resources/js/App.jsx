@@ -12,7 +12,6 @@ import { routes } from "./Approutes";
 function App() {
   const dispatch = useDispatch()
   const auth = useSelector(getAuth)
-
   useEffect(() => {
     dispatch(getUser())
   }, [])

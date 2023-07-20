@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import Refundlinerow from './Refundlinerow'
 function Refundtable({ lineitems, SetLineitems,setMaxDiscount }) {
   
-    
     return <table className=' w-full'>
         <thead className=' bg-slate-200/30'>
             <tr className=' border-y'>

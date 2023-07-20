@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function Productspopup({ children, Caption, className }) {
+function Productspopup({ children, Caption, className, handlePopupLeave }) {
     const [showPopup, setShowPopup] = useState(false);
     const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
     const popup = useRef(null)
@@ -24,7 +24,11 @@ function Productspopup({ children, Caption, className }) {
 
 
     const handleMouseLeave = () => {
-        setShowPopup(false);
+        if (handlePopupLeave) {
+            handlePopupLeave(setShowPopup)    
+        } else {
+            setShowPopup(false);
+        }
     };
 
 

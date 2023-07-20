@@ -11,7 +11,7 @@ const Button = (props) => {
         ${primary && 'bg-primary-600 hover:bg-primary-800'}
         ${info && 'bg-info-600 hover:bg-info-800'}
         ${alert && 'bg-orange-600 hover:bg-orange-800' }
-        ${neutral && ' bg-transparent !ring-1 !ring-zinc-300 text-blue-950 hover:text-white' }
+        ${neutral && ' !bg-gray-100 !ring-1 !ring-zinc-300 text-blue-950  hover:!bg-gray-100' }
         ${ghost && "btn-ghost"}
       `}
       onClick={onClick}

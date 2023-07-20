@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 
@@ -25,7 +26,10 @@ class LoginController extends Controller
  
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return response("ok",200);
+            $user = User::where('email', $request->email)->first();
+            return response([
+                'token' => $user->createToken("API TOKEN")->plainTextToken
+            ]);
         }
        throw ValidationException::withMessages(['email'=> 'The provided credentials do not match our records. ']);
     }

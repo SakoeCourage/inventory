@@ -66,7 +66,6 @@ function Makerefund() {
             .then(res => {
                 const { payment_method, sale, line_items } = res.data
                 setoriginalDiscount(sale?.discount_rate)
-                // console.log(sale)
                 setPaymentMethod(payment_method)
                 SetLineItemsFromSales(line_items)
                 SetSale(sale)

@@ -156,7 +156,7 @@ function Newstock() {
                         <FormInputText error={errors?.purchase_invoice_number} value={stockMetaData.purchase_invoice_number} onChange={(e) => setStockMetaData(cv => cv = { ...cv, purchase_invoice_number: e.target.value })} className="w-full" label='Purchase Invoice Number or description' />
                     </nav>
                     <nav className=' flex lg:flex-row flex-col gap-3'>
-                        <FormInputSelect error={errors?.supplier} onChange={(e) => setStockMetaData(cv => cv = { ...cv, supplier: e.target.value })} value={stockMetaData.supplier} options={Boolean(suppliers.length) && [...suppliers.map(({ id, supplier_name }) => { return ({ name: supplier_name, value: id }) })]} className="w-full" label="Select Supplier" />
+                        <FormInputSelect error={errors?.supplier} onChange={(e) => setStockMetaData(cv => cv = { ...cv, supplier: e.target.value })} value={stockMetaData.supplier} options={Boolean(suppliers.length) ? [...suppliers.map(({ id, supplier_name }) => { return ({ name: supplier_name, value: id }) })]: []} className="w-full" label="Select Supplier" />
                     </nav>
                 </div>
                 <div className='bg-white w-full border border-gray-400/70 rounded-md min-h-[30rem] p-4'>

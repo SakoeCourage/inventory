@@ -2,10 +2,6 @@
 
 
 use Illuminate\Support\Facades\Route;
-use Carbon\Carbon;
-use App\Models\Product;
-use App\Models\Productsmodels;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +55,8 @@ Route::get(
         
     }
 );
+
+Route::get('/test-report',[\App\Http\Controllers\Reports\IncomestatementweeklyController::class, 'generateWeeklyIncomeStatement']);
 
 Route::get('/{any}', function () {
     return view('index');

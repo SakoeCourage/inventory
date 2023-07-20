@@ -5,6 +5,8 @@ const StockManagement = lazy(() => import('./pages/stockManagement/index'))
 const Dashboard = lazy(()=>import('./pages/dashboard'));
 const UserManagement = lazy(() => import('./pages/usermanagement/index'))
 const Myaccount = lazy(()=>import('./pages/myaccount/index'))
+const Expenses = lazy(()=>import('./pages/expenses/index'))
+const Report = lazy(()=>import('./pages/report/index'))
 
 export const  routes = [
     {
@@ -33,9 +35,19 @@ export const  routes = [
       permissions: ['manage stock data']
     },
     {
+      path: "/report/*",
+      element: <Report />,
+      permissions: ['generate report']
+    },
+    {
       path: "/usermanagement/*",
       element: <UserManagement />,
       permissions: ['manage users']
+    },
+    {
+      path: "/expenses/*",
+      element: <Expenses />,
+      permissions: ['create expense','authorize expense']
     },
   ]
   
