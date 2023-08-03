@@ -12,12 +12,12 @@ import Removefromstockform from './partials/Removefromstockform'
 import Emptydata from '../../components/formcomponents/Emptydata'
 import { useSearchParams } from 'react-router-dom'
 import Loadingwheel from '../../components/Loaders/Loadingwheel'
-
+import Wrapable from '../../components/layout/Wrappable'
 function Productsdashboard() {
     const [showStockingModal, setShowStockingModal] = useState({
         option: null
     })
-   
+
     const [stockHistorys, setStockHistory] = useState([])
     const [stockData, setStockData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -65,7 +65,7 @@ function Productsdashboard() {
 
 
     return (
-        <div className='flex min-h-full  gap-4 p-6 max-w-[90rem] mx-auto'>
+        <div className='flex flex-col md:flex-row min-h-full  gap-4 p-1 md:p-6 max-w-[90rem] mx-auto'>
             {isLoading && <Loadingwheel />}
             <SideModal onClose={() => setShowStockingModal({ option: null })}
                 showClose title="Add to Stock " maxWidth='xl'
@@ -87,10 +87,12 @@ function Productsdashboard() {
                 />
             </SideModal>
 
-            <div className=' min-w-[17rem] text-sm'>
-                <Productmodellist
-                />
-            </div>
+            <Wrapable hasSubTree={true}  title="Models">
+                <div className=' min-w-[17rem] h0 text-sm'>
+                    <Productmodellist
+                    />
+                </div>
+            </Wrapable>
             {searchParams.get('model') ? <div className=' container mx-auto'>
                 <div className=' min-h-[15rem] grid grid-cols-1 lg:grid-cols-3 gap-5 text-sm'>
                     <Productdetailcard

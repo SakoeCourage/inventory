@@ -3,48 +3,44 @@ import FormInputText from '../../../components/inputs/FormInputText'
 import FormInputSelect from '../../../components/inputs/FormInputSelect'
 import { Icon } from '@iconify/react'
 
-function Expenseitemslist({ expenseItems, setData, errors }) {
-  const [itemsList, setitemsList] = useState([{
-    item: '',
-    amount: '',
-  }])
+function Expenseitemslist({ expenseItems, setData, errors,l_items }) {
+
   let handleChange = (i, [name, value]) => {
-    let newitems = [...itemsList];
+    let newitems = [...l_items];
     newitems[i][name] = value;
-    setitemsList(newitems);
+    setData('expenseitems', newitems)
   }
 
   let addNewItem = () => {
-    setitemsList((ci => ci = [...ci, {
+    let newitems = [...l_items];
+    setData('expenseitems', [...newitems,{
       item: '',
       amount: '',
-    }]))
-
+    }])
+   
   }
+
 
   let removeItemat = (i) => {
-    if (!(itemsList.length <= 1)) {
-      let newitems = [...itemsList];
-      newitems.splice(i, 1);
-      setitemsList(newitems)
+    if (!(l_items.length <= 1)) { 
+      let newItems = [...l_items]; 
+      newItems.splice(i, 1);
+      setData('expenseitems', newItems)
     }
-  }
+  };
 
-  useEffect(() => {
-    setData('expenseitems', itemsList)
-  }, [itemsList])
 
 
   return (
     <div className=' flex flex-col gap-5 '>
-      {itemsList.map((item, i) => {
+      {l_items.map((item, i) => {
         return (<nav className=' flex items-center gap-4'>
-          <FormInputSelect error={errors[`expenseitems.${i}.item`]} value={itemsList[i]['item']}
+          <FormInputSelect error={errors[`expenseitems.${i}.item`]} value={l_items[i]['item']}
             onChange={(e) => handleChange(i, ['item', e.target.value])}
             options={Boolean(expenseItems.length) ? [...expenseItems.map((item) => { return ({ value: item.id, name: item.name }) })] : []} className="!w-full" label='Select an item' />
           <FormInputText error={errors[`expenseitems.${i}.amount`]} type='number'
             onChange={(e) => handleChange(i, ['amount', e.target.value])}
-            value={itemsList[i]['amount']} className="!w-full" label='amount' />
+            value={l_items[i]['amount']} className="!w-full" label='amount' />
           <button onClick={() => removeItemat(i)} className=' text-red-500'>
             <Icon fontSize={30} icon="mdi:trash" />
           </button>

@@ -5,7 +5,7 @@ import { Pilltab } from '../saleManagement/productOrder'
 import { Icon } from '@iconify/react'
 import Api from '../../api/Api'
 import Loadingwheel from '../../components/Loaders/Loadingwheel'
-
+import { AccessByPermission } from '../authorization/AccessControl'
 const components = {
   expenseHistory: ExpenseHistory,
   newExpense: NewExpense,
@@ -61,7 +61,9 @@ function index() {
       <nav className=" w-full  z-30   bg-info-600 p-2 pt-3">
         <header className="flex items-center gap-4 max-w-6xl mx-auto ">
           <Pilltab active={currentComponent == 'expenseHistory'} onClick={() => setCurrentComponent('expenseHistory')} Pillicon={<Icon fontSize={20} icon="material-symbols:history" />} title='History' />
+          <AccessByPermission abilities={['create expense']}>
           <Pilltab active={currentComponent == 'newExpense'} onClick={() => setCurrentComponent('newExpense')} Pillicon={<Icon fontSize={20} icon="bi:plus-circle" />} title='New epenses' />
+          </AccessByPermission>
         </header>
       </nav>
       <section className=' max-w-6xl mx-auto'>

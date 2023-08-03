@@ -136,7 +136,7 @@ function Newstock() {
 
     return (
         <div className=' container mx-auto  py-10 min-h-max'>
-            {showProductSearchModal && <div className=' fixed inset-0 bg-black/60 z-30 isolate flex flex-col'>
+            {showProductSearchModal && <div className=' fixed inset-0  bg-black/60 z-30 isolate flex flex-col'>
                 <div className=" max-w-3xl mx-auto w-full">
                     <Productsearch
                         setShowProductSearchModal={setShowProductSearchModal}

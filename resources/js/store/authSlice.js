@@ -1,4 +1,5 @@
 import { configureStore, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { clearUnreadCount } from "../store/unreadCountSlice";
 import User from '../api/User'
 import Cookies from 'js-cookie';
 
@@ -14,9 +15,10 @@ function removePreloader(){
 export const getUser = createAsyncThunk('/user', async () => {
     try {
         const user = await User.auth()
+        console.log(user.data)
+
         return user
     } catch (error) {
-        error && console.log(error)
         return error.message
     }
 })
@@ -25,6 +27,7 @@ export const Logout = createAsyncThunk('/logout', async () => {
     try {
         const req = await User.logout()
         Cookies.remove('BearerToken')
+        window.store.dispatch(clearUnreadCount())
         return req
     } catch (error) {
         console.log(error)

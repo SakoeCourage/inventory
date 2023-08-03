@@ -13,8 +13,8 @@ class BasicSellingQuantitySeeder extends Seeder
      */
     public function run(): void
     {
-        $quantities = ["unit", "Ounce", "Gram", "Kilogram", "Meter", "Square Foot", "Yard", "Pair"];
-        $symbols = ["unit", 'oz', 'g', 'kg', 'm', 'ft', 'yd', 'pair'];
+        $quantities = ["unit", "Ounce", "Gram", ,"Bottle","Can","Kilogram", "Meter", "Square Foot", "Yard", "Pair"];
+        $symbols = ["unit", 'oz', 'g',"bottle","Can", 'kg', 'm', 'ft', 'yd', 'pair'];
         for ($item = 0; $item < count($quantities); $item++) {
             foreach ($quantities as $quantity) {
                 $quantity = new BasicSellingQuantity();

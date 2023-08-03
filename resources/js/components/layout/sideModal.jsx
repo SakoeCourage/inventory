@@ -15,7 +15,7 @@ const SideModal = (props) => {
       <Slide direction="left" in={open} mountOnEnter unmountOnExit>
         <div aria-live="assertive" className="pointer-events-none fixed inset-0 flex items-end place-content-end sm:items-start z-30 ">
           <div 
-            className={ `flex flex-col flex-grow pointer-events-none   h-full
+            className={ `flex flex-col flex-grow pointer-events-none w-screen md:w-auto h-full
               ${maxWidth === 'md' && 'max-w-md'}
               ${maxWidth === 'lg' && 'max-w-lg'}
               ${maxWidth === 'xl' && 'max-w-xl'}

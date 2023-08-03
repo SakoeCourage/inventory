@@ -63,8 +63,7 @@ module.exports = {
                     700: "#23348b",
                     800: "#17235d",
                     900: "#0c112e",
-                    "rgb": "58, 87, 232",
-                    "rgb-dark": "17, 38, 146"
+                    "rgb": "58, 87, 232"
                 },
                 secondary: {
                     100: "#f8f9fa",
@@ -180,21 +179,11 @@ module.exports = {
                     800: "#262626",
                     900: "#171717",
                 },
-                dark: {
-                    bg: "#151824",
-                    text: "#8A92A6",
-                    card: "#222738",
-                    border: "#30384f",
-                    strip: "rgba(138,146,166,0.03)",
-                    primary: "#0b112e",
-                    secondary: "#5c6ca5",
-                    dark: "#60658a",
-                },
+          
                 sideblue: "#3a57e8",
                 sideblack: "#212529",
                 sidehover: "#ffffff20",
-                glass: "#ffffff90",
-                glassdark: "#76707069",
+                glass: "#ffffff90"
             },
         },
         letterSpacing: {

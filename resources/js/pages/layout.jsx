@@ -17,12 +17,18 @@ const Layout = (props) => {
   const outlet = document.querySelector('#outlet')
 
 
+
   useEffect(() => {
     if (outlet) {
       outlet.scrollTop = 0
     }
+    setFullSideBar(false)
 
   }, [window.location.href])
+
+
+
+  
 
 
   

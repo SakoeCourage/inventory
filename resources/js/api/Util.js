@@ -66,7 +66,13 @@ export function getUriWithParam(baseUrl, params) {
     return Url.toString();
 };
 
-export  function addOrUpdateUrlParam(uri, paramKey, paramVal) {
+export function addOrUpdateUrlParam(uri, paramKey, paramVal) {
+    // Remove the "page" parameter if it exists in the URI
+    var rePageParam = new RegExp("([?&])page=[^&#]*", "i");
+    if (rePageParam.test(uri)) {
+      uri = uri.replace(rePageParam, '');
+    }
+  
     var re = new RegExp("([?&])" + paramKey + "=[^&#]*", "i");
     if (re.test(uri)) {
       uri = uri.replace(re, '$1' + paramKey + "=" + paramVal);
@@ -76,7 +82,7 @@ export  function addOrUpdateUrlParam(uri, paramKey, paramVal) {
     }
     return uri;
   }
-
+  
 
 export function handleValidation(schema, formData) {
     let validationErrors = {}

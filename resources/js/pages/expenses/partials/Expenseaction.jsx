@@ -4,21 +4,25 @@ import { dateReformat, formatcurrency } from '../../../api/Util'
 import { Statuscode } from './expenseHistory'
 import Button from '../../../components/inputs/Button'
 import { AccessByPermission } from '../../authorization/AccessControl'
-
+import { useDispatch } from 'react-redux'
+import { getUnreadCount } from '../../../store/unreadCountSlice'
 function Expenseaction({ id, handleClose }) {
+  const dispatch = useDispatch()
   const [data, setData] = useState(null)
- const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleExpenseAction = (actionType) =>{
+  const handleExpenseAction = (actionType) => {
     setIsLoading(true)
     Api.post(`/expense/take-action/${id}`, { action: actionType })
       .then(res => {
         handleClose()
+        dispatch(getUnreadCount());
       }).catch(err => {
         console.log(err)
         setIsLoading(false)
       })
   }
+  
   useEffect(() => {
     Api.get(`/expense/submits/get/${id}`)
       .then(res => {
@@ -95,14 +99,14 @@ function Expenseaction({ id, handleClose }) {
       </nav>
 
       <AccessByPermission abilities={['authorize expense']}>
-      {
-      Boolean(data?.expenseitems.length) && Number(data?.status) == 0 && <div className='flex items-center gap-2 mt-auto w-full'>
-        <Button onClick={()=>handleExpenseAction('approve')} className="w-1/2" processing={false} type="submit" text="Approved" success />
-        <Button className="w-1/2" onClick={()=>handleExpenseAction('decline')} type="button" text="Decline" danger />
-      </div>
-      }
+        {
+          Boolean(data?.expenseitems.length) && Number(data?.status) == 0 && <div className='flex items-center gap-2 mt-auto w-full'>
+            <Button onClick={() => handleExpenseAction('approve')} className="w-1/2" processing={false} type="submit" text="Approved" success />
+            <Button className="w-1/2" onClick={() => handleExpenseAction('decline')} type="button" text="Decline" danger />
+          </div>
+        }
       </AccessByPermission>
-  
+
     </div>
   )
 }

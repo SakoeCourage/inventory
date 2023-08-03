@@ -64,38 +64,38 @@ function Refundhistory() {
         <table className="w-full overflow-hidden">
           <thead className="bg-secondary-200 ">
             <tr>
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 #
               </th>
 
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Date
               </th>
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Time
               </th>
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Product Name
               </th>
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Model Name
               </th>
 
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Refund Quantity
               </th>
-              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Author
               </th>
 
             </tr>
           </thead>
-          <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800  ">
+          <tbody className="divide-y divide-secondary-200   ">
             {Boolean(refundHistory?.data?.length) && refundHistory?.data?.map((dt, i) => {
               return (
                 <tr
                   key={i}
-                  className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                  className={`${i % 2 !== 0 && 'bg-secondary-100 '
                     }`}
                 >
                   <td className="px-6 py-3 whitespace-nowrap">

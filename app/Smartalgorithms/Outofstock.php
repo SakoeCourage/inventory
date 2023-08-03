@@ -18,7 +18,7 @@ class Outofstock
     public function __construct()
     {
         $this->two_weeks_ago = Carbon::now()->subWeek(2);
-        $this->get_recent_sale_items = Saleitem::with(['productsmodels' => ['product']])->whereDate('created_at', '>=', $this->two_weeks_ago)->latest()->get();
+        $this->get_recent_sale_items = Saleitem::with(['productsmodels' => ['product']])->whereDate('created_at', '>=', $this->two_weeks_ago)->where('quantity','>',0)->latest()->get();
     }
 
 

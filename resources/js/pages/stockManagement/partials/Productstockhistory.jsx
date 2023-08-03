@@ -69,18 +69,19 @@ function Productstockhistory({ stockHistorys, stockData, getStockHIstory, curren
 
 
     return (
-        <div className=' bg-white p-2 rounded-md w-full overflow-x-scroll min-h-[29rem] flex flex-col  border border-gray-400/70 '>
-            <div className='my-3 flex items-center justify-between px-3'>
-                <nav className="flex items-center gap-3">
-                    <nav onClick={() => setCurrentComponent('historytable')} className={` cursor-pointer font-medium text-blue-950/50  h-full text-md leading-9 uppercase border border-gray-400/70 p-2 rounded-md ${currentComponent == "historytable" && 'bg-blue-500/10'}`}>product's stock cycle</nav>
-                    <nav onClick={() => setCurrentComponent('supplierstable')} className={` cursor-pointer font-medium text-blue-950/50 flex items-center gap-2  h-full text-md leading-9 uppercase border border-gray-400/70 p-2 rounded-md w-max min-w-[8rem] text-center ${currentComponent == "supplierstable" && 'bg-blue-500/10'}`}>
+        <div className=' bg-white p-2 rounded-md w-full   min-h-[29rem] flex flex-col  border border-gray-400/70 '>
+            <div className='my-3 flex flex-col md:flex-row gap-2 items-center md:justify-between px-3'>
+                <nav className="flex flex-col md:flex-row w-full  items-center gap-2">
+                    <nav onClick={() => setCurrentComponent('historytable')} className={` cursor-pointer font-medium text-blue-950/50  h-full text-md leading-9 uppercase border border-gray-400/70 p-2 w-full rounded-md ${currentComponent == "historytable" && 'bg-blue-500/10'}`}>product's stock cycle</nav>
+                    <nav onClick={() => setCurrentComponent('supplierstable')} className={` cursor-pointer font-medium text-blue-950/50 flex items-center gap-2  h-full text-md leading-9 uppercase border border-gray-400/70 p-2 rounded-md w-full min-w-[8rem] text-center ${currentComponent == "supplierstable" && 'bg-blue-500/10'}`}>
                         <nav className='inline'>Product's Suppliers  </nav>
                         <nav className=' text-white bg-red-500/70   p-1 rounded-full text-xs w-6 h-6 grid place-items-center '>{formatMaximumValue(stockData?.has_suppliers)}</nav>
                     </nav>
                 </nav>
-                {currentComponent == 'historytable' ? <nav className="flex items-center gap-4">
+                {currentComponent == 'historytable' ? <nav className="!w-full md:w-auto flex items-center gap-4">
                     {stockHistorys?.filters?.date && <Button onClick={() => getStockHIstory()} text="Reset" />}
                     <FormInputDate
+                    className="!w-full md:w-max"
                         placeholder='filter date'
                         value={stockHistorys?.filters?.date ? dayjs(stockHistorys?.filters?.date) : null}
                         onChange={(e) => handleDateChange(dayjs(e.target.value.$d).format('YYYY-MM-DD'))}

@@ -84,7 +84,6 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
         .then(res => {
           setfilteredProducts([])
           const { products, filters } = res.data
-          console.log(products)
           setProducts(products)
           setFilters(filters)
           setProcessing(false)
@@ -124,8 +123,8 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
 
   return (
     <ClickAwayListener onClickAway={() => setShowProductSearchModal(false)}>
-      <div className=' z-40  py-8 pb-14 flex flex-col '>
-        <div className="p-2 bg-white rounded-md">
+      <div className=' z-40  md:py-8 pb-14 flex flex-col '>
+        <div className="p-2 bg-white md:rounded-md">
           <FormInputsearch processing={processing} getSearchKey={(value) => handleSearch(value)} className="" placeholder="Search product name or product model" />
         </div>
         {Boolean(filteredProducts?.length) && <div className='  mt-2 text-gray-500 bg-white h-full max-h-[calc(min(44rem,70vh))] overflow-y-scroll px-5 pb-5 rounded-md shadow-md'>

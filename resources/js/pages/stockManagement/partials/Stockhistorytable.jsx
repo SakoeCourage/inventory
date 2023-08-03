@@ -10,41 +10,41 @@ function Stockhistorytable({ stockHistorys, stockData, handleChangePage }) {
     }, [])
     
     return (
-        <div className='flex flex-col min-h-full h-full  grow '>
+        <div className='flex flex-col min-h-full h-full  grow overflow-x-scroll '>
             <table className="w-full overflow-hidden">
                 <thead className="bg-secondary-200 ">
                     <tr>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             #
                         </th>
 
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Date
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Time
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Quantity
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Stock Balance
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Description
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Author
                         </th>
 
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800  ">
+                <tbody className="divide-y divide-secondary-200  ">
                     {Boolean(stockHistorys?.history?.data?.length) && stockHistorys?.history?.data?.map((dt, i) => {
                         return (
                             <tr
                                 key={i}
-                                className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                                className={`${i % 2 !== 0 && 'bg-secondary-100 '
                                     }`}
                             >
                                 <td className="px-6 py-3 whitespace-nowrap">

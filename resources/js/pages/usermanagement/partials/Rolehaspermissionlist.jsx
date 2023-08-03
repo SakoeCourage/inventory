@@ -9,7 +9,7 @@ function Loader() {
     return <div role="status" className=" p-4 space-y-4 border border-gray-200 divide-y divide-gray-50 rounded shadow animate-pulse  md:p-6 ">
         <div className="grid grid-cols-2 ">
             <div className=' flex flex-col justify-center items-center'>
-                <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                <div className="h-2.5 bg-gray-300 rounded-full  w-24 mb-2.5"></div>
                 <div className="w-32 h-2 bg-gray-200 rounded-full "></div>
             </div>
             <div className="h-2.5 bg-gray-300 rounded-full  w-12 mx-auto"></div>

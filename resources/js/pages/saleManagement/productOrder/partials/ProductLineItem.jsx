@@ -4,11 +4,20 @@ import FormInputSelect from '../../../../components/inputs/FormInputSelect'
 import { Icon } from '@iconify/react'
 import { Tooltip } from '@mui/material'
 import { formatcurrency } from '../../../../api/Util'
-
-
-function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductChange, handleValueChange, item, items, removeItemat, errors }) {
+import Rangeinput from '../../../../components/inputs/Rangeinput'
+import { formatMaximumValue } from '../../../stockManagement/partials/Productstockhistory'
+import Productcollection from '../../../../components/Productcollection'
+function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductChange, handleValueChange, item, removeItemat, errors }) {
     let getProductsModelsfromProductId = (id) => {
         return modelsFromDB.filter((data) => data?.product_id == id)
+    }
+
+    let getProductNameFromProductId = (id) => {
+        return productsFromDB.find((data) => Number(data?.id) == Number(id))?.product_name
+    }
+
+    let getModelNameFromProductId = (id) => {
+        return modelsFromDB.find((data) => data?.id == id)?.model_name
     }
 
     let GetmodelfromId = (id) => {
@@ -46,70 +55,47 @@ function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductCha
         return lineamount
     }, [item['price_per_collection'], item['collections'], item['units'], item['unit_price'], item['productsmodel_id']])
 
+    useEffect(() => {
+        console.log(item)
+    }, [item])
 
 
 
+    return <nav className=' grid grid-cols-8 gap-1 w-full model-item py-2 border-b relative'>
+        {/* <nav className=' absolute inset-y-[40%] left-2 bg-red-400 w-5 h-5 text-white flex items-center justify-center rounded-full text-sm aspect-square truncate'>
+            {index + 1}
+        </nav> */}
 
-    return <div data-index={index + 1} className='flex  max-w-4xl mx-auto gap-4 w-full p-3 py-5 customer-cart-list-item  '>
-        <div className='item flex w-full flex-col gap-4'>
-            <nav className='flex flex-col lg:flex-row gap-4 w-full'>
-                <FormInputSelect
-                    error={errors && errors[`items.${index}.product_id`]}
-                    options={Boolean(productsFromDB) ? [...productsFromDB.map(product => { return ({ name: product['product_name'], value: product['id'] }) })] : []}
-                    onChange={(e) => handleProductChange(index, e.target.value)}
-                    value={item['product_id']}
-                    className="w-full" label='Select Product' />
-                <FormInputSelect
-                 error={errors && errors[`items.${index}.productsmodel_id`]}
-                    options={item['product_id'] ? [...getProductsModelsfromProductId(item['product_id']).map(model => { return ({ name: model['model_name'], value: model['id'] }) })] : []}
-                    onChange={(e) => {
-                        handleValueChange(index, 'units', '')
-                        handleValueChange(index, 'collections', '')
-                        handleValueChange(index, 'price_per_collection', '')
-                        handleValueChange(index, 'unit_price', '')
-                        handleValueChange(index, 'productsmodel_id', e.target.value)
-                    }}
-                    value={item['productsmodel_id']}
-                    className="w-full" label='Model' />
-            </nav>
-            <nav className='flex flex-col lg:flex-row gap-4'>
-                {item['productsmodel_id'] && checkIfInCollection(item['productsmodel_id']) &&
-                    <FormInputText autocomplete="off"
-                    error={errors && errors[`items.${index}.quantity`]}
-                        value={item['collections']}
-                        onChange={(e) => {
-                            handleValueChange(index, 'collections', Number(e.target.value))
-                            handleValueChange(index, 'price_per_collection', GetmodelfromId(item['productsmodel_id'])?.price_per_collection)
-                        }}
-                        type='number' inputProps={{ min: 0 }} inputMode='numeric' min="0" className="w-full" label={`Number of ${getCollectionType(item['productsmodel_id'])}`} />
+        <nav className='flex items-center justify-center col-span-2 '>
+            <nav className=' flex flex-col items-start ml-3  gap-2 w-full'>
+                <span className=' text-black'>{getProductNameFromProductId(item['product_id'])}</span>
+                {item['productsmodel_id']
+                    &&
+                    <span className=' text-sm'>
+                        {getModelNameFromProductId(item['productsmodel_id'])}
+                    </span>
                 }
-                <FormInputText autocomplete="off"
-                 error={errors && errors[`items.${index}.quantity`]}
-                    onChange={(e) => {
-                        handleValueChange(index, 'units', Number(e.target.value))
-                        handleValueChange(index, 'unit_price', GetmodelfromId(item['productsmodel_id'])?.unit_price)
-                    }
-                    }
-                    value={item['units']}
-                    type='number' inputProps={{
-                        min: 0,
-                        max: item['productsmodel_id'] && checkIfInCollection(item['productsmodel_id']) && Getmaxcollection(item['productsmodel_id'])
-                    }} className="w-full" label={item['product_id'] ? `Number of ${getBasicQuantity(item['product_id'])}` : 'Number of Units'} />
             </nav>
-            <nav className='flex items-center justify-end text-xs text-blue-950 h-5 bg-red-50/20 py-2'>
-                <nav className='flex items-center gap-3'>
-                    <span>Amount :</span>
-                    <span>{formatcurrency(calculateAmount)}</span>
-                    <Tooltip title="Remove from cart">
-                        <button onClick={() => removeItemat(index)} className=' p-1 rounded-full text-xs grid place-items-center text-red-500 '>
-                            <Icon icon="ph:trash-bold" fontSize={15} />
-                        </button>
-                    </Tooltip>
+        </nav>
 
-                </nav>
+        <nav className=' flex items-center justify-center col-span-3'>
+            <nav className='flex flex-col  gap-4'>
+                <Productcollection
+                    in_collections={item?.in_collection}
+                    quantity={item?.quantity}
+                    units_per_collection={item?.quantity_per_collection}
+                    collection_type={getCollectionType(item?.productsmodel_id)}
+                    basic_quantity={getBasicQuantity(item?.product_id)}
+                />
             </nav>
-        </div>
-    </div>
+        </nav>
+        <nav className='  flex items-center justify-center col-span-2'>
+            <nav>{formatcurrency(calculateAmount)}</nav>
+        </nav>
+        <nav onClick={() => removeItemat(index)} className=' col-span-1 inset-y-[40%] left-2 p-1 rounded-full text-xs grid place-items-center text-info-500 '>
+            <Icon icon="ph:trash-bold" fontSize={20} />
+        </nav>
+    </nav>
 }
 
 export default ProductLineItem

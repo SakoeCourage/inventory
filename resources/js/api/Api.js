@@ -4,6 +4,7 @@ import { clearCredentials } from "../store/authSlice";
 
 
 const baseURL = import.meta.env.VITE_APP_BASE_URL;
+// const baseURL = 'https://inventorylite.fly.dev';
 
 const Api = axios.create({
     baseURL: `${baseURL}/api/v1`,

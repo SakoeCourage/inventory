@@ -49,7 +49,7 @@ function Paymenthistory({ paymentMethods }) {
 
     return (
         <div className=' max-w-6xl mx-auto bg-white min-h-[12rem] p-2 border border-gray-400/70 rounded-md'>
-            <div className='flex items-center gap-4 justify-end my-2'>
+            <div className='flex items-center flex-col md:flex-row gap-4 justify-end my-2'>
                 {(filters?.paymentmethod || filters?.day) &&
                     <Button onClick={() => { fetchPaymentHistory(); setFilters([]) }} text='reset filters' />
                 }
@@ -58,44 +58,44 @@ function Paymenthistory({ paymentMethods }) {
                     value={filters?.paymentmethod ? filters?.paymentmethod : null}
                     options={paymentMethods ? [...paymentMethods.map(method => { return ({ name: method?.method, value: method?.id }) })] : []}
                     onChange={(e) => fullUrl && fetchPaymentHistory(addOrUpdateUrlParam(fullUrl, 'paymentmethod', e.target.value))}
-                    className="w-full md:w-[15rem]"
+                    className="w-full "
                 />
                 <FormInputDate
                     value={filters?.day ? dayjs(filters?.day) : null}
                     onChange={(e) => fullUrl && fetchPaymentHistory(addOrUpdateUrlParam(fullUrl, 'day', dayjs(e.target.value).format('YYYY-MM-DD')))}
-                    className="!w-full md:w-[15rem]"
+                    className="!w-full "
                 />
             </div>
             <div className="overflow-x-auto min-h-[32rem]">
                 <table className="w-full overflow-hidden">
                     <thead className="bg-secondary-200 ">
                         <tr>
-                            <th className="px-6 py-3  text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                            <th className="px-6 py-3  text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                 #
                             </th>
 
-                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                 Date modified
                             </th>
-                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                 Payment Method
                             </th>
-                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                 Payment from
                             </th>
-                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                            <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                 Amount
                             </th>
 
 
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800">
+                    <tbody className="divide-y divide-secondary-200 ">
                         {paymentHistory?.data && paymentHistory?.data.map((x, i) => {
                             return (
                                 <tr
                                     key={i}
-                                    className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                                    className={`${i % 2 !== 0 && 'bg-secondary-100 '
                                         }`}
                                 >
                                     <td className="px-6 py-2 !text-xs whitespace-nowrap">

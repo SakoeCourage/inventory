@@ -51,31 +51,31 @@ const Supplierstable = ({ data, setData, isLoading, setIsLoading, setFilters, fe
             <table className="w-full overflow-hidden">
               <thead className="bg-secondary-200 ">
                 <tr>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     #
                   </th>
 
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Date modified
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Supplier Name
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Supplier Contact
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Action
                   </th>
 
                 </tr>
               </thead>
-              <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800">
+              <tbody className="divide-y divide-secondary-200 ">
                 {data?.data && data?.data.map((x, i) => {
                   return (
                     <tr
                       key={i}
-                      className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                      className={`${i % 2 !== 0 && 'bg-secondary-100 '
                         }`}
                     >
                       <td className="px-6 py-2 !text-xs whitespace-nowrap">

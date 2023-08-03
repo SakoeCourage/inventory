@@ -9,17 +9,17 @@ import Refundinfo from '../../../../components/inputs/Refundinfo'
 function SaleTable({ saleData }) {
   const { sale, sale_items } = saleData
 
-  return <table className="addleftline w-[90%] mx-auto h-max ">
+  return <table className="addleftline md:w-[90%] mx-auto !overflow-x-auto w-full  h-max ">
     <thead className="bg-white border-secondary-400/50 border rounded-md ">
       <tr>
-        <th className="px-6 py-3  text-left rtl:text-right  whitespace-nowrap font-semibold ">
+        <th className="px-6 py-3  text-left rtl:text-right   font-semibold ">
           #
         </th>
 
-        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
+        <th className="px-6 py-3 text-left rtl:text-right   font-semibold ">
           Product
         </th>
-        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
+        <th className="px-6 py-3 text-left rtl:text-right   font-semibold ">
           Quantity
         </th>
         <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
@@ -36,14 +36,14 @@ function SaleTable({ saleData }) {
             className={`${i % 2 !== 0 && 'bg-secondary-100/50 '
               }`}
           >
-            <td className="px-6 py-3 !text-xs whitespace-nowrap">
+            <td className="px-6 py-3 !text-xs ">
               <div className="flex items-center">
                 <h6 className="text-sm font-normal mb-0 !capitalize ">
                   {i + 1} {item.is_refunded > 0 && <Refundinfo item/>}
                 </h6>
               </div>
             </td>
-            <td className="px-6 py-3 !text-xs whitespace-nowrap">
+            <td className="px-6 py-3 !text-xs">
               <div className="flex items-center">
                 <h6 className="text-sm font-normal mb-0  ">
                   <span>{item?.sale_product?.product?.product_name}</span>
@@ -51,7 +51,7 @@ function SaleTable({ saleData }) {
                 </h6>
               </div>
             </td>
-            <td className="px-6 py-3 !text-xs whitespace-nowrap">
+            <td className="px-6 py-3 !text-xs ">
               <div className="flex items-center">
                 <h6 className="text-sm font-normal mb-0  ">
                   <Productcollection
@@ -104,8 +104,8 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
       {isLoading && <nav className="flex items-center justify-center w-full absolute inset-0 z-30 bg-white h-full">
         <Loadingspinner />
       </nav>}
-      <nav className=' addleftline flex flex-col gap-10  px-5 mx-auto w-[90%] mt-16   items-center'>
-        <nav className=' flex items-center  w-full gap-2'>
+      <nav className=' addleftline flex flex-col gap-10  md:px-5 mx-auto w-full   md:w-[90%] mt-16   items-center'>
+        <nav className=' grid grid-cols-2  w-full gap-2'>
           <nav className='flex flex-col p-2 basis-[50%]  gap-5 text-lg bg-red-200/25 rounded-md'>
             <nav>Cutomer Name</nav>
             <nav className='font-semibold'>{saleData?.sale?.customer_name}</nav>
@@ -115,7 +115,7 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
             <nav className='font-semibold'>{saleData?.sale?.customer_contact}</nav>
           </nav>
         </nav>
-        <nav className=' flex items-center gap-2 w-full'>
+        <nav className=' grid grid-cols-2 gap-2 w-full'>
           <nav className='flex flex-col p-2 basis-[50%]  gap-5 text-lg bg-orange-200/25 rounded-md'>
             <nav>Sale Representative</nav>
             <nav className='font-semibold'>{saleData?.sale_representative}</nav>
@@ -127,7 +127,7 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
         </nav>
       </nav>
       <SaleTable saleData={saleData} />
-      <nav className=' addleftline w-[90%] mx-auto flex flex-col gap-4'>
+      <nav className=' addleftline md:px-5 w-full  md:w-[90%] mx-auto  flex flex-col gap-4'>
         <nav className='flex items-center gap-2 p-2 bg-gray-100/70'>
           <nav className=' w-full'>
             Sub total

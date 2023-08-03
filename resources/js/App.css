@@ -36,6 +36,9 @@
 .model-item:nth-child(odd) {
     @apply bg-gray-200/40
 }
+.model-item:nth-child(even) {
+    @apply bg-gray-100/40
+}
 
 .decoration-none {
     text-decoration: none;
@@ -422,3 +425,47 @@ table.report-table td {
     margin: auto 1rem;
     @apply px-4
 }
+
+/* Base scrollbar styles */
+.custom-scroll {
+    scrollbar-color: #888 #f1f1f1;
+    scrollbar-width: thin;
+  }
+  
+  /* WebKit-based browsers */
+  .custom-scroll::-webkit-scrollbar {
+    width: 5px;
+   
+  }
+  
+  /* Track style (the background of the scrollbar) */
+  .custom-scroll::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  /* Handle style (the draggable part of the scrollbar) */
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+   
+  }
+  
+  /* Show the scrollbar thumb when the element is being hovered or focused */
+  .custom-scroll:hover::-webkit-scrollbar-thumb,
+  .custom-scroll:focus::-webkit-scrollbar-thumb,
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    width: 5px;
+  }
+  
+  /* When the handle is being dragged */
+  .custom-scroll::-webkit-scrollbar-thumb:active {
+    background-color: #333;
+  }
+  
+  /* When the scrollbar is in a "corner" (such as on macOS) */
+  .custom-scroll::-webkit-scrollbar-corner {
+    background-color: #f1f1f1;
+  }
+  
+ 
+  

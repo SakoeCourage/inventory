@@ -5,57 +5,43 @@ import { formatcurrency } from '../../../../api/Util'
 import FormInputText from '../../../../components/inputs/FormInputText'
 import FormInputSelect from '../../../../components/inputs/FormInputSelect'
 import Api from '../../../../api/Api'
-function Itemscheckout({ formData, setSaleDiscount, setFormData, errors, saleDiscount, getBalance ,paymentMethods}) {
+import Customercart from './Customercart'
+import Payoutsection from './Payoutsection'
+function Itemscheckout({ handleOnClearCart,productsFromDB,modelsFromDB,items,setItems,formData, setSaleDiscount, setFormData, errors, saleDiscount, getBalance, paymentMethods }) {
 
 
     return (
         <>
-            <nav className='  flex items-center gap-2 p-3 text-blue-950/70  max-w-4xl mx-auto'>
-                <Icon icon="ic:twotone-shopping-cart-checkout" /> <span>Items Check Out</span>
+            <nav className='  flex items-center gap-2 p-3 text-blue-950/70 text-sm  max-w-4xl mx-auto '>
+                <nav className=' bg-info-100/40 text-info-600 flex items-center gap-3 px-2 py-1 rounded-md'>
+                <Icon icon="ic:twotone-shopping-cart-checkout" /> <span>Cart List</span>
+                </nav>
+                {Boolean(items?.length) &&<span className=' px-1 rounded-full h-5  min-w-[1.5rem] w-max bg-info-500 text-white flex items-center justify-center text-xs'>{items?.length }</span>}
+                {Boolean(items?.length) &&<button onClick={()=>handleOnClearCart()} className=' p-1 rounded-full h-7 min-w-[1.5rem] w-max bg-info-100/30 hover:bg-info-100 px-2 py-2 text-info-600 flex items-center justify-center text-xs ml-auto'>
+                <svg className=' mr-2' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="currentColor" d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0zm5.66 14.24l-1.41 1.41L10 11.41l-4.24 4.25l-1.42-1.42L8.59 10L4.34 5.76l1.42-1.42L10 8.59l4.24-4.24l1.41 1.41L11.41 10z"/></svg>
+                    Clear cart
+                </button>}
             </nav>
             <hr className='border border-gray-200 w-full border-dotted my-0' />
-            <nav className='flex flex-col gap-2 max-w-4xl mx-auto w-full mt-5'>
-                <nav className="flex items-center justify-between p-2 bg-red-50/50 text-red-950 rounded-md">
-                    <nav>
-                        SUB TOTAL
-                    </nav>
-                    <nav className=' font-bold'>
-                        {formatcurrency(formData?.sub_total)}
-                    </nav>
-                </nav>
-
-                <nav className="flex items-center justify-between p-2 text-red-950 rounded-md">
-                    <nav className='w-full'>
-                        <FormInputText type='number' error={errors.discount_rate} inputProps={{ inputMode: 'numeric', min:0, max: 100 }} className="w-full" value={formData?.discount_rate} onChange={(e) => setFormData(cv => cv = { ...cv, discount_rate: e.target.value })} label='Sale Discount' placeholder='(%)' />
-                    </nav>
-                    <nav className='w-full text-sm flex items-center gap-5 justify-end '>
-                        {/* <Switch checked={saleDiscount} onChange={(e) => setSaleDiscount(e.target.checked)} /> */}
-                        <span className={`${saleDiscount ? 'text-red-950' : 'text-gray-700'} `}>{formData?.discount_rate && saleDiscount ? `${formData?.discount_rate ?? 0}% discount is applied` : 'no discount applied'}</span>
-
-                    </nav>
-                </nav>
-                <nav className="flex items-center justify-between p-2 text-red-950 rounded-md">
-                    <nav className='w-full'>
-                        <FormInputText type='number' inputProps={{ min: formData?.total ?? 0 }} className="w-full" error={errors?.amount_paid} value={formData?.amount_paid} onChange={(e) => setFormData(cv => cv = { ...cv, amount_paid: e.target.value })} label='Amount Paid' placeholder='GHS (000)' />
-                    </nav>
-                    <nav className='w-full text-sm items-end flex text-right justify-self-end  gap-1  flex-col '>
-                        <nav className=' text-xs'> Balance:</nav>
-                        <nav className=' text-base font-bold'> {formatcurrency(getBalance)}</nav>
-                    </nav>
-                </nav>
-                <nav className="flex items-center justify-between p-2 text-red-950 rounded-md">
-                    <nav className='w-full'>
-                        <FormInputSelect options={paymentMethods.length ? [...paymentMethods.map(method => { return({ value: method.id, name: method.method})})]:[]}  className=" w-full lg:w-1/2" error={errors?.payment_method} value={formData?.payment_method} onChange={(e) => setFormData(cv => cv = { ...cv, payment_method: e.target.value })} label='Payment Method'  />
-                    </nav>
-                </nav>
-                <nav className="flex items-center justify-between p-2 bg-red-50/50 text-red-950 rounded-md">
-                    <nav>
-                        TOTAL
-                    </nav>
-                    <nav className=' font-bold'>
-                        {formatcurrency(formData?.total)}
-                    </nav>
-                </nav>
+            <nav className='flex flex-col gap-2 max-w-4xl mx-auto w-full '>
+                <Customercart
+                    productsFromDB={productsFromDB}
+                    modelsFromDB={modelsFromDB}
+                    setFormData={setFormData}
+                    formData={formData}
+                    items={items}
+                    errors={errors}
+                    setItems={setItems}
+                />
+                <Payoutsection 
+                    formData={formData}
+                    saleDiscount={saleDiscount}
+                    errors={errors}
+                    setFormData={setFormData}
+                    paymentMethods={paymentMethods}
+                    getBalance={getBalance}
+                />
+                
             </nav>
         </>
     )

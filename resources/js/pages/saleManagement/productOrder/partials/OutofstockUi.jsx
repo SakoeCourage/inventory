@@ -38,31 +38,31 @@ function OutofstockUi({ products, setOutOfStockProducts,formData }) {
             <table className="w-full overflow-hidden">
               <thead className=" ">
                 <tr className='text-sm'>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     #
                   </th>
 
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Product Name
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Qty Required
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Qty In Stock
                   </th>
-                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Action
                   </th>
 
                 </tr>
               </thead>
-              <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800 !text-sm">
+              <tbody className="divide-y divide-secondary-200  !text-sm">
                 {Boolean(products.length) && products.map((product, i) => {
                   return (
                     <tr
                       key={i}
-                      className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                      className={`${i % 2 !== 0 && 'bg-secondary-100 '
                         }`}
                     >
                       <td className="px-6 py-2 !text-xs whitespace-nowrap">
@@ -72,7 +72,7 @@ function OutofstockUi({ products, setOutOfStockProducts,formData }) {
                           </h6>
                         </div>
                       </td>
-                      <td className="px-6 py-2 !text-xs whitespace-nowrap">
+                      <td className="px-6 py-2 !text-xs ">
                         <div className="flex items-center">
                           <h6 className="mb-0  ">
                            <span className=''> {`${product.product_name}`}</span>

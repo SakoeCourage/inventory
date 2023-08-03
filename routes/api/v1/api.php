@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Expenses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,15 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/to-search-deep', [App\Http\Controllers\SaleController::class, 'tosearch']);
         Route::get('/get/{sale}', [App\Http\Controllers\SaleController::class, 'show']);
         Route::get('/get/sale-from-invoice/{sale:sale_invoice}', [App\Http\Controllers\SaleController::class, 'getSaleFromInvoice']);
+        Route::get('/view-invoice/{invoiceID}', [App\Http\Controllers\SaleController::class, 'showinvoice']);
+
+    });
+   
+    Route::group(['prefix' => 'proforma'], function () {
+        Route::post('/new', [App\Http\Controllers\ProformaInvoiceController::class, 'store']);
+        Route::get('/all', [App\Http\Controllers\ProformaInvoiceController::class, 'index']);
+        Route::get('/view-invoice/{proformaInvoiceID}', [App\Http\Controllers\ProformaInvoiceController::class, 'show']);
+        Route::delete('/delete/{proformaInvoice}', [App\Http\Controllers\ProformaInvoiceController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'user'], function () {
@@ -107,16 +117,19 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/updateorcreate', [\App\Http\Controllers\ExpensedefinitionController::class, 'store']);
         Route::get('/all', [\App\Http\Controllers\ExpensedefinitionController::class, 'index']);
         Route::delete('/delete/{expensedefinition}', [\App\Http\Controllers\ExpensedefinitionController::class, 'destroy']);
-        Route::post('/submit', [\App\Http\Controllers\ExpensesController::class, 'create']);
+        Route::post('/submit', [\App\Http\Controllers\ExpensesController::class, 'create'])->middleware('role_or_permission:create expense|Super Admin');
         Route::get('/submits/all', [\App\Http\Controllers\ExpensesController::class, 'allExpenses']);
         Route::get('/submits/get/{expenses}', [\App\Http\Controllers\ExpensesController::class, 'show']);
-        Route::post('/take-action/{expenses}',[\App\Http\Controllers\ExpensesController::class, 'takeAction'])->middleware('permission:authorize expense');
+        Route::post('/take-action/{expenses}',[\App\Http\Controllers\ExpensesController::class, 'takeAction'])->middleware('role_or_permission:authorize expense|Super Admin');
         Route::get('/pending-count',[\App\Http\Controllers\ExpensesController::class, 'getPendingExpenseCount']);
-
     });
     Route::group(['prefix' => 'report'],function(){
         Route::post('/product-sale-report',[\App\Http\Controllers\ReportController::class,'generateProductSaleReport']);
         Route::post('/income-week-report',[\App\Http\Controllers\Reports\IncomestatementweeklyController::class,'generateWeeklyIncomeStatement']);
         Route::post('/income-month-report',[\App\Http\Controllers\Reports\IncomestatementmonthlyController::class,'generatemonthlyincomestatement']);
     });
+
+    Route::get('/unread-count/all',[\App\Http\Controllers\UnreadcountContorller::class,'index']);
+    Route::get('/business-profile/get',[\App\Http\Controllers\BusinessprofileController::class,'index']);
+    Route::post('/business-profile/create-update',[\App\Http\Controllers\BusinessprofileController::class,'createorupdate']);
 });

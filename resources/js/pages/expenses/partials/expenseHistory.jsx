@@ -76,9 +76,9 @@ const ExpenseHistory = ({ setFilters, getExpensesFromDB, filters, fullUrl, expen
 
     return (
         <Card className='py-6 my-3'>
-            <div className=' flex items-center py-2 gap-2 justify-end px-4'>
-                <FormInputSelect onChange={(e) => fullUrl && getExpensesFromDB(addOrUpdateUrlParam(fullUrl, 'filter', e.target.value))} value={filters?.filter} label='filter' className=' !min-w-[15rem]' options={[...filterenums.map(filter => { return ({ name: filter, value: filter }) })]} />
-                <FormInputSelect onChange={(e) => fullUrl && getExpensesFromDB(addOrUpdateUrlParam(fullUrl, 'status', e.target.value))} value={filters?.status} label='status' className=' !min-w-[15rem]' options={[...statusenums.map(status => { return ({ name: status, value: status }) })]} />
+            <div className=' flex items-center py-2 gap-2 justify-end px-4 w-full'>
+                <FormInputSelect  onChange={(e) => fullUrl && getExpensesFromDB(addOrUpdateUrlParam(fullUrl, 'filter', e.target.value))} value={filters?.filter} label='filter' className='w-full  md:!min-w-[15rem]' options={[...filterenums.map(filter => { return ({ name: filter, value: filter }) })]} />
+                <FormInputSelect  onChange={(e) => fullUrl && getExpensesFromDB(addOrUpdateUrlParam(fullUrl, 'status', e.target.value))} value={filters?.status} label='status' className='w-full  md:!min-w-[15rem]' options={[...statusenums.map(status => { return ({ name: status, value: status }) })]} />
             </div>
             <div className="flex flex-col w-full min-h-[36rem] h-max relative ">
                 <div className="flex flex-col  overflow-hidden w-full">
@@ -108,12 +108,12 @@ const ExpenseHistory = ({ setFilters, getExpensesFromDB, filters, fullUrl, expen
 
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800">
+                                <tbody className="divide-y divide-secondary-200 ">
                                     {expensesfromDB.data && expensesfromDB?.data.map((x, i) => {
                                         return (
                                             <tr
                                                 key={i}
-                                                className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                                                className={`${i % 2 !== 0 && 'bg-secondary-100 '
                                                     }`}
                                             >
 

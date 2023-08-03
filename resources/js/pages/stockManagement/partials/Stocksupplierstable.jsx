@@ -18,35 +18,35 @@ function Stocksupplierstable({ currentModelID ,supplierdata,getSuppliersPerGiven
     }, [])
 
     return (
-        <div className='flex flex-col min-h-full h-full grow relative min-w-full'>
+        <div className='flex flex-col min-h-full h-full grow relative min-w-full overflow-x-scroll'>
             {isLoading && <div className='absolute inset-0 flex items-center justify-center bg-white/40 z-40'>
                 <Icon icon="svg-spinners:pulse-rings-3" className='text-blue-600' fontSize={60} />
             </div>}
             <table className="w-full overflow-hidden">
                 <thead className="bg-secondary-200 ">
                     <tr>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             #
                         </th>
 
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                             Last Modified
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                            Supplier's Name
                         </th>
-                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold dark:text-secondary-600">
+                        <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                         Supplier's Contact
                         </th>
 
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800  ">
+                <tbody className="divide-y divide-secondary-200  ">
                     {supplierdata?.data && supplierdata?.data.map((dt, i) => {
                         return (
                             <tr
                                 key={i}
-                                className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                                className={`${i % 2 !== 0 && 'bg-secondary-100 '
                                     }`}
                             >
                                 <td className="px-6 py-3 whitespace-nowrap">

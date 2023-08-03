@@ -10,7 +10,6 @@ import Badge from '@mui/material/Badge';
 import { useDispatch, useSelector } from 'react-redux';
 import { Logout } from '../../store/authSlice';
 import { getAuth } from '../../store/authSlice';
-import { useEffect } from 'react';
 import { AccessByPermission } from '../../pages/authorization/AccessControl';
 import { useNavigate } from 'react-router-dom';
 import Loadingwheel from '../Loaders/Loadingwheel';

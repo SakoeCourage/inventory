@@ -48,6 +48,8 @@ function Refundlinerow({ line_item, index, SetLineitems, items }) {
 
 
 
+
+
     return <tr className=' border-y'>
         <td className="px-6 py-2 !text-sm whitespace-nowrap">
             <div className="flex  flex-col gap-2 font-normal">
@@ -62,7 +64,7 @@ function Refundlinerow({ line_item, index, SetLineitems, items }) {
         <td className="px-6 py-2 !text-sm whitespace-normal">
             <Productcollection
                 in_collections={line_item?.in_collection}
-                basic_quantity={line_item?.basic_selling_quantity}
+                basic_quantity={line_item?.basic_quantity}
                 quantity={line_item?.quantity}
                 collection_type={line_item?.collection_type}
                 units_per_collection={line_item?.quantity_per_collection}

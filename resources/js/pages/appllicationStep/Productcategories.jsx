@@ -47,15 +47,15 @@ function Productcategories() {
 
   return (
     <div className='text-sm h-max '>
-      <div className='bg-info-600 h-[35vh] px-10 overflow-visible '>
+      <div className='bg-info-600 h-[35vh] md:px-10 overflow-visible '>
         <div className='max-w-6xl mx-auto h-full '>
           <h3 className='pb-3 text-info-100 ml-4 text-lg '><span className="mr-4">Product Categories</span>
             <Icon icon="bi:plus-circle" />
           </h3>
           <Card className='py-6 pb-36'>
-            <div className='flex justify-between items-center px-6 pb-6'>
-              <div className="flex items-center gap-3">
-                <div className='border rounded-lg flex items-center justify-between w-96'>
+          <div className='flex flex-col md:flex-row gap-3  justify-between items-center px-6 pb-6'>
+              <div className="flex grow items-center flex-col md:flex-row gap-3 w-full ">
+                <div className='border rounded-lg flex items-center justify-between !w-full md:!w-96'>
                   <input onKeyDown={(e) => { e.key === 'Enter' && handleCategorySearch() }} className='bg-transparent outline-none px-4 w-full' placeholder='Search category...' value={searchKey} onChange={(e) => setSearchKey(e.target.value)} type="search" />
                   <button onClick={() => handleCategorySearch()} className='bg-gray-300 px-3 py-2 grid place-content-center text-gray-600'>
                     <Icon icon="ic:round-search" fontSize={30} />
@@ -66,7 +66,7 @@ function Productcategories() {
                   text="reset"
                 />}
               </div>
-              <Button onClick={() => setShowCategoryForm(cv => cv = { ...cv, mode: "New Category" })} info >
+              <Button className="w-full  my-auto md:w-auto" onClick={() => setShowCategoryForm(cv => cv = { ...cv, mode: "New Category" })} info >
                 <div className='flex items-center gap-2 text-xs'>
                   <Icon icon="carbon:tag-group" fontSize={22} />
                   <span>Add A Category</span>

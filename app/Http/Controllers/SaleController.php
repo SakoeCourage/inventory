@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Productsmodels;
 use App\Models\Sale;
 use App\Models\Saleitem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use App\Services\ProductStockService;
-use Illuminate\Support\Facades\DB;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
+use App\Models\Productsmodels;
+use App\Models\Businessprofile;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Services\ProductStockService;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class SaleController extends Controller
 {
@@ -35,6 +36,17 @@ class SaleController extends Controller
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
         ];
     }
+
+
+    /**
+     * Display the specified resource.
+     */
+    public function showinvoice($invoiceID)
+    {
+        $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $invoiceID)->firstOrFail();
+        return response([...$newdata->toArray(),'business_profile'=>Businessprofile::get()->first()], 200);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -80,6 +92,7 @@ class SaleController extends Controller
      */
     public function store(Request $request, ProductStockService $productStockService, ProductController $productController)
     {
+        $newdata = null;
         $request->validate([
             'customer_fullname' => ['nullable', 'string', 'max:255'],
             'customer_contact' => ['nullable', 'string', 'min:10', 'max:10'],
@@ -96,7 +109,7 @@ class SaleController extends Controller
             'items.*.in_collection' => ['required', 'boolean'],
         ]);
 
-        DB::transaction(function () use ($request, $productStockService) {
+        DB::transaction(function () use ($request, $productStockService, &$newdata) {
             $sale_invoice = IdGenerator::generate(['table' => 'sales', 'field' => 'sale_invoice', 'length' => 14, 'prefix' => 'SALE-' . date('ymd')]);
             $newSale = Sale::create([
                 'customer_contact' => $request->customer_contact,
@@ -104,7 +117,7 @@ class SaleController extends Controller
                 'sub_total' => $request->sub_total,
                 'total_amount' => $request->total,
                 'paymentmethod_id' => $request->payment_method,
-                'user_id' => 1,
+                'user_id' => auth()->user()->id,
                 'discount_rate' => $request->discount_rate,
                 'balance' => $request->balance ?? 0,
                 'amount_paid' => $request->amount_paid ?? $request->total,
@@ -112,7 +125,7 @@ class SaleController extends Controller
             ]);
 
             foreach ($request->items as $key => $value) {
-                 Saleitem::create([
+                Saleitem::create([
                     'sale_id' => $newSale->id,
                     'productsmodel_id' => $value['productsmodel_id'],
                     'price' => $value['unit_price'],
@@ -130,9 +143,11 @@ class SaleController extends Controller
                 ]);
                 $productStockService->decreasestock((Object) $value);
             }
-            PaymenthistoryController::Newpayament((object)array_merge($request->toArray(),['sale_id' => $newSale->id]));
+            PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
+
+            $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $newSale->id)->firstOrFail();
         });
-        return $productController->productAndModelsJoin();
+        return [...$productController->productAndModelsJoin(), 'newsale' => [...$newdata->toArray(),'business_profile'=>Businessprofile::get()->first()]];
     }
 
     /**
@@ -144,7 +159,7 @@ class SaleController extends Controller
             'sale' => $sale,
             'sale_representative' => $sale->salerepresentative->name,
             'payment_method' => $sale->paymentmethod->method,
-            
+
             'sale_items' => $sale->saleitems->map(function ($value, $key) {
                 return [
                     'amount' => $value->amount,
@@ -167,8 +182,8 @@ class SaleController extends Controller
     {
         return [
             'sale' => $sale,
-            'payment_method'=>$sale->paymentmethod,
-            'line_items' => $sale->saleitems->map(function($value,$key){
+            'payment_method' => $sale->paymentmethod,
+            'line_items' => $sale->saleitems->map(function ($value, $key) {
                 return [
                     'sale_item' => $value,
                     'product_model' => $value->productsmodels,

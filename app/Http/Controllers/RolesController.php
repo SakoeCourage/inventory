@@ -28,12 +28,12 @@ class RolesController extends Controller
             ]
         );
         if ($request->id) {
-            $roleName = Role::where('id',$request->id)->firstOrFail()->name;
+            $roleName = Role::where('id', $request->id)->firstOrFail()->name;
             if ($roleName === 'Super Admin') {
                 throw new \Exception('Unable to make changes to ' . $roleName);
             }
         }
-        Role::updateOrCreate(['id' => $request->id ?? null], ['name' => $request->name]);
+        Role::updateOrCreate(['id' => $request->id ?? null], ['guard_name' => 'web', 'name' => $request->name]);
     }
 
     public function create(Request $request)
@@ -41,7 +41,7 @@ class RolesController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name']
         ]);
-        Role::create($data);
+        Role::create([...$data,...['guard_name' => 'web']]);
     }
 
     public function permissionToSelect()
@@ -54,16 +54,16 @@ class RolesController extends Controller
     public function getPermissionFromRoleName($rolename)
     {
         return [
-             'rolePermissions' => Role::where('name',$rolename)->firstOrFail()->permissions()->get(['name'])->pluck('name'),
+            'rolePermissions' => Role::where('name', $rolename)->firstOrFail()->permissions()->get(['name'])->pluck('name'),
             'permissions' => Permission::orderBy('created_at')->get(['name'])->pluck('name')
         ];
     }
 
     public function applyNewPermissions(Request $request)
     {
-        if ((String)$request->roleName === 'Super Admin') {
+        if ((String) $request->roleName === 'Super Admin') {
             throw new \Exception("Unable to make changes to " . $request->roleName);
         }
-        return Role::where('name',$request->roleName)->firstOrFail()->syncPermissions($request->permissions);
+        return Role::where('name', $request->roleName)->firstOrFail()->syncPermissions($request->permissions);
     }
 }

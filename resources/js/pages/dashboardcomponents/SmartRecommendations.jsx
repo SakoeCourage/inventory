@@ -19,7 +19,7 @@ function Belowrecommended(props) {
     </div>
 }
 function Aboverecommended(props) {
-    return <div className='flex items-center gap-1  bg-green-100/30 shadow-md p-2 rounded-md m-1 relative'>
+    return <div className='flex items-center gap-1 aboverecomendation shadow-md p-2 rounded-md m-1 relative'>
         <Circularprogress value={100} />
         <nav className='flex flex-col gap-2 p-2'>
             <nav className='flex items-center gap-2'><nav>{props.product?.product_name}</nav> <nav className=' text-gray-500'>{props.product?.model_name}</nav></nav>
@@ -60,14 +60,10 @@ function UnAttendedProducts({ products, models }) {
 
 
 function SmartRecommendations({ smart_recommendations, unattended_products }) {
-    useEffect(() => {
-        console.log(unattended_products)
-        console.log(smart_recommendations)
-    }, [])
 
     return (
-        <div className='grow min-w-[30%] shadow-md  border card rounded-md border-gray-400/40' >
-            <nav className='border-b p-2'>
+        <div className='grow relative min-w-[30%] shadow-md  border card rounded-md border-gray-400/40 h-[35.5rem] overflow-y-scroll custom-scroll' >
+            <nav className='border-b p-2 sticky top-0 z-20 bg-white'>
                 <nav className='flex items-center gap-1 text-info-900'>
                     <Icon fontSize={25} className='text-info-600 ' icon="ph:list-magnifying-glass" />
                     <nav className='flex items-center justify-between grow'>

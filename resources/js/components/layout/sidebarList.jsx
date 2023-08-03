@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react'
 import Collapse from '@mui/material/Collapse'
 import { Icon } from '@iconify/react'
 import { Tooltip, Zoom } from '@mui/material'
-
+import { formatMaximumValue } from '../../pages/stockManagement/partials/Productstockhistory'
+import { AccessByPermission } from '../../pages/authorization/AccessControl'
 const SidebarList = (props) => {
   const { route, fullSideBar } = props
   const location = useLocation()
@@ -12,7 +13,7 @@ const SidebarList = (props) => {
   const [collapseTwo, setCollapseTwo] = useState(true)
 
   const changeState = (val) => {
-    let state
+    let state = false;
     if (!val?.subItems) {
       if (route?.path === location.pathname) {
         state = true
@@ -38,12 +39,13 @@ const SidebarList = (props) => {
 
   useEffect(() => {
     setisIncurrentRoute(changeState(route))
-
+    setisColapsed(!changeState(route))
+    
   }, [location])
   return (
     <>
       {!route?.subItems ? (
-        <li className={` w-full  py-2 ${fullSideBar ? 'px-4' : 'px-3'} ${isIncurrentRoute ? 'bg-gray-100/70' : 'hover:bg-gray-100/50'} rounded-r-3xl`}>
+        <li className={` w-full  py-2 ${fullSideBar ? 'px-4' : 'px-3'} ${isIncurrentRoute ? 'bg-gray-100/70' : 'hover:bg-gray-100/50'} rounded-r-3xl relative`}>
           <NavLink
             to={route.path}
             className={(props) =>
@@ -53,7 +55,6 @@ const SidebarList = (props) => {
             <div className="flex items-center gap-3">
               {fullSideBar ?
                 <Icon icon={route.icon} fontSize={25} />
-
                 :
                 <Tooltip title={route.name} arrow placement='right' TransitionComponent={Zoom}>
                   <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-600'} />
@@ -64,6 +65,11 @@ const SidebarList = (props) => {
               }
             </div>
           </NavLink>
+          {route?.unreadcount && route?.unreadcount?.count > 0 &&
+            <AccessByPermission abilities={route?.unreadcount?.permissions}>
+              <nav className=' absolute right-2 inset-y-[20%] aspect-square bg-red-400 text-white rounded-full grid place-items-center text-xs '>{formatMaximumValue(route?.unreadcount?.count)}</nav>
+            </AccessByPermission>
+          }
         </li>
       ) : (
         <li className={` w-full  py-2 ${fullSideBar ? "px-4" : 'px-3'} ${isIncurrentRoute ? 'bg-info-100/60' : 'hover:bg-gray-100/50'} rounded-r-3xl`}>
@@ -74,11 +80,9 @@ const SidebarList = (props) => {
           >
             <div className="flex items-center gap-3 tracking-1 ">
               {fullSideBar ?
-                <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-500'}/>
-
-                :
+                <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-500'} /> :
                 <Tooltip title={route.name} arrow placement='right' TransitionComponent={Zoom}>
-                  <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-500'}/>
+                  <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-500'} />
                 </Tooltip>
               }
               {fullSideBar &&

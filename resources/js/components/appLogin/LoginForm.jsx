@@ -116,7 +116,7 @@ const LoginForm = () => {
         </form>
         <nav className='flex items-center justify-center w-full mt-7 text-sm'>
           <span className=' text-gray-400 pr-2'>Software Version</span>
-          <span className=' text-gray-400 pl-2 border-l'>{import.meta.env.VITE_APP_SOFTWARE_VERSION}</span>
+          <span className=' text-gray-400 pl-2 border-l'>1.0</span>
         </nav>
       </div>
       <svg viewBox="0 0 91 91" className="absolute top-0 left-0 z-0 w-32 h-32 -mt-12 -ml-12 text-red-200/60

@@ -63,12 +63,12 @@ const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, 
 
                 </tr>
               </thead>
-              <tbody className="divide-y divide-secondary-200 dark:divide-secondary-800">
+              <tbody className="divide-y divide-secondary-200 ">
                 {data.data && data?.data.map((x, i) => {
                   return (
                     <tr
                       key={i}
-                      className={`${i % 2 !== 0 && 'bg-secondary-100 dark:bg-dark-bg'
+                      className={`${i % 2 !== 0 && 'bg-secondary-100 '
                         }`}
                     >
                     
