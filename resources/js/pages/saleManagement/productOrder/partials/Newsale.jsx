@@ -63,6 +63,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                 setErrors({})
 
             }).catch(err => {
+                console.log(err)
                 if (err?.response?.status === 422) {
                     console.log(err?.response?.data?.errors)
                     setProcessing(false)

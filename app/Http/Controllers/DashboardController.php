@@ -112,12 +112,33 @@ class DashboardController extends Controller
 
         $sales = Sale::whereDate('created_at', '>=', $begining_of_week)
             ->whereDate('created_at', '<=', $today)
-            ->selectRaw(' DATE_FORMAT(created_at,"%a") as day, total_amount as total_amount')
+            ->selectRaw("
+            CASE strftime('%w', created_at)
+            WHEN '0' THEN 'Sun'
+            WHEN '1' THEN 'Mon'
+            WHEN '2' THEN 'Tue'
+            WHEN '3' THEN 'Wed'
+            WHEN '4' THEN 'Thu'
+            WHEN '5' THEN 'Fri'
+            WHEN '6' THEN 'Sat'
+          END AS day
+            
+            , total_amount as total_amount")
             ->get();
 
         $revenue = Saleitem::whereDate('created_at', '>=', $begining_of_week)
             ->whereDate('created_at', '<=', $today)
-            ->selectRaw(' DATE_FORMAT(created_at,"%a") as day, profit as profit')
+            ->selectRaw("
+                CASE strftime('%w', created_at)
+                WHEN '0' THEN 'Sun'
+                WHEN '1' THEN 'Mon'
+                WHEN '2' THEN 'Tue'
+                WHEN '3' THEN 'Wed'
+                WHEN '4' THEN 'Thu'
+                WHEN '5' THEN 'Fri'
+                WHEN '6' THEN 'Sat'
+             END AS day
+             , profit as profit")
             ->get();
 
         $revenue = $days->mapWithKeys(function ($day, $index) use ($revenue) {
