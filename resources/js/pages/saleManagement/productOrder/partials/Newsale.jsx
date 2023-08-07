@@ -56,7 +56,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
     }
 
     const handleSubmit = () => {
-        setProcessing(true)
+        // setProcessing(true)
         handleOutOfStock(formData, modelsFromDB, getProductfromId).then(res => {
             Api.post('/sale/new', formData).then(res => {
                 handleOnsucess(res.data)

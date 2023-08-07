@@ -1,12 +1,12 @@
 import {  lazy } from 'react';
-const ApplicationSetup = lazy(() => import('./pages/appllicationStep/index'))
-const SaleManagement = lazy(() => import('./pages/saleManagement/index'))
-const StockManagement = lazy(() => import('./pages/stockManagement/index'))
-const Dashboard = lazy(()=>import('./pages/dashboard'));
-const UserManagement = lazy(() => import('./pages/usermanagement/index'))
-const Myaccount = lazy(()=>import('./pages/myaccount/index'))
-const Expenses = lazy(()=>import('./pages/expenses/index'))
-const Report = lazy(()=>import('./pages/report/index'))
+import ApplicationSetup from './pages/appllicationStep/index';
+import SaleManagement from "./pages/saleManagement/index";
+import StockManagement from './pages/stockManagement/index';
+import Dashboard from "./pages/dashboard";
+import UserManagement from "./pages/usermanagement/index";
+import Myaccount from "./pages/myaccount/index"
+import Expenses from "./pages/expenses/index"
+import Report from "./pages/report/index"
 
 export const  routes = [
     {

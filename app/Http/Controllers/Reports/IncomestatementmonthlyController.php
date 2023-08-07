@@ -16,9 +16,9 @@ class IncomestatementmonthlyController extends Controller
     {
         $request->validate([
             'month' => ['required'],
-            'product_ids' =>['required','array','min:1']
+            'product_ids' => ['required', 'array', 'min:1']
         ]);
-    
+
         Datehelper::getForMaxMonth($request->month);
 
         $date = Carbon::createFromFormat('Y-n', $request->month);
@@ -67,19 +67,21 @@ class IncomestatementmonthlyController extends Controller
             ->join('refunds', 'sales.id', '=', 'refunds.sale_id')
             ->whereDate('saleitems.created_at', '<=', $lastDate)
             ->whereDate('saleitems.created_at', '>=', $firstDate)
-            ->selectRaw("products.product_name as name,
-            saleitems.id ,
-            CASE 
-            WHEN DAY(saleitems.created_at) <= 7 THEN 1
-            WHEN DAY(saleitems.created_at) <= 14 THEN 2
-            WHEN DAY(saleitems.created_at) <= 21 THEN 3
-            ELSE 4
+            ->selectRaw("
+            products.product_name AS name,
+            saleitems.id,
+            CASE
+                WHEN strftime('%d', saleitems.created_at) <= 7 THEN 1
+                WHEN strftime('%d', saleitems.created_at) <= 14 THEN 2
+                WHEN strftime('%d', saleitems.created_at) <= 21 THEN 3
+                ELSE 4
             END AS week,
-            DATE(saleitems.created_at) as date
-           ,saleitems.amount as total_amount
-           ,saleitems.profit as profit
-           ,saleitems.is_refunded as refunded,
-           refunds.previous_sale_data as refunded_products
+            strftime('%Y-%m-%d', saleitems.created_at) AS date,
+            saleitems.amount AS total_amount,
+            saleitems.profit AS profit,
+            saleitems.is_refunded AS refunded,
+            refunds.previous_sale_data AS refunded_products
+           
            ")
             ->get();
 
@@ -138,14 +140,16 @@ class IncomestatementmonthlyController extends Controller
             ->where('expenses.status', 1)
             ->whereDate('expenses.updated_at', '<=', $lastDate)
             ->whereDate('expenses.updated_at', '>=', $firstDate)
-            ->selectRaw('expensedefinitions.name as item,
-            CASE 
-            WHEN DAY(expenses.updated_at) <= 7 THEN 1
-            WHEN DAY(expenses.updated_at) <= 14 THEN 2
-            WHEN DAY(expenses.updated_at) <= 21 THEN 3
-            ELSE 4
+            ->selectRaw("
+            expensedefinitions.name AS item,
+            CASE
+                WHEN strftime('%d', expenses.updated_at) <= 7 THEN 1
+                WHEN strftime('%d', expenses.updated_at) <= 14 THEN 2
+                WHEN strftime('%d', expenses.updated_at) <= 21 THEN 3
+                ELSE 4
             END AS week,
-            expenses.total_amount as total')
+            expenses.total_amount AS total
+            ")
             ->get();
 
         $avaliableEmptyExpense = $allApprovedExpensesFromDB->groupBy(['item', 'week'])->mapWithKeys(function ($value, $item) {
@@ -166,7 +170,7 @@ class IncomestatementmonthlyController extends Controller
                 })
             ];
         });
-        
+
 
         $weeklyCumulatedTotal = $allApprovedExpensesFromDB->groupBy(['week'])->mapWithKeys(function ($value, $weeknumber) {
             return [

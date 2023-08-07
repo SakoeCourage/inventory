@@ -18,11 +18,7 @@ class IncomestatementweeklyController extends Controller
             'product_ids' =>['required','array','min:1']
         ]);
 
-        // $request = (object) [
-        //     'startDate' => '2023-07-14',
-        //     'endDate' => '2023-07-20',
-        //     'product_ids' => [71, 70, 69]
-        // ];
+  
       
         return [
             'title' => $request->startDate . " to " . $request->endDate,
@@ -68,7 +64,7 @@ class IncomestatementweeklyController extends Controller
             ->join('sales', 'sales.id', '=', 'saleitems.sale_id')
             ->whereDate('saleitems.created_at', '<=', $endDate)
             ->whereDate('saleitems.created_at', '>=', $startDate)
-            ->selectRaw('products.product_name as name,DATE(saleitems.created_at) as day ,saleitems.amount as total_amount')
+            ->selectRaw('products.product_name as name, strftime("%Y-%m-%d", saleitems.created_at) as day ,saleitems.amount as total_amount')
             ->get();
 
         $paidSaleInvoicesDB = $productsales;
@@ -134,7 +130,7 @@ class IncomestatementweeklyController extends Controller
             ->where('expenses.status', 1)
             ->whereDate('expenses.updated_at', '<=', $endDate)
             ->whereDate('expenses.updated_at', '>=', $startDate)
-            ->selectRaw('expensedefinitions.name as item,DATE(expenses.updated_at) as day,expenses.total_amount as total')
+            ->selectRaw('expensedefinitions.name as item,strftime("%Y-%m-%d", expenses.updated_at) as day,expenses.total_amount as total')
             ->get();
 
 

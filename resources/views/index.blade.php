@@ -27,7 +27,10 @@
 <style>
     div.pagepreloader {
         position: fixed;
-        inset: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: max-content;
         display: flex;
         align-items: flex-start;
         background-color: rgb(243 244 246 / 0.1);
@@ -63,7 +66,7 @@
         bottom: 0;
         left: 0;
         width: 0;
-        border-radius: 1rem;
+        border-radius: 2rem;
         animation: wheelbar 2s linear infinite;
     }
 
@@ -71,40 +74,40 @@
         0% {
             left: 0%;
             right: 100%;
-            width: 0%;
+            width: 5vw;
             background: #ecfdf5;
         }
 
         10% {
             left: 0%;
             right: 75%;
-            width: 15%;
+            width: 12vw;
             background: #d1fae5;
         }
         30% {
             left: 0%;
             right: 75%;
-            width: 25%;
+            width: 15vw;
             background: #a7f3d0;
         }
         50% {
             left: 0%;
             right: 75%;
-            width: 35%;
+            width: 20vw;
             background: #6ee7b7;
         }
 
         90% {
             right: 0%;
             left: 75%;
-            width: 40%;
+            width: 15vw;
             background: #34d399;
         }
 
         100% {
             left: 100%;
             right: 0%;
-            width: 40%;
+            width: 15vw;
             background: #10b981;
         }
     }

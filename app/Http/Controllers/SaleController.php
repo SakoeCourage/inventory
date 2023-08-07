@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\ProductStockService;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
+use App\Helpers\Generateinvoicenumber;
 
 class SaleController extends Controller
 {
@@ -44,7 +44,7 @@ class SaleController extends Controller
     public function showinvoice($invoiceID)
     {
         $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $invoiceID)->firstOrFail();
-        return response([...$newdata->toArray(),'business_profile'=>Businessprofile::get()->first()], 200);
+        return response([...$newdata->toArray(), 'business_profile' => Businessprofile::get()->first()], 200);
     }
 
 
@@ -87,9 +87,10 @@ class SaleController extends Controller
         return $profit;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
+    
+
+
     public function store(Request $request, ProductStockService $productStockService, ProductController $productController)
     {
         $newdata = null;
@@ -110,7 +111,7 @@ class SaleController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $productStockService, &$newdata) {
-            $sale_invoice = IdGenerator::generate(['table' => 'sales', 'field' => 'sale_invoice', 'length' => 14, 'prefix' => 'SALE-' . date('ymd')]);
+
             $newSale = Sale::create([
                 'customer_contact' => $request->customer_contact,
                 'customer_name' => $request->customer_fullname,
@@ -121,7 +122,7 @@ class SaleController extends Controller
                 'discount_rate' => $request->discount_rate,
                 'balance' => $request->balance ?? 0,
                 'amount_paid' => $request->amount_paid ?? $request->total,
-                'sale_invoice' => $sale_invoice
+                'sale_invoice' =>Generateinvoicenumber::generateSaleInvoice('SALE-','sales','sale_invoice')
             ]);
 
             foreach ($request->items as $key => $value) {
@@ -147,7 +148,7 @@ class SaleController extends Controller
 
             $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $newSale->id)->firstOrFail();
         });
-        return [...$productController->productAndModelsJoin(), 'newsale' => [...$newdata->toArray(),'business_profile'=>Businessprofile::get()->first()]];
+        return [...$productController->productAndModelsJoin(), 'newsale' => [...$newdata->toArray(), 'business_profile' => Businessprofile::get()->first()]];
     }
 
     /**

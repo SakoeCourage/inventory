@@ -35,30 +35,31 @@ class ProductSaleReportController extends ReportController
     static function generateProductQuery($start, $end, $product_id)
     {
         return parent::getPayedSaleBetweenDates($start, $end, $product_id)
-            ->selectRaw(
-                '   sales.id,
-                    saleitems.quantity,
-                    productsmodels.model_name as model_name,
-                    Date(sales.updated_at ) as paid_at,
-                    TRUNCATE((sales.total_amount)/100,2) as amount_paid,
-                    TRUNCATE((sales.sub_total)/100 ,2) as sub_total,
-                    products.*
-                  '
+            ->selectRaw("
+
+           sales.id,
+           saleitems.quantity,
+           productsmodels.model_name as model_name,
+           strftime('%Y-%m-%d', sales.updated_at) as paid_at,
+           CAST(sales.total_amount / 100.0 AS NUMERIC(10, 2)) as amount_paid,
+           CAST(sales.sub_total / 100.0 AS NUMERIC(10, 2)) as sub_total,
+           products.*
+           "
             )->distinct('sales.id');
     }
 
     static function generateInvoiceQuery($start, $end, array $product_id)
     {
-        return parent::getPayedInvoicesDates($start, $end,$product_id)
-            ->selectRaw('
-                    sales.id,
-                    Date(sales.created_at ) as paid_at,
-                    sales.sale_invoice,
-                    TRUNCATE((sales.total_amount)/100,2) as amount_paid , 
-                    TRUNCATE((sales.sub_total)/100 ,2) as subtotal,
-                    paymentmethods.method
-                  ')
-                  ->distinct('sales.id')
+        return parent::getPayedInvoicesDates($start, $end, $product_id)
+            ->selectRaw("
+            sales.id,
+            strftime('%Y-%m-%d', sales.created_at) as paid_at,
+            sales.sale_invoice,
+            CAST(sales.total_amount / 100.0 AS NUMERIC(10, 2)) as amount_paid,
+            CAST(sales.sub_total / 100.0 AS NUMERIC(10, 2)) as subtotal,
+            paymentmethods.method
+            ")
+            ->distinct('sales.id')
         ;
     }
 
@@ -80,7 +81,7 @@ class ProductSaleReportController extends ReportController
         $start_to_front_end = Carbon::parse($start);
 
         $totalRevenue = parent::getRevenueBetweenDate($start->format('Y-m-d'), $end->format('Y-m-d'));
-        $paidInvoicesQuery = self::generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray())->get();
+        $paidInvoicesQuery = self::generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'), $products->toArray())->get();
         $in_paymentmethod = $paidInvoicesQuery->groupBy('method');
         $in_paymentmethod = $in_paymentmethod->map(function ($coll, $key) {
             return $coll->sum('amount_paid');
@@ -149,7 +150,7 @@ class ProductSaleReportController extends ReportController
         $start = Carbon::parse($start);
         $end = Carbon::parse($end ?? Carbon::today());
 
-        $dailyBasis = self::generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray())->get();
+        $dailyBasis = self::generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'), $products->toArray())->get();
 
         $netSaleData = $dailyBasis->groupBy(['paid_at'])->map(function ($collection, $paid_at) {
             return [
@@ -162,17 +163,17 @@ class ProductSaleReportController extends ReportController
         $grand_daily_sale = $netSaleData->sum('DAILY SALE');
         $grand_discounted_amount = $netSaleData->sum('DISCOUNTED AMOUNT');
         $grand_net_sale = $netSaleData->sum('SUB TOTAL');
-        
+
         $range = self::generateEmptyDateRanges(Carbon::parse($start), Carbon::parse($end));
         foreach ($range as $key => $value) {
-            $range[$key]=[
+            $range[$key] = [
                 'DATE' => $key,
                 'DAILY SALE' => 0,
                 'DISCOUNTED AMOUNT' => 0,
                 'SUB TOTAL' => 0,
             ];
         }
-        $netSaleData = array_replace_recursive($range,$netSaleData->toArray());
+        $netSaleData = array_replace_recursive($range, $netSaleData->toArray());
         $productSalesData = $products->map(function ($product, $key) use ($start, $end) {
             return self::generateLongReportProductSale($product, $start, $end);
         })->toArray();
@@ -193,7 +194,7 @@ class ProductSaleReportController extends ReportController
 
     }
 
-  
+
 
     static function generateLongReportProductSale($productID, $start, $end)
     {
@@ -223,15 +224,15 @@ class ProductSaleReportController extends ReportController
         });
         $SaleWithDateRanges = self::generateEmptyDateRanges($start, $end);
         foreach ($SaleWithDateRanges as $key => $value) {
-            $SaleWithDateRanges[$key] = array_merge($emptyData,['DATE'=> $key]);
+            $SaleWithDateRanges[$key] = array_merge($emptyData, ['DATE' => $key]);
         }
-        
-        
+
+
         $productSales = $productSales->mapWithKeys(function ($item) {
             return [$item->keys()->first() => $item->values()->first()];
         })->toArray();
-        $productSales = array_replace_recursive($SaleWithDateRanges,$productSales);
-        
+        $productSales = array_replace_recursive($SaleWithDateRanges, $productSales);
+
         return [
             'data' => $productSales,
             'date_range' => array_keys($SaleWithDateRanges),
