@@ -58,7 +58,7 @@ function index() {
   return (
     <div>
       {isLoading && <Loadingwheel />}
-      <nav className=" w-full  z-30   bg-info-600 p-2 pt-3">
+      <nav className=" w-full  z-30   bg-info-900/60 p-2 pt-3">
         <header className="flex items-center gap-4 max-w-6xl mx-auto ">
           <Pilltab active={currentComponent == 'expenseHistory'} onClick={() => setCurrentComponent('expenseHistory')} Pillicon={<Icon fontSize={20} icon="material-symbols:history" />} title='History' />
           <AccessByPermission abilities={['create expense']}>

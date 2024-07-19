@@ -6,15 +6,17 @@ import { Icon } from "@iconify/react"
 import { useEffect } from "react"
 import Api from "../../../api/Api"
 import Loadingwheel from "../../../components/Loaders/Loadingwheel"
-const Paymenthistory = lazy(()=>import ("./partials/Paymenthistory"))
-const Proformalist = lazy(()=>import ("./partials/Proformalist"))
+import LeaseSaleHistory from "./partials/LeaseSaleHistory"
+const Paymenthistory = lazy(() => import("./partials/Paymenthistory"))
+const Proformalist = lazy(() => import("./partials/Proformalist"))
 
 
 const components = {
   newsale: Newsale,
   salehistory: Salehistory,
   Paymenthistory: Paymenthistory,
-  Proformalist: Proformalist
+  Proformalist: Proformalist,
+  LeaseSaleHistory: LeaseSaleHistory
 }
 export function Pilltab({ title, Pillicon, onClick, active }) {
   return <button onClick={() => onClick()} className={`p-2 border-white text-white  flex items-center gap-2 w-max md:min-w-[12rem] text-center px-3 hover:transform hover:translate-x-1 hover:-translate-y-1 add-border-below relative  transition-all ${active && 'text-white border rounded-lg current'}`}>
@@ -23,6 +25,9 @@ export function Pilltab({ title, Pillicon, onClick, active }) {
 }
 
 const Index = () => {
+  /**
+   * @type {[keyof typeof components, React.Dispatch<React.SetStateAction<keyof typeof components>>]}
+   */
   const [currentComponent, setCurrentComponent] = useState('newsale')
   const [productsFromDB, setProductsFromDB] = useState([])
   const [modelsFromDB, setModelsFromDB] = useState([])
@@ -30,7 +35,7 @@ const Index = () => {
   const [filters, setFilters] = useState([])
   const [invoices, setInvoices] = useState([])
   const [paymentMethods, setPaymentMethods] = useState([])
-  
+  const [leaseSalseHisotry, setLeaseSaleHistory] = useState([])
 
   const getPaymentMethods = () => {
     Api.get('/toselect/paymentmethods')
@@ -55,27 +60,29 @@ const Index = () => {
   }
 
 
+
   useEffect(() => {
     getAllProductsAndModels()
     getPaymentMethods()
   }, [])
-  
+
   const Component = components[currentComponent]
 
   return (<div className=" ">
-    <nav className=" w-full  z-30   bg-info-600 p-2 pt-3">
+    <nav className=" w-full  z-30   bg-info-900/50 p-2 pt-3">
       <header className="flex items-center gap-4 max-w-6xl mx-auto ">
         <Pilltab active={currentComponent == 'newsale'} onClick={() => setCurrentComponent('newsale')} Pillicon={<Icon fontSize={20} icon="bi:plus-circle" />} title='New Sale' />
         <Pilltab active={currentComponent == 'salehistory'} onClick={() => setCurrentComponent('salehistory')} Pillicon={<Icon fontSize={20} icon="material-symbols:history" />} title='Sale History' />
+        <Pilltab active={currentComponent == "LeaseSaleHistory"} onClick={() => setCurrentComponent("LeaseSaleHistory")} Pillicon={<Icon fontSize={20} icon="material-symbols:history" />} title='Lease  History' />
         <Pilltab active={currentComponent == 'Proformalist'} onClick={() => setCurrentComponent('Proformalist')} Pillicon={
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M208 80h264v32H208zM40 96a64 64 0 1 0 64-64a64.072 64.072 0 0 0-64 64Zm64-32a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Zm104 176h264v32H208zm-104 80a64 64 0 1 0-64-64a64.072 64.072 0 0 0 64 64Zm0-96a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Zm104 176h264v32H208zm-104 80a64 64 0 1 0-64-64a64.072 64.072 0 0 0 64 64Zm0-96a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M208 80h264v32H208zM40 96a64 64 0 1 0 64-64a64.072 64.072 0 0 0-64 64Zm64-32a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Zm104 176h264v32H208zm-104 80a64 64 0 1 0-64-64a64.072 64.072 0 0 0 64 64Zm0-96a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Zm104 176h264v32H208zm-104 80a64 64 0 1 0-64-64a64.072 64.072 0 0 0 64 64Zm0-96a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Z" /></svg>
         } title='Proforma Invoices' />
         <Pilltab active={currentComponent == 'Paymenthistory'} onClick={() => setCurrentComponent('Paymenthistory')} Pillicon={<Icon fontSize={20} icon="dashicons:money-alt" />} title='Payment History' />
       </header>
     </nav>
 
     <main className=" mt-6">
-      <Suspense fallback={<Loadingwheel/>}>
+      <Suspense fallback={<Loadingwheel />}>
         <Component
           setCurrentComponent={setCurrentComponent}
           productsFromDB={productsFromDB}
@@ -92,7 +99,6 @@ const Index = () => {
           filters={filters}
         />
       </Suspense>
-
     </main>
 
   </div>)

@@ -3,11 +3,34 @@ import { TablePagination, Tooltip, Zoom } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import Api from '../../api/Api';
 import { NavLink } from 'react-router-dom';
-import { dateReformat ,formatnumber} from '../../api/Util';
+import { dateReformat, formatnumber } from '../../api/Util';
 import Loadingwheel from '../../components/Loaders/Loadingwheel';
 
-const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, setFilters }) => {
+const ProductsTable = ({
+  data,
+  setData,
+  isLoading,
+  setIsLoading,
+  updateProduct,
+  setFilters,
+  selectedProducts,
+  setSelectedProducts
+}) => {
 
+
+
+  const toggleSelectedByIDProduct = (id) => {
+    
+    setSelectedProducts((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        // If the ID is already selected, remove it
+        return prevSelected.filter((productId) => productId !== id);
+      } else {
+        // If the ID is not selected, add it
+        return [...prevSelected, id];
+      }
+    });
+  };
 
   const fetchPaginatedData = (url) => {
     setIsLoading(true)
@@ -46,6 +69,9 @@ const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, 
               <thead className="bg-secondary-200 ">
                 <tr>
                   <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
+                    #
+                  </th>
+                  <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Date modified
                   </th>
                   <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
@@ -71,7 +97,10 @@ const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, 
                       className={`${i % 2 !== 0 && 'bg-secondary-100 '
                         }`}
                     >
-                    
+
+                      <td className="px-6 py-2 !text-xs whitespace-nowrap">
+                        <input onClick={(()=> toggleSelectedByIDProduct(x?.id))} checked={selectedProducts?.includes(x.id)} type="checkbox" name="" id="" />
+                      </td>
                       <td className="px-6 py-2 !text-xs whitespace-nowrap">
                         <div className="flex items-center">
                           <h6 className="mb-0  ">
@@ -108,14 +137,14 @@ const ProductsTable = ({ data, setData, isLoading, setIsLoading, updateProduct, 
                             onClick={() => updateProduct(x.id)}
                             className=" p-1 rounded-full border border-gray-400/70 active:border-gray-400/40 text-red-900   text-sm font-semibold leading-5  hover:cursor-pointer"
                           >
-                            <Icon className='' icon="mdi:database-edit-outline" fontSize={20}/>
+                            <Icon className='' icon="mdi:database-edit-outline" fontSize={20} />
                           </span>
                         </Tooltip>
                         <Tooltip title="Products Dashboard" arrow TransitionComponent={Zoom}>
                           <NavLink to={`/stockmanagement/product/${x.id}/${x.product_name}/manage`}
                             className=" p-1 rounded-full border border-gray-400/70 active:border-gray-400/40  text-blue-900 text-sm font-semibold leading-5  hover:cursor-pointer"
                           >
-                            <Icon className='' icon="material-symbols:list-alt-outline" fontSize={20}/>
+                            <Icon className='' icon="material-symbols:list-alt-outline" fontSize={20} />
                           </NavLink>
                         </Tooltip>
                       </td>

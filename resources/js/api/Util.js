@@ -142,6 +142,20 @@ export const SlideUpAndDownAnimation = {
     exit:{ opacity: 0, translateY: '100vh', transition: { duration: 0.2 } }
 };
 
+export const SlideDownAndUpAnimation = {
+    initial: { opacity: 0, translateY: '-100vh' },
+    animate: {
+        opacity: 1,
+        translateY: '0',
+        transition: {
+            type: 'spring',
+            mass: 0.1,
+            damping: 8
+        }
+    },
+    exit: { opacity: 0, translateY: '-100vh', transition: { duration: 0.2 } }
+};
+
 
 export function updateQueryParam(url, param, value) {
     var urlObj = new URL(url);

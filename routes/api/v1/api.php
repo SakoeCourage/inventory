@@ -3,7 +3,9 @@
 use App\Models\Expenses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\NewProductTemplateExport;
+use App\Exports\ProductCategoryExport;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +40,8 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/roles', [\App\Http\Controllers\RolesController::class, 'toselect']);
         Route::get('/paymentmethods', [\App\Http\Controllers\PaymentmethodController::class, 'toselect']);
         Route::get('/expenses', [\App\Http\Controllers\ExpensedefinitionController::class, 'toselect']);
+        Route::get('/branches',[\App\Http\Controllers\StoreBranchController::class,"toSelect"]);
+        Route::get('/stores',[\App\Http\Controllers\StoreController::class,"toSelect"]);
     });
 
     Route::group(['prefix' => 'product'], function () {
@@ -54,6 +58,14 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/stock/{model_id}/increase', [App\Http\Controllers\ProductstockhistoryController::class, 'increaseStock']);
         Route::post('/stock/{model_id}/decrease', [App\Http\Controllers\ProductstockhistoryController::class, 'decreaseStock']);
         Route::get('/all/unattended', [App\Http\Controllers\ProductController::class, 'getUnattendedProductsWithCategoriesAndModels']);
+        Route::post('/import-from-excel',[App\Http\Controllers\ProductImportController::class, "processExcelFile"]);
+        Route::get("/product-template",function (Request $request) {
+            return Excel::download( new NewProductTemplateExport, 'IL_Product_Template.xlsx');
+        });
+        Route::get("/all-quantity-to-stock-template",function (Request $request) {
+            return Excel::download(new ProductCategoryExport, 'products_by_category.xlsx');
+        });
+        
     });
 
     Route::group(['prefix' => 'supplier'], function () {
@@ -79,9 +91,12 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/get/{sale}', [App\Http\Controllers\SaleController::class, 'show']);
         Route::get('/get/sale-from-invoice/{sale:sale_invoice}', [App\Http\Controllers\SaleController::class, 'getSaleFromInvoice']);
         Route::get('/view-invoice/{invoiceID}', [App\Http\Controllers\SaleController::class, 'showinvoice']);
-
     });
-   
+
+    Route::group(['prefix' => 'lease'],function(){  
+        Route::get('/mark-as-settled/{saleId}',[App\Http\Controllers\LeaseController::class, "handleOnLeaseSettled"]);
+    });
+
     Route::group(['prefix' => 'proforma'], function () {
         Route::post('/new', [App\Http\Controllers\ProformaInvoiceController::class, 'store']);
         Route::get('/all', [App\Http\Controllers\ProformaInvoiceController::class, 'index']);
@@ -128,6 +143,39 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/income-week-report',[\App\Http\Controllers\Reports\IncomestatementweeklyController::class,'generateWeeklyIncomeStatement']);
         Route::post('/income-month-report',[\App\Http\Controllers\Reports\IncomestatementmonthlyController::class,'generatemonthlyincomestatement']);
     });
+
+    Route::group(['prefix' => 'store'],function(){
+        Route::get('/all',[\App\Http\Controllers\StoreController::class,"index"]);
+        Route::post('/create',[\App\Http\Controllers\StoreController::class,"store"]);
+        Route::delete('/delete/{store}',[\App\Http\Controllers\StoreController::class,"destroy"]);
+        Route::post('/updateorcreate',[\App\Http\Controllers\StoreController::class,"updateorcreate"]);
+
+    });
+
+    Route::group(['prefix' => 'packaging-unit'],function(){
+        Route::get('/all',[\App\Http\Controllers\CollectionTypeController::class,"index"]);
+        Route::post('/create',[\App\Http\Controllers\CollectionTypeController::class,"store"]);
+        Route::delete('/delete/{collectionType}',[\App\Http\Controllers\CollectionTypeController::class,"destroy"]);
+        Route::post('/updateorcreate',[\App\Http\Controllers\CollectionTypeController::class,"update"]);
+
+    });
+
+    Route::group(['prefix' => 'basic-unit'],function(){
+        Route::get('/all',[\App\Http\Controllers\BasicSellingQuantityController::class,"index"]);
+        Route::post('/create',[\App\Http\Controllers\BasicSellingQuantityController::class,"store"]);
+        Route::delete('/delete/{basicSellingQuantity}',[\App\Http\Controllers\BasicSellingQuantityController::class,"destroy"]);
+        Route::post('/updateorcreate',[\App\Http\Controllers\BasicSellingQuantityController::class,"update"]);
+    });
+
+    Route::group(['prefix' => 'branch'],function(){
+        Route::get('/all',[\App\Http\Controllers\StoreBranchController::class,"index"]);
+        Route::post('/create',[\App\Http\Controllers\StoreBranchController::class,"store"]);
+        Route::delete('/delete/{storeBranch}',[\App\Http\Controllers\StoreBranchController::class,"destroy"]);
+        Route::post('/update/{storeBranch}',[\App\Http\Controllers\StoreBranchController::class,"update"]);
+        Route::post('/updateorcreate',[\App\Http\Controllers\StoreBranchController::class,"updateorcreate"]);
+
+    });
+    
 
     Route::get('/unread-count/all',[\App\Http\Controllers\UnreadcountContorller::class,'index']);
     Route::get('/business-profile/get',[\App\Http\Controllers\BusinessprofileController::class,'index']);

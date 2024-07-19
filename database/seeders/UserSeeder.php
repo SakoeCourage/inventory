@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'inventorylite@superadmin.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('superAdmin@'), // password
+            'password' => Hash::make('superAdmin@'), 
             'remember_token' => Str::random(10),
         ]);
         $superAdmin->assignRole('Super Admin');

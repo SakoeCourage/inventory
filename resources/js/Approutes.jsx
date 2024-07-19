@@ -7,6 +7,7 @@ const UserManagement = lazy(() => import('./pages/usermanagement/index'))
 const Myaccount = lazy(()=>import('./pages/myaccount/index'))
 const Expenses = lazy(()=>import('./pages/expenses/index'))
 const Report = lazy(()=>import('./pages/report/index'))
+const AppSetup = lazy(()=>import('./pages/appllicationStep/SetupCategoryScreen'))
 
 export const  routes = [
     {
@@ -20,7 +21,7 @@ export const  routes = [
       permissions: []
     },
     {
-      path: "/applicationsetup/*",
+      path: "/app-setup/*",
       element: <ApplicationSetup />,
       permissions: ['define system data']
     },
@@ -48,6 +49,11 @@ export const  routes = [
       path: "/expenses/*",
       element: <Expenses />,
       permissions: ['create expense','authorize expense']
+    },
+    {
+      path: "/app-setup",
+      element: <AppSetup />,
+      permissions: ['define system data']
     },
   ]
   

@@ -2,6 +2,17 @@
 module.exports = {
     content: ["./index.html", "./public/index.html", ".resources/**/*.{vue,js,ts,tsx,jsx}", "./resources/views/*.blade.php", "./resources/views/**/*.blade.php", "./resources/views/**/**/*.blade.php", ".resources/components/**/*.{tsx,jsx,scss}", "./resources/**/*.{html,jsx,scss}"],
     theme: {
+        container: {
+            screens: {
+              xs: "380px",
+              sm: "640px",
+              md: "768px",
+              lg: "1024px",
+              xl: "1184px",
+              "2xl": "1300px",
+              "3xl": "1600px",
+            },
+          },
         fontFamily: {
             sans: [
                 '"Inter"',

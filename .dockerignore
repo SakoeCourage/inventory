@@ -9,7 +9,6 @@ storage/logs/*
 .rr.yml
 rr
 vendor
-*.env*
 # 2. Ignore common files/directories we don't need
 fly.toml
 .vscode

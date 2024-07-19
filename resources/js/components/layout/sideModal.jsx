@@ -22,7 +22,6 @@ const SideModal = (props) => {
               ${maxWidth === '2xl' && 'max-w-2xl'}
               ${maxWidth === '3xl' && 'max-w-3xl'}
               ${!maxWidth  && 'max-w-md'}
-
             `}
           >
             {/* <div className="h-[53px]" >&nbsp;</div> */}
@@ -46,7 +45,6 @@ const SideModal = (props) => {
               </div>
               {showDivider &&
                 <Divider className='text-black' />
-
               }
               <div className="flex-grow flex overflow-y-hidden">
                 {props.children}

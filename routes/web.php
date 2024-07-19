@@ -14,11 +14,36 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Http\Request;
+use App\Exports\ProductCategoryExport;
+use App\Exports\NewProductTemplateExport;
+use App\Imports\ProductImport;
 
 
 
-Route::get('/test-report',function(){
-    dd("hello there");
+
+
+Route::get('/test-excel', function (Request $request) {
+    return Excel::download(new ProductCategoryExport, 'products_by_category.xlsx');
+});
+Route::get('/test-new-template', function (Request $request) {
+    return Excel::download(new NewProductTemplateExport, 'IL_New_Template_Form.xlsx');
+});
+
+
+Route::get("/test-upload", function () {
+    return view("excelupload");
+});
+
+Route::get("/import", function () {
+    $file = '../resources/asset/IL_New_Template_Form.xlsx';
+    $process = new \App\Http\Controllers\ProductImportController();
+    return $process->processExcelFile(new Request([
+        'template_file' => $file
+    ]));
+
 });
 
 Route::get('/{any}', function () {

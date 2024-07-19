@@ -6,10 +6,16 @@ import { AnimatePresence } from 'framer-motion'
 import SmartRecommendations from './dashboardcomponents/SmartRecommendations'
 import Loadingwheel from '../components/Loaders/Loadingwheel'
 import Dasboardloader from '../components/Loaders/Dasboardloader'
+import StockAvailability from './dashboardcomponents/StockAvailability'
 
 const Dashboard = () => {
   const [dashboardData, setDashBoardData] = useState(null)
-  const [isLoading,setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+
+  /**
+ * @description - Fetching Dashboard Data
+ */
   const getDashBoardData = () => {
     setIsLoading(true)
     Api.get('/dashboard/data')
@@ -20,22 +26,27 @@ const Dashboard = () => {
         console.log(err)
       })
   }
+
   useEffect(() => {
     getDashBoardData()
   }, [])
 
+  useEffect(() => {
+    console.log(dashboardData)
+  }, [dashboardData])
+
+
   return (
     <div className='h-max  relative  '>
       {dashboardData && <div>  <Statsview dashboardData={dashboardData} />
-      <div className=' max-w-[90rem] flex flex-col lg:flex-row gap-2  mx-auto mt-4 '>
-        <LineChart dashboardData={dashboardData} />
-        <SmartRecommendations unattended_products={dashboardData.unattended_products} smart_recommendations={dashboardData.smart_recommendations} />
-      </div>
+        <div className=' container flex flex-col lg:flex-row gap-2  mx-auto mt-4 '>
+          <LineChart dashboardData={dashboardData} />
+          <StockAvailability />
+          {/* <SmartRecommendations unattended_products={dashboardData.unattended_products} smart_recommendations={dashboardData.smart_recommendations} /> */}
+        </div>
       </div>}
-     
-     <Dasboardloader isLoading={isLoading} />
-   
-     
+      <Dasboardloader isLoading={isLoading} />
+
     </div>
   )
 }

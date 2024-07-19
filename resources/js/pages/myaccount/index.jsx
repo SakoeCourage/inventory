@@ -45,7 +45,7 @@ function Index() {
   return (<div class="">
     <div class="w-full ">
       {isLoading && <Loadingwheel />}
-      <div class="w-full bg-info-600 h-48  "></div>
+      <div class="w-full bg-info-900/90 h-48  "></div>
       <div className=' max-w-5xl mx-auto w-full flex items-center justify-start'>
         <div class="relative -mt-16 md:-mt-20 ml-5 flex items-center gap-3 ">
           <div class={` border  border-gray-300 text-5xl text-info-800 h-28 md:h-36 grid place-items-center  rounded-full aspect-square shadow-md border-b ${isLoading ? 'bg-gray-200' : 'bg-info-100'}`}>

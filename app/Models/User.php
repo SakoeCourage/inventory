@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -55,5 +56,15 @@ class User extends Authenticatable
             $query->where('name', 'Like', '%' . $search . '%');
             // ->orWhereIn('id',$related_model->toArray());
         });
+    }
+
+    public function stores()
+    {
+        return $this->belongsToMany(Store::class, 'store_users');
+    }
+
+    public function storeProducts()
+    {
+        return $this->hasManyThrough(Product::class, Store::class, 'user_id', 'store_id', 'id', 'id');
     }
 }

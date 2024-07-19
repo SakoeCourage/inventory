@@ -51,8 +51,10 @@ export const ini_sale = {
     amount_paid: '',
     total: 0,
     balance: 0,
+    sale_type: "regular",
     items: []
 }
+
 export const ini_sale_items = {
     product_id: '',
     productsmodel_id: '',

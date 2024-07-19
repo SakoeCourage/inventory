@@ -91,7 +91,6 @@ const Formhook = (initialValues) => {
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
 
-
   /**
    * Sets new data in the form data object.
    *
@@ -111,15 +110,9 @@ const Formhook = (initialValues) => {
     }
   };
 
-
-
   const reset = () => {
     setData(initialValues);
   };
-
-
-
-
 
   /**
  * Performs an HTTP POST request.
@@ -208,8 +201,6 @@ const Formhook = (initialValues) => {
       setProcessing(false)
     })
   }
-
-
 
   return {
     data,

@@ -45,11 +45,11 @@ const SidebarList = (props) => {
   return (
     <>
       {!route?.subItems ? (
-        <li className={` w-full  py-2 ${fullSideBar ? 'px-4' : 'px-3'} ${isIncurrentRoute ? 'bg-gray-100/70' : 'hover:bg-gray-100/50'} rounded-r-3xl relative`}>
+        <li className={` w-full  py-2 ${fullSideBar ? 'px-4' : 'px-3'} ${isIncurrentRoute ? 'bg-info-100/60' : 'hover:bg-gray-100/90  !text-info-100 hover:text-gray-900/70 text-gray-900/70'} rounded-r-3xl relative`}>
           <NavLink
             to={route.path}
             className={(props) =>
-              props.isActive ? 'text-info-500' : 'text-gray-500  hover:text-gray-500/70 '
+              props.isActive ? 'text-info-900' : ' text-inherit hover:text-gray-900/70'
             }
           >
             <div className="flex items-center gap-3">
@@ -57,11 +57,11 @@ const SidebarList = (props) => {
                 <Icon icon={route.icon} fontSize={25} />
                 :
                 <Tooltip title={route.name} arrow placement='right' TransitionComponent={Zoom}>
-                  <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-600'} />
+                  <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-900'} />
                 </Tooltip>
               }
               {fullSideBar &&
-                <span className={`item-name font-medium ${isIncurrentRoute && '!text-info-600'}`}>{route.name}</span>
+                <span className={`item-name font-medium ${isIncurrentRoute && '!text-info-900'}`}>{route.name}</span>
               }
             </div>
           </NavLink>
@@ -72,21 +72,21 @@ const SidebarList = (props) => {
           }
         </li>
       ) : (
-        <li className={` w-full  py-2 ${fullSideBar ? "px-4" : 'px-3'} ${isIncurrentRoute ? 'bg-info-100/60' : 'hover:bg-gray-100/50'} rounded-r-3xl`}>
+        <li className={` w-full  py-2 ${fullSideBar ? "px-4" : 'px-3'} ${isIncurrentRoute ? 'bg-info-100/60' : 'hover:bg-gray-100/90'} rounded-r-3xl`}>
           <button
             onClick={(_) => setisColapsed(!isColapsed)}
-            className={`flex justify-between w-full text-gray-500 items-center ${isIncurrentRoute ? '' : 'hover:text-gray-500/70'}
+            className={`flex justify-between w-full text-gray-500 items-center ${isIncurrentRoute ? '' : 'text-info-100  hover:text-gray-900/70'}
             }`}
           >
             <div className="flex items-center gap-3 tracking-1 ">
               {fullSideBar ?
-                <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-500'} /> :
+                <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-900'} /> :
                 <Tooltip title={route.name} arrow placement='right' TransitionComponent={Zoom}>
-                  <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-500'} />
+                  <Icon icon={route.icon} fontSize={25} className={isIncurrentRoute && 'text-info-900'} />
                 </Tooltip>
               }
               {fullSideBar &&
-                <span className={` font-medium ${isIncurrentRoute && 'text-info-600'}`}>{route.name}</span>
+                <span className={` font-medium ${isIncurrentRoute && 'text-info-900'}`}>{route.name}</span>
               }
             </div>
             {fullSideBar &&
@@ -108,11 +108,11 @@ const SidebarList = (props) => {
                 return (
                   !link.subItems ?
                     <li key={i} className={`text-sm ${fullSideBar ? 'pl-10' : 'pl-1'} py-1.5 flex items-center gap-3 `}>
-                      {fullSideBar && <Icon fontSize={10} icon="octicon:dot-fill-16" />}
+                      {fullSideBar && <Icon className='text-info-900' fontSize={10} icon="octicon:dot-fill-16" />}
                       <NavLink
                         to={link.link}
                         className={(props) =>
-                          props.isActive ? 'text-info-600' : 'text-gray-500 hover:text-gray-900 '
+                          props.isActive ? 'text-info-900' : 'text-gray-500 hover:text-gray-900 '
                         }
                       >
                         {fullSideBar ?
@@ -130,7 +130,7 @@ const SidebarList = (props) => {
                     >
                       <button
                         onClick={(_) => setCollapseTwo(!collapseTwo)}
-                        className={`flex justify-between w-full text-gray-500 items-center ${isIncurrentRoute ? 'text-blue-600 ' : 'hover:text-gray-500/70'}`}
+                        className={`flex justify-between w-full text-info-500 items-center ${isIncurrentRoute ? 'text-blue-600 ' : 'hover:text-gray-500/70'}`}
                       >
                         <div className="flex items-center gap-3 tracking-1 ">
                           {fullSideBar ?
@@ -167,7 +167,7 @@ const SidebarList = (props) => {
                                   <NavLink
                                     to={x.link}
                                     className={(props) =>
-                                      props.isActive ? 'text-blue-800' : 'text-gray-500 hover:text-gray-900 '
+                                      props.isActive ? 'text-blue-950' : 'text-info-700 hover:text-gray-900 '
                                     }
                                   >
                                     {fullSideBar ?

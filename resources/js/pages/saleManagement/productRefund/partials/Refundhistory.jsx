@@ -87,7 +87,6 @@ function Refundhistory() {
               <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Author
               </th>
-
             </tr>
           </thead>
           <tbody className="divide-y divide-secondary-200   ">

@@ -28,21 +28,16 @@ const Layout = (props) => {
 
 
 
-  
-
-
-  
-
   return (
     <SnackbarProvider maxSnack={1}>
       {auth.auth ? 
-      <div className='h-screen w-screen overflow-hidden bg-gray-200/80'>
+      <div className='h-screen w-screen overflow-hidden bg-[#F7FCF7]'>
         <div className='flex h-full'>
           <div className=''>
             <SideBar fullSideBar={fullSideBar} setFullSideBar={setFullSideBar} />
           </div>
           <div className='w-full min-h-screen overflow-hidden'>
-            <div className=' h-[var(--navbar-height)] bg-info-600'>
+            <div className=' h-[var(--navbar-height)] bg-info-50'>
               <Navbar setFullSideBar={setFullSideBar} fullSideBar={fullSideBar} />
             </div>
             <div ref={outlet} id='outlet' className='w-full min-h-max h-full overflow-y-scroll pb-20  '>

@@ -94,9 +94,16 @@ class DashboardController extends Controller
             'products_cycle' => $this->getProductCycle(),
             'products_value' => $this->getCurrentProductsAndValue(),
             'line_chart' => $this->generateLineChart(),
-            'smart_recommendations' => $outofstock->main()->groupBy('stock_level'),
+            'smart_recommendations' => [...[
+                "total_stock" => "150"
+            ],
+            ...$outofstock->main()->groupBy('stock_level')],
             'unattended_products' => $this->getUnattendedProducts()
         ];
+    }
+
+    public function generateStockAvailabilityData(){
+
     }
 
     public function generateLineChart()

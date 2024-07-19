@@ -12,6 +12,7 @@ function Productsuppliers() {
   const [data, setData] = useState([])
   const [filters, setFilters] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  
   const [showSupplierForm, setShowSupplierForm] = useState({
     supplier_name: null,
     supplier_contact: null,
@@ -48,7 +49,7 @@ function Productsuppliers() {
 
   return (
     <div className='text-sm h-max '>
-      <div className='bg-info-600 h-[35vh] md:px-10 overflow-visible '>
+      <div className='bg-info-900/90 h-[35vh] md:px-10 overflow-visible '>
         <div className='max-w-6xl mx-auto h-full '>
           <h3 className='pb-3 text-info-100 ml-4 text-lg '><span className="mr-4">Product Suppliers</span>
             <Icon icon="bi:plus-circle" />

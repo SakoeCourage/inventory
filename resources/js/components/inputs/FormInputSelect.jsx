@@ -73,20 +73,8 @@ const FormInputSelect = ({ label, value, options, required, onChange, name, onCl
       onChange={(e, value) => onChange(convertToDefEventPara(name, value.value))}
       renderInput={(params) => <TextField {...props} required={required} {...params} label={label} variant="outlined"
 
-        // InputProps={{
-        //   ...params.InputProps,
-        //   endAdornment: (
-        //     <>
-        //       {inputValue && ( // only show the clear button if there is a value
-        //         <button className='hover:bg-gray-100 rounded-full w-7 h-7'>
-        //           <Icon icon="material-symbols:close-rounded" fontSize={15}/>
-        //         </button>
-        //       )}
-        //       {params.InputProps.endAdornment}
-        //     </>
-        //   ),
-        // }}
-      />}
+      />
+    }
     />
   )
 }

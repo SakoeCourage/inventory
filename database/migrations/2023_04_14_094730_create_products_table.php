@@ -20,7 +20,6 @@ return new class extends Migration
             $table->bigInteger('quantity_in_stock')->nullable()->default(0);
         });
     }
-
     /**
      * Reverse the migrations.
      */

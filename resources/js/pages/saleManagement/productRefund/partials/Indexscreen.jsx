@@ -18,7 +18,6 @@ import { useSearchParams,useNavigate } from 'react-router-dom'
 function Productfetch({ sale_id ,setFetchedSaleData}) {
     const [isLoading, setIsLoading] = useState(false)
     const [saleitems, setSaleitems] = useState([])
-
     const [mounted, setMounted] = useState(true)
 
     const getSaleData = () => {
@@ -32,7 +31,6 @@ function Productfetch({ sale_id ,setFetchedSaleData}) {
             Api.get('/sale/get/' + sale_id, { signal: controller.signal })
                 .then(res => {
                     const { sale_items } = res.data
-                    console.log(res.data)
                     setSaleitems(sale_items)
                     setFetchedSaleData(true)
                     setIsLoading(false)
@@ -154,7 +152,7 @@ function Indexscreen() {
   
     return (
         <div className=''>
-            <section className='  mx-auto bg-info-600   '>
+            <section className='  mx-auto bg-info-900/50   '>
                 <nav className=' max-w-6xl mx-auto pt-5 pb-2 transform translate-y-9'>
                     <FormInputsearch processing={processing} getSearchKey={(searchkey) => { handleSearch(searchkey) }} is placeholder="search sale id or customer name" />
                 </nav>

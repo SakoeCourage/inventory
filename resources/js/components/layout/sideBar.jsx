@@ -4,6 +4,7 @@ import { IconButton } from "@mui/material"
 import { useSelector, useDispatch } from "react-redux"
 import { getUnreadCount, getPendingCount } from "../../store/unreadCountSlice"
 import React, { useEffect, useMemo } from "react"
+import Logo from "../ui/Logo"
 
 
 const SideBar = (props) => {
@@ -61,14 +62,8 @@ const SideBar = (props) => {
         icon: "ph:users"
       },
       {
-        name: 'Application Setup', subItems: [
-          { title: 'Product definition', link: '/applicationsetup/products/definition' },
-          { title: 'Suppliers', link: '/applicationsetup/products/suppliers' },
-          { title: 'Categories', link: '/applicationsetup/products/categories' },
-          { title: 'Expense definitions', link: '/applicationsetup/expense/definition' },
-          { title: 'Business profile', link: '/applicationsetup/businessprofile/definition' },
-
-        ],
+        name: 'Application Setup',
+        path: "/app-setup",
         icon: "bi:gear"
       }
 
@@ -80,9 +75,12 @@ const SideBar = (props) => {
   return (
 
     <div
-      className={` transition-all  h-full z-20  ${fullSideBar ? 'fixed inset-y-0 bg-white xl:relative w-72 xl:bg-info-100/30 xl:backdrop-opacity-10 xl:pr-2 ' : 'w-0 xl:w-16 !fixed bg-white/30 hover:bg-white hover:!w-72]'} `}
+      className={` transition-all flex flex-col gap-1  h-full z-20 bg-info-900  ${fullSideBar ? 'fixed inset-y-0  xl:relative w-72 xl:bg-info-900 xl:backdrop-opacity-10 xl:pr-2 ' : 'w-0 xl:w-16 !fixed  hover:!w-72]'} `}
     >
-      <div className='text-gray-400   h-full'>
+      <nav className={`  w-full px-5 py-4 text-info-100 my-auto h-[var(--navbar-height)] ${fullSideBar ? 'block ' : ' hidden'}`}>
+        <Logo />
+      </nav>
+      <div className='text-gray-400 grow'>
         <nav className={`h-16  border-b mb-7 grid place-items-center ${fullSideBar ? '!bg-transparent ' : ' '}`}>
           <IconButton onClick={() => props.setFullSideBar(prev => !prev)} size="small"><Icon className={`text-gray-300 ${fullSideBar ? 'block xl:hidden' : ''}`} icon="ic:outline-menu-open" fontSize={26} /></IconButton>
         </nav>

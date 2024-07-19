@@ -3,7 +3,6 @@ import ProductLineItem from './ProductLineItem'
 import EmpytCart from './EmpytCart';
 function Customercart({ productsFromDB, modelsFromDB, formData, setFormData, items, setItems, errors }) {
 
-
     let removeItemat = (i) => {
         let newitems = [...items];
         newitems.splice(i, 1);
@@ -36,9 +35,6 @@ function Customercart({ productsFromDB, modelsFromDB, formData, setFormData, ite
         newitems[i]['price_per_collection'] = ''
         setItems(newitems)
     }
-
-
-
 
 
     return (

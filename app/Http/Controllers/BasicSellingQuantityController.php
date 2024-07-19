@@ -10,16 +10,28 @@ class BasicSellingQuantityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(BasicSellingQuantity $basicSellingQuantity)
     {
-        //
+        return [
+            'basicQuantities' => $basicSellingQuantity->filter(request()->only(['search']))
+                ->latest()->paginate(10)->withQueryString()
+                ->through(function ($currentValue) {
+                    return [
+                        'id' => $currentValue->id,
+                        'created_at' => $currentValue->created_at,
+                        'name' => $currentValue->name,
+                        'symbol' => $currentValue->symbol
+                    ];
+                }),
+            'filters' => request()->only('search')
+        ];
     }
     /**
      * Display a listing of the resource for select purpose.
      */
     public function toselect()
     {
-      return BasicSellingQuantity::get('name');
+        return BasicSellingQuantity::get('name');
     }
 
     /**
@@ -57,9 +69,15 @@ class BasicSellingQuantityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BasicSellingQuantity $basicSellingQuantity)
+    public function update(Request $request)
     {
-        //
+        $id = $request->id ?? null;
+        $request->validate([
+            'name' => ['required', 'unique:basic_selling_quantities,name,' . $id],
+            'symbol' => ['required', 'unique:basic_selling_quantities,symbol,' . $id],
+        ]);
+
+        BasicSellingQuantity::updateOrCreate(['id' => $id ?? null], $request->all());
     }
 
     /**
@@ -67,6 +85,6 @@ class BasicSellingQuantityController extends Controller
      */
     public function destroy(BasicSellingQuantity $basicSellingQuantity)
     {
-        //
+        $basicSellingQuantity->delete();
     }
 }

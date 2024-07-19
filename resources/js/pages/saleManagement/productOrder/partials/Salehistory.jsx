@@ -67,10 +67,10 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
 
   const generateGenerateInvoice = (saleID) => {
     if (saleID) {
-      enqueueSnackbar('Loading invoice',{variant: 'default',key:'invoiceloadingstus'})
+      enqueueSnackbar('Loading invoice',{variant: 'default',key:'invoiceloadingstatus'})
       Api.get(`sale/view-invoice/${saleID}`)
         .then(res => {   
-          closeSnackbar('invoiceloadingstus')
+          closeSnackbar('invoiceloadingstatus')
           setInvoiceData({
             data: res.data,
             type: 'SALE INVOICE'

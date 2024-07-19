@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InvoiceProducts;
 use App\Models\Productsmodels;
 use App\Models\Stockhistory;
 use App\Models\Supplier;
@@ -58,14 +59,16 @@ class StockhistoryController extends Controller
              * then add all the product and supplier to stockhistory table
              */
 
-            Stockhistory::create([
+            $newStockHistory = Stockhistory::create([
                 'supplier_id' => $request->supplier,
                 'record_date' => $request->record_date,
                 'stock_products' => $request->new_stock_products,
                 'purchase_invoice_number' => $request->purchase_invoice_number
             ]);
             foreach ($request->new_stock_products as $newStock) {
+                //finding modelof product form currnet stock line item
                 $currentmodel = Productsmodels::find($newStock['model_id']);
+                // binding current product to a supplier
                 Productsupplier::firstOrCreate([
                     'supplier_id' => $request->supplier,
                     'productsmodel_id' => $newStock['model_id']
@@ -73,12 +76,25 @@ class StockhistoryController extends Controller
                     'supplier_id' => $request->supplier,
                     'productsmodel_id' => $newStock['model_id']
                 ]);
+
+                // increasing stock
                 $productStockService->increasestock((object)[
                     'productsmodel_id' => $newStock['model_id'],
                     'quantity' => $newStock['quantity'],
                     'description' => 'new stock from a supplier ' . $currentSupplierName,
                 ]);
+
+                // updating product pricing model
                 $currentmodel->update([
+                    'cost_per_collection' =>  $newStock['cost_per_collection'],
+                    'cost_per_unit' =>  $newStock['cost_per_unit']
+                ]);
+
+                //adding current invoice data to invoice product invoice table
+                InvoiceProducts::create([
+                    'product_id'=> $newStock['product_id'],
+                    'productsmodel_id'=> $newStock['model_id'],
+                    'stockhistory_id'=> $newStockHistory->id,
                     'cost_per_collection' =>  $newStock['cost_per_collection'],
                     'cost_per_unit' =>  $newStock['cost_per_unit']
                 ]);

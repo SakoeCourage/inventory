@@ -23,7 +23,6 @@ return new class extends Migration
             $table->bigInteger('balance')->nullable()->default(0);
             $table->bigInteger('amount_paid')->nullable()->default(0);
             $table->bigInteger('discount_rate')->default(0);
-
         });
     }
 

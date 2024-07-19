@@ -8,9 +8,7 @@ function CategoryListItem({ categoryname, products }) {
             <Icon className='  mr-2 text-white' icon="carbon:tag-group" fontSize={22} />
             {categoryname}
         </nav>
-
         {Object.entries(products).map((product, i) => <ProductList key={i} productname={product[0]} products={product[1]} />)}
-
     </div>
 }
 

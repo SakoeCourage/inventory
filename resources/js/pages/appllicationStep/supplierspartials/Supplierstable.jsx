@@ -9,6 +9,7 @@ import Button from '../../../components/inputs/Button';
 import { SlideUpAndDownAnimation } from '../../../api/Util';
 import { AnimatePresence } from 'framer-motion';
 import Loadingwheel from '../../../components/Loaders/Loadingwheel';
+
 const Supplierstable = ({ data, setData, isLoading, setIsLoading, setFilters, fetchSupplierData, setShowSupplierForm }) => {
 
   const [deleteSupplierByID, setDeleteSupplierByID] = useState(null)

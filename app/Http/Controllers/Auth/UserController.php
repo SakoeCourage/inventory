@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\StoreUser;
+use App\Models\UserStores;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Userprofile;
@@ -31,6 +34,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
+
         $data = request()->validate([
             'name' => ['required', 'string', 'min:8', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -38,7 +43,8 @@ class UserController extends Controller
             'lastname' => ['required', 'string', 'min:2', 'max:255'],
             'gender' => ['required', 'string', 'min:2', 'max:255'],
             'contact' => ['required', 'string', 'min:10', 'max:10'],
-            'role' => ['required', 'string', 'max:255']
+            'role' => ['required', 'string', 'max:255'],
+            'stores' => ['required', 'array', 'min:1', 'distinct']
         ]);
 
         DB::transaction(function () use ($data) {
@@ -60,6 +66,16 @@ class UserController extends Controller
                 'contact' => $data['contact'],
                 'gender' => $data['gender'],
             ]);
+
+            $userAssignedStore = collect($data['stores'])->map(function ($storeId) use ($newuser) {
+                return [
+                    'user_id' => $newuser->id,
+                    'store_id' => $storeId,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            });
+            StoreUser::insert($userAssignedStore->toArray());
         });
     }
 
@@ -68,7 +84,7 @@ class UserController extends Controller
      */
     public function show($user)
     {
-        return User::with(['profile', 'roles:name'])->where('id', $user)
+        return User::with(['profile', 'roles:name', 'stores:id'])->where('id', $user)
             ->get()
             ->map(function ($user, $key) {
                 return [
@@ -80,6 +96,7 @@ class UserController extends Controller
                     'gender' => $user->profile ? $user->profile->gender : '',
                     'contact' => $user->profile ? $user->profile->contact : '',
                     'role' => $user->roles->first()->name,
+                    'stores' => $user->stores->pluck('id')->toArray(),
                 ];
             })->first();
     }
@@ -96,7 +113,8 @@ class UserController extends Controller
             'lastname' => ['required', 'string', 'min:2', 'max:255'],
             'gender' => ['required', 'string', 'min:2', 'max:255'],
             'contact' => ['required', 'string', 'min:10', 'max:10'],
-            'role' => ['required', 'string', 'max:255']
+            'role' => ['required', 'string', 'max:255'],
+            'stores' => ['required', 'array', 'min:1', 'distinct']
         ]);
         DB::transaction(function () use ($data, $user) {
             // creating new using
@@ -115,6 +133,9 @@ class UserController extends Controller
                 'contact' => $data['contact'],
                 'gender' => $data['gender'],
             ]);
+
+            $user->stores()->sync($data['stores']);
+           
         });
     }
 

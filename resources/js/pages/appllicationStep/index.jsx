@@ -5,6 +5,10 @@ import Productcategories from './Productcategories'
 import Productsuppliers from './Productsuppliers'
 import ExpenseDefinition from './expenseDefinition'
 import Businessprofile from './businessprofile'
+import StoreDefininition from './storeDefininition'
+import BranchDefinition from './branchDefinition'
+import PackagingUnit from './packagingUnit'
+import BasicUnit from './basicUnit'
 
 const Index = () => {
   return (
@@ -14,6 +18,10 @@ const Index = () => {
       <Route path='products/categories' exact element={<Productcategories />} />
       <Route path='expense/definition' exact element={<ExpenseDefinition />} />
       <Route path='businessprofile/definition' exact element={<Businessprofile />} />
+      <Route path='store/definition' exact element={<StoreDefininition />} />
+      <Route path='branch/definition' exact element={<BranchDefinition />} />
+      <Route path='selling-unit/packaging' exact element={<PackagingUnit />} />
+      <Route path='selling-unit/basic' exact element={<BasicUnit />} />
     </Routes>
   )
 }

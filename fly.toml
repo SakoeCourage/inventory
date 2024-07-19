@@ -1,47 +1,52 @@
-# fly.toml app configuration file generated for inventorylite on 2023-08-02T12:39:51Z
+# fly.toml app configuration file generated for inventorylite on 2024-06-28T23:04:26Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "inventorylite"
-primary_region = "dfw"
-console_command = "php /var/www/html/artisan tinker"
+app = 'inventorylite'
+primary_region = 'dfw'
+console_command = 'php /var/www/html/artisan tinker'
 
 [build]
   [build.args]
-    NODE_VERSION = "18"
-    PHP_VERSION = "8.2"
+    NODE_VERSION = '18'
+    PHP_VERSION = '8.2'
 
 [env]
-   APP_ENV = "production"
-  DB_CONNECTION = "mysql"
-  DB_HOST = "mariadb-132302-0.cloudclusters.net"
-  DB_DATABASE= "inventoryLite"
-  DB_PORT="10070"
-  LOG_CHANNEL = "stderr"
-  LOG_LEVEL = "info"
-  LOG_STDERR_FORMATTER = "Monolog\\Formatter\\JsonFormatter"
-  SESSION_DRIVER = "cookie"
-  SESSION_SECURE_COOKIE = "true"
-  APP_NAME="inventoryLite"
-  APP_DEBUG="true"
-  BASE_URL = "https://inventorylite.fly.dev"
-  APP_URL = "https://inventorylite.fly.dev"
-  SANCTUM_STATEFUL_DOMAINS = "https://inventorylite.fly.dev"
-  LOG_DEPRECATIONS_CHANNEL="null"
-  VITE_APP_BASE_URL = "https://inventorylite.fly.dev"
-  VITE_APP_SOFTWARE_VERSION = "Beta 0.7"
-  MAIL_FROM_NAME="${APP_NAME}"
-  BROADCAST_DRIVER="log"
-  CACHE_DRIVER="file"
-  FILESYSTEM_DISK="local"
-  QUEUE_CONNECTION="sync"
-  SESSION_LIFETIME="300"
-  
+  APP_DEBUG = 'true'
+  APP_ENV = 'production'
+  APP_NAME = 'inventoryLite'
+  APP_URL = 'https://inventorylite.fly.dev'
+  BASE_URL = 'https://inventorylite.fly.dev'
+  BROADCAST_DRIVER = 'log'
+  CACHE_DRIVER = 'file'
+  DB_CONNECTION = 'mysql'
+  DB_DATABASE = 'inventoryLite'
+  DB_HOST = 'mariadb-132302-0.cloudclusters.net'
+  DB_PORT = '10070'
+  FILESYSTEM_DISK = 'local'
+  LOG_CHANNEL = 'stderr'
+  LOG_DEPRECATIONS_CHANNEL = 'null'
+  LOG_LEVEL = 'info'
+  LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
+  MAIL_FROM_NAME = '${APP_NAME}'
+  QUEUE_CONNECTION = 'sync'
+  SANCTUM_STATEFUL_DOMAINS = 'https://inventorylite.fly.dev'
+  SESSION_DRIVER = 'cookie'
+  SESSION_LIFETIME = '300'
+  SESSION_SECURE_COOKIE = 'true'
+  VITE_APP_BASE_URL = 'https://inventorylite.fly.dev'
+  VITE_APP_SOFTWARE_VERSION = 'Beta 0.7'
+
 [http_service]
   internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
+
+[[vm]]
+  memory = '2gb'
+  cpu_kind = 'shared'
+  cpus = 1

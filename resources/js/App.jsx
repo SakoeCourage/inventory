@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AcessControlPage } from "./pages/authorization/AccessControl";
 import Login from "./components/appLogin/login";
 import { routes } from "./Approutes";
+import Logo from "./components/ui/Logo";
 
 function App() {
   const dispatch = useDispatch()
@@ -15,7 +16,6 @@ function App() {
   useEffect(() => {
     dispatch(getUser())
   }, [])
-
 
   return (
     <>
@@ -37,7 +37,10 @@ function App() {
         <Route path="*" element={<div className=" flex items-center justify-center h-screen font-semibold"> Page not found</div>} />
       </Routes>
       : 
-      <><Loadingwheel /></>
+      <div className="flex items-center h-screen w-screen justify-center">
+        <Loadingwheel />
+        <Logo className="h-12 w-50 text-info-900"/>
+    </div>
     }
     </>
 
