@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable,HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -45,10 +45,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function profile(){
+    public function profile()
+    {
         return $this->hasOne(Userprofile::class);
     }
-  
+
 
     public function scopeSearch($query, array $filters)
     {
@@ -66,5 +67,9 @@ class User extends Authenticatable
     public function storeProducts()
     {
         return $this->hasManyThrough(Product::class, Store::class, 'user_id', 'store_id', 'id', 'id');
+    }
+    public function storePreference()
+    {
+        return $this->hasOne(UserCurrentStoreSelection::class);
     }
 }

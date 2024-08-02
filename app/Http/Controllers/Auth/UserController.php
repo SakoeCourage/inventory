@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\StoreUser;
+use App\Models\UserCurrentStoreSelection;
 use App\Models\UserStores;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -76,6 +77,11 @@ class UserController extends Controller
                 ];
             });
             StoreUser::insert($userAssignedStore->toArray());
+
+            UserCurrentStoreSelection::create([
+                'user_id' => $newuser->id,
+                'store_id' => $userAssignedStore[0]["store_id"]
+            ]);
         });
     }
 
@@ -135,7 +141,15 @@ class UserController extends Controller
             ]);
 
             $user->stores()->sync($data['stores']);
-           
+            UserCurrentStoreSelection::updateOrCreate(
+                [
+                    'user_id' => $user->id
+                ]
+                ,
+                [
+                    'store_id' => $data['stores'][0]
+                ]
+            );
         });
     }
 

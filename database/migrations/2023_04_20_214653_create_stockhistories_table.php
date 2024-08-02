@@ -16,7 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->json('stock_products');
             $table->dateTime('record_date');
-            $table->foreignId('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->foreignId('supplier_id')->nullable()->references('id')->on('suppliers')->onDelete('cascade');
+            $table->string('purchase_invoice_number')->default('');
         });
     }
 

@@ -17,7 +17,7 @@ class ProformaInvoiceController extends Controller
     public function index(ProformaInvoice $invoice, Request $request)
     {
         return [
-            'invoices' => $invoice->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->latest()->paginate(10),
+            'invoices' => $invoice->where('store_id',$request->user()->storePreference->store_id)->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->latest()->paginate(10),
             'filters' => request()->only('search', 'day'),
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
         ];
@@ -82,7 +82,8 @@ class ProformaInvoiceController extends Controller
                 'discount_rate' => $request->discount_rate,
                 'balance' => $request->balance ?? 0,
                 'amount_paid' => $request->amount_paid ?? $request->total,
-                'form_data' => $request->all()
+                'form_data' => $request->all(),
+                'store_id' => $request->user()->storePreference->store_id
             ]);
 
             foreach ($request->items as $key => $value) {

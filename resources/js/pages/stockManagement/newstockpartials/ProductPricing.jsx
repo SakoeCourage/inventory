@@ -1,8 +1,9 @@
 import { formatcurrency } from "../../../api/Util"
 import Button from '../../../components/inputs/Button'
 function ProductPricing({ basicUnit, collectionType, getCurrentModel, Incollection, lineItem, setShowPricingModal }) {
-    return <div className=' min-h-full   p-2 flex flex-col'>
-        <div className='p-3 mt-1 text-center bg-info-100/50 text-info-800'>Product should be price such that enough profit can be made</div>
+    
+    return <div className=' min-h-full flex flex-col'>
+        <div className=' py-3 px-1 border-b text-center bg-info-100/50 text-xs'>Product should be price such that enough profit can be made</div>
         <div className='  my-auto  flex  flex-col justify-center gap-5 py-5  '>
             <nav className='uppercase text-center'>CURRENT PRICING MODEL:</nav>
             <div className="grid grid-cols-2">

@@ -39,7 +39,9 @@ class Saleitem extends Model
             set: fn ($amount) => $amount * 100,
         );
     }
-
+    public function sale(){
+        return $this->belongsTo(Sale::class, 'sale_id');
+    }
     public function productsmodels(){
         return $this->belongsTo(Productsmodels::class,'productsmodel_id');
     }

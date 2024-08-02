@@ -72,40 +72,40 @@
             left: 0%;
             right: 100%;
             width: 0%;
-            background: #ecfdf5;
+            background: #991b1b;
         }
 
         10% {
             left: 0%;
             right: 75%;
             width: 15%;
-            background: #d1fae5;
+            background: #450a0a;
         }
         30% {
             left: 0%;
             right: 75%;
             width: 25%;
-            background: #a7f3d0;
+            background: #fff7ed;
         }
         50% {
             left: 0%;
             right: 75%;
             width: 35%;
-            background: #6ee7b7;
+            background: #4c0519;
         }
 
         90% {
             right: 0%;
             left: 75%;
             width: 40%;
-            background: #34d399;
+            background: #c2410c;
         }
 
         100% {
             left: 100%;
             right: 0%;
             width: 40%;
-            background: #10b981;
+            background: #451a03;
         }
     }
 

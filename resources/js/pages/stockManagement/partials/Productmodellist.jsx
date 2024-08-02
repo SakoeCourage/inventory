@@ -45,7 +45,7 @@ function Productmodellist() {
                 {Boolean(data?.length) &&
                     data.map((dt, i) => {
                         return (
-                            <abbr onClick={()=>{setsearchParams({model:dt.id})}} key={i} title={dt.model_name} className={`decoration-none p-2 px-4 hover:bg-blue-50 cursor-pointer model-item truncate w-full ${searchParams.get('model') == dt.id && 'addleftline !bg-info-100 '}`}> {dt.model_name} </abbr>
+                            <abbr onClick={()=>{setsearchParams({model:dt.id},{replace: true})}} key={i} title={dt.model_name} className={`decoration-none p-2 px-4 hover:bg-blue-50 cursor-pointer model-item truncate w-full ${searchParams.get('model') == dt.id && 'addleftline !bg-info-100 '}`}> {dt.model_name} </abbr>
                         )
                     })
                 }

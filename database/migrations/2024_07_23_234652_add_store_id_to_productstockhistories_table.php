@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('stockhistories', function (Blueprint $table) {
-            $table->string('purchase_invoice_number')->after('stock_products')->default('');
+        Schema::table('productstockhistories', function (Blueprint $table) {
+                $table->foreignId("store_id")
+                ->references("id")
+                ->on("stores")
+                ->onDelete("cascade");
         });
     }
 
@@ -21,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('stockhistories', function (Blueprint $table) {
-            $table->dropColumn('purchase_invoice_number');
+        Schema::table('productstockhistories', function (Blueprint $table) {
+          $table->dropColumn("store_id");
         });
     }
 };

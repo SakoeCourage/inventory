@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('product_name');
             $table->foreignId('basic_selling_quantity_id');
             $table->boolean('has_models')->default(true)->comment('[ 1 => product has one or more curated models or variety defined],[ 0 => has no zero curated models or variety defined ]');
-            $table->bigInteger('quantity_in_stock')->nullable()->default(0);
+            $table->foreignId('category_id');
         });
     }
     /**

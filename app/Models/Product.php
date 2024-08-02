@@ -24,18 +24,12 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function scopeFilter($query, array $filters)
+    public function storeProducts()
     {
-        $query->when($filters['search'] ?? false, function ($query, $search) {
-            // $related_model = Productsmodels::where('model_name', 'Like', '%' . $search . '%')->get('product_id');
-            $query->where('product_name', 'Like', '%' . $search . '%');
-            // ->orWhereIn('id',$related_model->toArray());
-        })->when($filters['category'] ?? false, function ($query, $category) {
-            $query->where('category_id', $category);
-        });
+        return $this->hasManyThrough(StoreProduct::class, Productsmodels::class, 'product_id', 'productsmodel_id');
     }
 
-    public function scopeDeepSearch($query, array $filters)
+    public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {
             $related_model = Productsmodels::where('model_name', 'Like', '%' . $search . '%')->get('product_id');
@@ -45,4 +39,19 @@ class Product extends Model
             $query->where('category_id', $category);
         });
     }
+
+    public function scopeDeepSearch($query, array $filters)
+    {
+
+        $query->when($filters['search'] ?? false, function ($query, $search) {
+            $related_model = Productsmodels::where('model_name', 'Like', '%' . $search . '%')->pluck('product_id');
+            $query->where('product_name', 'Like', '%' . $search . '%')
+                ->orWhereIn('id', $related_model);
+        })->when($filters['category'] ?? false, function ($query, $category) {
+            $query->where('category_id', $category);
+        });
+    }
+
+
+
 }

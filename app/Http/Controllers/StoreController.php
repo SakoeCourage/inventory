@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Store;
+use App\Models\User;
+use App\Models\UserCurrentStoreSelection;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class StoreController extends Controller
 {
@@ -37,6 +40,15 @@ class StoreController extends Controller
     {
     }
 
+    public function toggleUserPreferredStore(Request $request)
+    {
+        UserCurrentStoreSelection::where("user_id",Auth()->user()->id)
+        ->update([
+            'store_id' => $request->store_id
+        ]);
+        
+        return response("Store Preference Changed",200);
+    }
     public function toSelect()
     {
         return Store::with('branch')->get()

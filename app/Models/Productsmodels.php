@@ -79,4 +79,9 @@ class Productsmodels extends Model
             }
         });
     }
+
+    public function storeProducts()
+    {
+        return $this->hasMany(StoreProduct::class, 'productsmodel_id', 'id');
+    }
 }

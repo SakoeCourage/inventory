@@ -19,9 +19,11 @@ export const getUser = createAsyncThunk('/user', async () => {
 
         return user
     } catch (error) {
+        console.log(error)
         return error.message
     }
 })
+
 
 export const Logout = createAsyncThunk('/logout', async () => {
     try {

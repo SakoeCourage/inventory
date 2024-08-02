@@ -21,6 +21,9 @@ return new class extends Migration
             $table->boolean('in_collection')->comment('[ 1 => product can be curated],[ 0 => product cannot be curated]');
             $table->bigInteger('price_per_collection')->nullable()->default(0);
             $table->bigInteger('quantity_per_collection')->nullable()->default(0);
+            $table->bigInteger('cost_per_unit')->nullable()->default(0);
+            $table->bigInteger('cost_per_collection')->nullable()->default(0);
+            $table->foreignId('collection_method')->nullable();
         });
     }
 

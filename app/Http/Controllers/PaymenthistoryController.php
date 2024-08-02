@@ -13,7 +13,7 @@ class PaymenthistoryController extends Controller
     public function index()
     {
        return [
-            'data' => Paymenthistory::with('paymentmethod')->filter(request()->only('paymentmethod','day'))->latest()
+            'data' => Paymenthistory::where('store_id',request()->user()->storePreference->store_id)->with('paymentmethod')->filter(request()->only('paymentmethod','day'))->latest()
             ->paginate()->withQueryString()
             ->through(function($history){
                 return[
@@ -37,7 +37,8 @@ class PaymenthistoryController extends Controller
             'sender' => $data->customer_fullname ?? '',
             'paymentmethod_id' => $data->payment_method,
             'amount' => $data->total,
-            'sale_id' => $data->sale_id
+            'sale_id' => $data->sale_id,
+            'store_id' => request()->user()->storePreference->store_id
         ]);
     }
 

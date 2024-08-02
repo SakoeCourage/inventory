@@ -13,7 +13,7 @@ export const handleOutOfStock = async (formData,modelsFromDB,getProductfromId) =
                     quantity_in_stock: itemsModelfromDb?.quantity_in_stock,
                     quantity_required: item?.quantity,
                     in_collection: itemsModelfromDb?.in_collection,
-                    collection_type: itemsModelfromDb?.collection_type?.type,
+                    collection_type: itemsModelfromDb?.collection_type,
                     quantity_per_collection: itemsModelfromDb?.quantity_per_collection,
                     model_name: itemsModelfromDb?.model_name
                 }]

@@ -29,16 +29,16 @@ class Productstockhistory extends Model
         });
     }
 
-
     public function productsmodel(){
         return $this->belongsTo(Productsmodels::class, 'productsmodel_id');
     }
 
-    
-
     public function author(){
         return $this->belongsTo(User::class,'user_id');
     }
-    
+
+    public function store(){
+        return $this->belongsTo(Store::class);
+    }
 
 }

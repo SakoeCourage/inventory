@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stores', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->foreignId("store_branch_id")->references("id")->on("store_branches");
-            $table->string("store_name");
-            
+        Schema::table('paymenthistories', function (Blueprint $table) {
+            $table->foreignId("store_id")
+            ->references("id")
+            ->on("stores")
+            ->onDelete("cascade");
         });
     }
 
@@ -25,6 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stores');
+        Schema::table('paymenthistories', function (Blueprint $table) {
+            $table->dropColumn("store_id");
+        });
     }
 };

@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('store_products', function (Blueprint $table) {
-            $table->bigInteger('quantity_in_stock')->nullable()->default(0);
+        Schema::create('user_current_store_selections', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignId("user_id")->nullable();
+            $table->foreignId("store_id")->nullable();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('store_products', function (Blueprint $table) {
-            $table->dropColumn("quantity_in_stock");
-        });
+        Schema::dropIfExists('user_current_store_selections');
     }
 };

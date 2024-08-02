@@ -36,6 +36,7 @@
 .model-item:nth-child(odd) {
     @apply bg-gray-200/40
 }
+
 .model-item:nth-child(even) {
     @apply bg-gray-100/40
 }
@@ -49,11 +50,11 @@
 }
 
 .product-list:nth-child(odd) {
-    @apply rounded-md border border-dashed !bg-gray-100/80 border-gray-400/70
+    @apply bg-green-50
 }
 
 .product-list:nth-child(even) {
-    @apply rounded-md border border-dashed !bg-gray-50/60 border-gray-400/40
+    @apply bg-green-100/20
 }
 
 .product-search-result li {
@@ -102,11 +103,13 @@
 }
 
 @-webkit-keyframes flash {
+
     0%,
     50%,
     100% {
         opacity: 1;
     }
+
     25%,
     75% {
         opacity: 0;
@@ -114,11 +117,13 @@
 }
 
 @-moz-keyframes flash {
+
     0%,
     50%,
     100% {
         opacity: 1;
     }
+
     25%,
     75% {
         opacity: 0;
@@ -126,11 +131,13 @@
 }
 
 @-o-keyframes flash {
+
     0%,
     50%,
     100% {
         opacity: 1;
     }
+
     25%,
     75% {
         opacity: 0;
@@ -138,11 +145,13 @@
 }
 
 @keyframes flash {
+
     0%,
     50%,
     100% {
         opacity: 1;
     }
+
     25%,
     75% {
         opacity: 0;
@@ -365,11 +374,13 @@
         opacity: 0.2;
         @apply bg-gray-100 text-black/60 border-gray-500
     }
+
     50% {
         opacity: 0.4;
         backdrop-filter: blur(3px);
         @apply bg-gray-100/50 text-black/30 border-gray-500/60
     }
+
     100% {
         backdrop-filter: blur(5px);
         opacity: 0.6;
@@ -430,45 +441,53 @@ table.report-table td {
 .custom-scroll {
     scrollbar-color: #888 #f1f1f1;
     scrollbar-width: thin;
-  }
-  
-  /* WebKit-based browsers */
-  .custom-scroll::-webkit-scrollbar {
+}
+
+/* WebKit-based browsers */
+.custom-scroll::-webkit-scrollbar {
     width: 5px;
-   
-  }
-  
-  /* Track style (the background of the scrollbar) */
-  .custom-scroll::-webkit-scrollbar-track {
+
+}
+
+/* Track style (the background of the scrollbar) */
+.custom-scroll::-webkit-scrollbar-track {
     background-color: transparent;
-  }
-  
-  /* Handle style (the draggable part of the scrollbar) */
-  .custom-scroll::-webkit-scrollbar-thumb {
+}
+
+/* Handle style (the draggable part of the scrollbar) */
+.custom-scroll::-webkit-scrollbar-thumb {
     background-color: #888;
     border-radius: 10px;
-   
-  }
-  
-  /* Show the scrollbar thumb when the element is being hovered or focused */
-  .custom-scroll:hover::-webkit-scrollbar-thumb,
-  .custom-scroll:focus::-webkit-scrollbar-thumb,
-  .custom-scroll::-webkit-scrollbar-thumb:hover {
+
+}
+
+/* Show the scrollbar thumb when the element is being hovered or focused */
+.custom-scroll:hover::-webkit-scrollbar-thumb,
+.custom-scroll:focus::-webkit-scrollbar-thumb,
+.custom-scroll::-webkit-scrollbar-thumb:hover {
     width: 5px;
-  }
-  
-  /* When the handle is being dragged */
-  .custom-scroll::-webkit-scrollbar-thumb:active {
+}
+
+/* When the handle is being dragged */
+.custom-scroll::-webkit-scrollbar-thumb:active {
     background-color: #333;
-  }
-  
-  /* When the scrollbar is in a "corner" (such as on macOS) */
-  .custom-scroll::-webkit-scrollbar-corner {
+}
+
+/* When the scrollbar is in a "corner" (such as on macOS) */
+.custom-scroll::-webkit-scrollbar-corner {
     background-color: #f1f1f1;
-  }
-  
- 
-  
-  .settings-card{
+}
+
+
+
+.settings-card {
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
-  }
+}
+
+.store-list-item:nth-child(even) {
+    @apply bg-green-50/50
+}
+
+.store-list-item:nth-child(odd) {
+    @apply bg-green-50/20
+}

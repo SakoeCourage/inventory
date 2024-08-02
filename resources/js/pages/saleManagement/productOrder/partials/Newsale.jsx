@@ -14,6 +14,7 @@ import Customerinformation from './Customerinformation'
 import Itemscheckout from './Itemscheckout'
 import Invoicepreview from './Invoicepreview'
 import Wrapable from '../../../../components/layout/Wrappable'
+import Payoutsection from './Payoutsection'
 
 function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsAndModels, setProductsFromDB, setModelsFromDB }) {
     const initial_sale = { ...ini_sale }
@@ -61,12 +62,14 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
      * @param {typeof initial_sale} _formData 
      */
     const checkOut = (_formData) => {
-        if(_formData == null) return;
+        if (_formData == null) return;
         handleOutOfStock(formData, modelsFromDB, getProductfromId).then(res => {
             Api.post('/sale/new', _formData).then(res => {
                 handleOnsucess(res.data)
                 setErrors({})
             }).catch(err => {
+                setProcessing(false)
+                setProcessingLeaseSale(false)
                 if (err?.response?.status === 422) {
                     console.log(err?.response?.data?.errors)
                     setProcessing(false)
@@ -198,19 +201,13 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
         }
 
     }
-    
+
     useEffect(() => {
         if (Boolean(modelsFromDB?.length) && Boolean(modelsFromDB.length)) {
             handleLoadProforma();
             checkForInterruptedSale(setInterruptedSaleAvailable)
         }
     }, [modelsFromDB, modelsFromDB])
-
-    useEffect(() => {
-      console.log(formData)
-    }, [formData])
-    
-
 
 
     return (
@@ -229,27 +226,9 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                 </AnimatePresence>
             </nav>}
 
-            <div className='flex flex-col md:flex-row gap-4 w-full min-w-full'>
-
-                <div className=' order-2 flex flex-col gap-2 h-full w-full'>
-                    <Customerinformation errors={errors} formData={formData} setFormData={setFormData} />
-                    <Productsection
-                        setShowProductSearchModal={setShowProductSearchModal}
-                        showProductSearchModal={showProductSearchModal}
-                        productsFromDB={productsFromDB}
-                        modelsFromDB={modelsFromDB}
-                        setFormData={setFormData}
-                        formData={formData}
-                        items={items}
-                        errors={errors}
-                        setItems={setItems}
-                    />
-
-                </div>
-                {/* Items Check out */}
-                {/* Cart Section */}
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-full'>
                 <Wrapable title={"Customer Cart " + Boolean(items.length) && ` Cart Items (${items.length}) `} asmodal={true} className={'w-full'}>
-                    <div className='  min-h-[12rem] w-full h-full bg-white border border-gray-400/70 rounded-md pb-5 '>
+                    <div className='  w-full bg-white border border-gray-400/70 rounded-md pb-5 '>
                         <Itemscheckout
                             productsFromDB={productsFromDB}
                             modelsFromDB={modelsFromDB}
@@ -264,16 +243,52 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                             saleDiscount={saleDiscount}
                             getBalance={getBalance}
                         />
-                        <nav className='max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-5 w-full !mx-auto mt-5 px-2 pb-2 md:pb-0'>
-                            <Button processing={processingProforma} onClick={() => handleProforma()} alert text="Create Proforma" otherClasses="grow" />
-                            <Button processing={processing} onClick={() => handleOnRegularCheckOut()} info text="Check Out" otherClasses="grow" />
-                            <Button disabled={processing} processing={processingLeaseSale} onClick={() => handleOnLeaseCheckOut()} neutral text="Lease Check Out" className="grow col-span-1 md:col-span-2 " />
-                        </nav>
                     </div>
                 </Wrapable>
-
+                <div className='flex flex-col gap-2 h-full w-full'>
+                    <Customerinformation errors={errors} formData={formData} setFormData={setFormData} />
+                    <Productsection
+                        setShowProductSearchModal={setShowProductSearchModal}
+                        showProductSearchModal={showProductSearchModal}
+                        productsFromDB={productsFromDB}
+                        modelsFromDB={modelsFromDB}
+                        setFormData={setFormData}
+                        formData={formData}
+                        items={items}
+                        errors={errors}
+                        setItems={setItems}
+                    />
+                </div>
             </div>
-        </div>
+            <nav>
+                <Payoutsection
+                    formData={formData}
+                    saleDiscount={saleDiscount}
+                    errors={errors}
+                    setFormData={setFormData}
+                    paymentMethods={paymentMethods}
+                    getBalance={getBalance}
+                />
+            </nav>
+            <nav className='w-full grid grid-cols-2 md:grid-cols-4 gap-5 !mx-auto mt-5 px-2 pb-2 md:pb-0'>
+                <Button processing={processing} onClick={() => handleOnRegularCheckOut()} info className="grow flex-nowrap !flex items-center gap-2">
+                    <span>Check Out</span>
+                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                </Button>
+                <Button processing={processingProforma} onClick={() => handleProforma()} alert className="grow  flex-nowrap !flex items-center gap-2">
+                    Create Proforma
+                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                </Button>
+                <Button disabled={processing} processing={processingLeaseSale} onClick={() => handleOnLeaseCheckOut()} danger className="   flex-nowrap !flex items-center gap-2">
+                    Credit Sale
+                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                </Button>
+                <Button disabled={processing} processing={false} onClick={() => void (0)} primary text="" className="   flex-nowrap !flex items-center gap-2">
+                    Uncollected Sale
+                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                </Button>
+            </nav>
+        </div >
     )
 }
 

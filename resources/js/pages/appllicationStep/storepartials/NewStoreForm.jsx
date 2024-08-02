@@ -79,13 +79,6 @@ function NewStoreForm({ onClose, showStoreForm, fetchStoreTable }) {
                 <Loadingspinner />
             </div>}
             <nav className="flex flex-col my-auto max-w-lg w-full mx-auto gap-5">
-                <FormInputText
-                    error={errors?.store_name}
-                    helperText={errors?.store_name}
-                    value={formData.store_name}
-                    onChange={(e) => setFormData(cv => cv = { ...cv, store_name: e.target.value })}
-                    label='Store Name' />
-
                 <FormInputSelect
                     label="Branch"
                     options={Boolean(storeBranches?.length) ?
@@ -96,6 +89,13 @@ function NewStoreForm({ onClose, showStoreForm, fetchStoreTable }) {
                     helperText={errors?.store_branch_id}
                     onChange={(e) => { setFormData(cv => cv = { ...cv, store_branch_id: e.target.value }) }}
                 />
+                <FormInputText
+                    error={errors?.store_name}
+                    helperText={errors?.store_name}
+                    value={formData.store_name}
+                    onChange={(e) => setFormData(cv => cv = { ...cv, store_name: e.target.value })}
+                    label='Store Name' />
+
             </nav>
             <nav className='flex items-center mt-auto w-full p-2'>
                 <Button onClick={() => onClose()} otherClasses="grow" text="cancel" neutral />

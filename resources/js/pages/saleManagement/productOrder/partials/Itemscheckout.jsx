@@ -33,15 +33,6 @@ function Itemscheckout({ handleOnClearCart,productsFromDB,modelsFromDB,items,set
                     errors={errors}
                     setItems={setItems}
                 />
-                <Payoutsection 
-                    formData={formData}
-                    saleDiscount={saleDiscount}
-                    errors={errors}
-                    setFormData={setFormData}
-                    paymentMethods={paymentMethods}
-                    getBalance={getBalance}
-                />
-                
             </nav>
         </>
     )

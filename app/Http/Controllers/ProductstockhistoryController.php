@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Productstockhistory;
 use App\Models\Productsmodels;
 use App\Models\Stockhistory;
+use App\Models\StoreProduct;
 use App\Models\Supplier;
 use App\Services\ProductStockService;
 use Illuminate\Http\Request;
@@ -35,7 +36,10 @@ class ProductstockhistoryController extends Controller
     public function stockhistory($id)
     {
         return [
-            'history' =>  Productstockhistory::with('author:id,name')->where('productsmodel_id', $id)->filter(request()->only('date'))
+            'history' =>  Productstockhistory::with('author:id,name')->where([
+                'productsmodel_id'=> $id,
+                'store_id' => auth()->user()->storePreference->store_id
+            ])->filter(request()->only('date'))
             ->latest()->paginate(10)->withQueryString(),
             'filters'=> request()->only('date')
         ];
@@ -69,7 +73,6 @@ class ProductstockhistoryController extends Controller
             }
             $product_model = Productsmodels::find(request()->productsmodel_id);
             $product = Productsmodels::find(request()->productsmodel_id)->product;
-            // product_id":71,"model_id":1253,"quantity":3681,"cost_per_unit":"9.2","cost_per_collection":"32.32","in_collection":true
             Stockhistory::create([
                 'stock_products' => [
                     ['product_id' => $product->id ,
@@ -109,7 +112,6 @@ class ProductstockhistoryController extends Controller
         ]);
 
         DB::transaction(function () use ($productStockServie) {
-
             $productStockServie->decreasestock((object)[
                 'description' => request()->description,
                 'action_type' => 'reduction',
@@ -132,12 +134,16 @@ class ProductstockhistoryController extends Controller
     public function show($id)
     {
         $model = Productsmodels::where('id', $id);
+        $store_id = request()->user()->storePreference->store_id;
+
         return [
             'model' => $model->get(['id', 'model_name', 'unit_price', 'quantity_in_stock', 'in_collection', 'price_per_collection', 'quantity_per_collection','cost_per_unit','cost_per_collection'])->firstOrFail(),
             'collection_method' => $model->first()->in_collection == 1 ? $model->first()->collectionType->type : '',
             'product' => $model->first()->product,
             'basic_quantity' => $model->first()->product()->first()->basicQuantity->symbol,
-            'has_suppliers' =>  $model->first()->suppliers->count()
+            'has_suppliers' =>  $model->first()->suppliers->count(),
+            'stock_quantity' => StoreProduct::where(['productsmodel_id'=>$id,'store_id'=>$store_id])->get("quantity_in_stock")?->first()?->quantity_in_stock,
+            'availability' =>StoreProduct::where(['productsmodel_id'=>$id,'store_id'=>$store_id])->exists()
         ];
     }
 

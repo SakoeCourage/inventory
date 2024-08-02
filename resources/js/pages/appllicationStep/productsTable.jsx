@@ -20,7 +20,7 @@ const ProductsTable = ({
 
 
   const toggleSelectedByIDProduct = (id) => {
-    
+
     setSelectedProducts((prevSelected) => {
       if (prevSelected.includes(id)) {
         // If the ID is already selected, remove it
@@ -81,7 +81,7 @@ const ProductsTable = ({
                     Product Name
                   </th>
                   <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
-                    Qty In Stock
+                    No. of Models
                   </th>
                   <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                     Action
@@ -99,7 +99,7 @@ const ProductsTable = ({
                     >
 
                       <td className="px-6 py-2 !text-xs whitespace-nowrap">
-                        <input onClick={(()=> toggleSelectedByIDProduct(x?.id))} checked={selectedProducts?.includes(x.id)} type="checkbox" name="" id="" />
+                        <input onClick={(() => toggleSelectedByIDProduct(x?.id))} checked={selectedProducts?.includes(x.id)} type="checkbox" name="" id="" />
                       </td>
                       <td className="px-6 py-2 !text-xs whitespace-nowrap">
                         <div className="flex items-center">
@@ -126,7 +126,7 @@ const ProductsTable = ({
                       <td className="px-6 py-2 !text-xs whitespace-nowrap">
                         <div className="flex items-center">
                           <h6 className="mb-0  ">
-                            {`${formatnumber(x.quantity_in_stock)} ${x.basic_quantity}(s)`}
+                            {x?.models_count}
                           </h6>
                         </div>
                       </td>

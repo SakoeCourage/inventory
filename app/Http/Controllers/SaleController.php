@@ -22,7 +22,10 @@ class SaleController extends Controller
     public function index(Sale $sale, Request $request)
     {
         return [
-            'sales' => $sale->where("sale_type", $request->sale_type ?? SaleEnum::Regular->value)->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
+            'sales' => $sale->where([
+                "sale_type" => $request->sale_type ?? SaleEnum::Regular->value,
+                'store_id' => $request->user()->storePreference->store_id
+            ])->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
             'filters' => request()->only('search', 'day'),
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
         ];
@@ -111,12 +114,12 @@ class SaleController extends Controller
             'items.*.productsmodel_id' => ['required', 'distinct'],
             'items.*.quantity' => ['required', 'min:0', 'not_in:0'],
             'items.*.in_collection' => ['required', 'boolean'],
-            'sale_type' => ['required', 'string','in:regular,lease']
+            'sale_type' => ['required', 'string', 'in:regular,lease']
         ]);
 
         DB::transaction(function () use ($request, $productStockService, &$newdata) {
             $sale_invoice = IdGenerator::generate(['table' => 'sales', 'field' => 'sale_invoice', 'length' => 14, 'prefix' => 'SALE-' . date('ymd')]);
-            
+
             $newSale = Sale::create([
                 'customer_contact' => $request->customer_contact,
                 'customer_name' => $request->customer_fullname,
@@ -128,7 +131,8 @@ class SaleController extends Controller
                 'balance' => $request->balance ?? 0,
                 'amount_paid' => $request->amount_paid ?? $request->total,
                 'sale_invoice' => $sale_invoice,
-                'sale_type' => $request->sale_type
+                'sale_type' => $request->sale_type,
+                'store_id' => $request->user()->storePreference->store_id
             ]);
 
             foreach ($request->items as $key => $value) {
@@ -151,11 +155,16 @@ class SaleController extends Controller
                 $productStockService->decreasestock((Object) $value);
             }
 
-            PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
-
+            if($request->sale_type == 'regular'){
+                PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
+            }
+            
             $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $newSale->id)->firstOrFail();
         });
-        return [...$productController->productAndModelsJoin(), 'newsale' => [...$newdata->toArray(), 'business_profile' => Businessprofile::get()->first()]];
+        return [
+            ...$productController->productAndModelsJoin($request),
+            'newsale' => [...$newdata->toArray(), 'business_profile' => Businessprofile::get()->first()]
+        ];
     }
 
     /**

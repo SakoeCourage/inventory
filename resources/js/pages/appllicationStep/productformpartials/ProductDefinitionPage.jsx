@@ -214,7 +214,7 @@ const ProductDefinitionPage = () => {
     }
 
     const handleOnProductFileUpload = async () => {
-        if (setProductUploadTemplate == null) {
+        if (productUploadTemplate == null) {
             enqueueSnackbar("Failed To Upload", { variant: "error" })
             return;
         }
@@ -231,6 +231,7 @@ const ProductDefinitionPage = () => {
             });
             enqueueSnackbar("Product Upload Success", { variant: "success" });
             fetchAllProducts();
+            fetchDataToSelect()
         } catch (error) {
             if (error?.response?.status == 422) {
                 enqueueSnackbar(error.response.data, { variant: "error" });

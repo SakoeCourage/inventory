@@ -21,6 +21,10 @@ class Store extends Model
         ;
     }
 
+    public function stockhistory () {
+        return $this->hasMany(Productstockhistory::class,'store_id');
+    }
+
     public function branch (){
         return $this->belongsTo(StoreBranch::class,'store_branch_id');
     }

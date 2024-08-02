@@ -21,7 +21,7 @@ function Productdetailcard({stockData}) {
          {stockData?.model
             && <Productcollection 
             in_collections={stockData.model?.in_collection}
-            quantity={stockData?.model?.quantity_in_stock ?? 0 }
+            quantity={stockData?.stock_quantity ?? 0 }
             units_per_collection={stockData.model?.quantity_per_collection}
             basic_quantity={stockData.basic_quantity}
             collection_type={stockData.collection_method}

@@ -34,7 +34,7 @@ class StockhistoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, ProductStockService $productStockService,ProductController $pc )
+    public function store(Request $request, ProductStockService $productStockService, ProductController $pc)
     {
 
         $request->validate([
@@ -53,6 +53,7 @@ class StockhistoryController extends Controller
 
         DB::transaction(function () use ($request, $productStockService) {
             $currentSupplierName = Supplier::find($request->supplier)->supplier_name;
+            
             /**
              * increase the stock values using the productstockservice
              * foreach one of the products add to productsupplier table the suppplier id and the product model_id
@@ -63,7 +64,8 @@ class StockhistoryController extends Controller
                 'supplier_id' => $request->supplier,
                 'record_date' => $request->record_date,
                 'stock_products' => $request->new_stock_products,
-                'purchase_invoice_number' => $request->purchase_invoice_number
+                'purchase_invoice_number' => $request->purchase_invoice_number,
+                'store_id' => $request->user()->storePreference->store_id
             ]);
             foreach ($request->new_stock_products as $newStock) {
                 //finding modelof product form currnet stock line item
@@ -78,7 +80,7 @@ class StockhistoryController extends Controller
                 ]);
 
                 // increasing stock
-                $productStockService->increasestock((object)[
+                $productStockService->increasestock((object) [
                     'productsmodel_id' => $newStock['model_id'],
                     'quantity' => $newStock['quantity'],
                     'description' => 'new stock from a supplier ' . $currentSupplierName,
@@ -86,22 +88,23 @@ class StockhistoryController extends Controller
 
                 // updating product pricing model
                 $currentmodel->update([
-                    'cost_per_collection' =>  $newStock['cost_per_collection'],
-                    'cost_per_unit' =>  $newStock['cost_per_unit']
+                    'cost_per_collection' => $newStock['cost_per_collection'],
+                    'cost_per_unit' => $newStock['cost_per_unit']
                 ]);
 
                 //adding current invoice data to invoice product invoice table
                 InvoiceProducts::create([
-                    'product_id'=> $newStock['product_id'],
-                    'productsmodel_id'=> $newStock['model_id'],
-                    'stockhistory_id'=> $newStockHistory->id,
-                    'cost_per_collection' =>  $newStock['cost_per_collection'],
-                    'cost_per_unit' =>  $newStock['cost_per_unit']
+                    'product_id' => $newStock['product_id'],
+                    'productsmodel_id' => $newStock['model_id'],
+                    'stockhistory_id' => $newStockHistory->id,
+                    'cost_per_collection' => $newStock['cost_per_collection'],
+                    'cost_per_unit' => $newStock['cost_per_unit'],
+                    'store_id' => $request->user()->storePreference->store_id
                 ]);
             }
         });
-        
-        return  $pc->productAndModelsJoin();
+
+        return $pc->productAndModelsJoin($request);
     }
 
     /**

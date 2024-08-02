@@ -1,6 +1,5 @@
 import { Card } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import ProductsTable from '../productsTable'
 import { Icon } from '@iconify/react'
 import Button from "../../../components/inputs/Button"
 import SideModal from '../../../components/layout/sideModal'
@@ -9,6 +8,10 @@ import Api from '../../../api/Api'
 import axios, { Axios } from 'axios'
 import FormInputSelect from '../../../components/inputs/FormInputSelect'
 import { addOrUpdateUrlParam } from '../../../api/Util'
+import Modal from '../../../components/layout/modal'
+import ExcelUploadForm from './ExcelUploadForm'
+import { SnackbarProvider, useSnackbar } from 'notistack'
+import StoreProductsTable from './StoreProductsTable'
 
 function StoreProductsPage() {
   const [searchKey, setSearchKey] = useState('')
@@ -17,6 +20,8 @@ function StoreProductsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [filters, setFilters] = useState([])
   const [fullUrl, setFullUrl] = useState(null)
+  const [productUploadTemplate, setProductUploadTemplate] = useState(null)
+  const [showUploadOptions, setShowUploadOptions] = useState(false)
   const [selectItems, setSelectItems] = useState({
     basicQuantityFromDB: null,
     collectionTypesFromDb: null,
@@ -27,6 +32,7 @@ function StoreProductsPage() {
     data: null
   })
 
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const updateProduct = (val) => {
     setEdit({
@@ -40,12 +46,13 @@ function StoreProductsPage() {
 
   const fetchAllProducts = (url) => {
     setIsLoading(true)
-    Api.get(url ?? '/product/all').then(res => {
+    Api.get(url ?? '/store-products/all').then(res => {
       const { products, filters, full_url } = res.data
       setData(products)
       setFilters(filters)
       setFullUrl(full_url)
       setIsLoading(false)
+      console.log(products)
     })
       .catch(err => {
         console.log(err.response)
@@ -82,6 +89,36 @@ function StoreProductsPage() {
       )).catch(err => console.log(err))
   }
 
+  const handleOnProductFileUpload = async () => {
+    if (productUploadTemplate == null) {
+      enqueueSnackbar("Failed To Upload", { variant: "error" })
+      return;
+    }
+    const formData = new FormData()
+    formData.append("template_file", productUploadTemplate)
+
+    try {
+      setShowUploadOptions(false)
+      enqueueSnackbar("Uploading Products Please Wait...", { variant: "default" })
+      var response = await Api.post('/store-products/import', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      enqueueSnackbar("Product Upload Success", { variant: "success" });
+      fetchAllProducts();
+      fetchDataToSelect()
+    } catch (error) {
+      console.log(error)
+      if (error?.response?.status == 422) {
+        enqueueSnackbar(error.response.data, { variant: "error" });
+      }
+      setShowUploadOptions(true)
+    } finally {
+
+    }
+  }
+
   useEffect(() => {
     fetchAllProducts()
     fetchDataToSelect()
@@ -89,6 +126,9 @@ function StoreProductsPage() {
 
   return (
     <div className='text-sm h-max max-w-6xl mx-auto'>
+      <Modal onClose={() => setShowUploadOptions(false)} open={showUploadOptions} label="Upload Products">
+        <ExcelUploadForm handleUpload={handleOnProductFileUpload} getFile={setProductUploadTemplate} />
+      </Modal>
       <Card className='py-6'>
         <div className='flex flex-col md:flex-row gap-3  justify-between items-center px-6 pb-6'>
           <div className="flex grow items-center flex-col md:flex-row gap-3 w-full ">
@@ -108,14 +148,14 @@ function StoreProductsPage() {
               text="reset"
             />}
           </div>
-          <Button className="w-full  my-auto md:w-auto" info onClick={() => { setEdit(val => val = { ...val, data: null }); setOpenModal(true) }}>
+          <Button className="w-full  my-auto md:w-auto" info onClick={() => setShowUploadOptions(true)}>
             <div className='flex items-center gap-2 text-xs'>
               <Icon icon="flowbite:upload-outline" fontSize={22} />
               <span className=''>Upload Store Product</span>
             </div>
           </Button>
         </div>
-        <ProductsTable data={data} products={data.data}
+        <StoreProductsTable data={data} products={data.data}
           isLoading={isLoading}
           setFilters={setFilters}
           setIsLoading={setIsLoading}

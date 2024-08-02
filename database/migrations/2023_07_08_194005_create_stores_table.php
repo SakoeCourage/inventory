@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('stockhistories', function (Blueprint $table) {
-            $table->foreignId('supplier_id')->change()->nullable(true);
+        Schema::create('stores', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignId("store_branch_id")->references("id")->on("store_branches");
+            $table->string("store_name");
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('stockhistories', function (Blueprint $table) {
-           
-        });
+        Schema::dropIfExists('stores');
     }
 };

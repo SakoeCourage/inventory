@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('productsmodels', function (Blueprint $table) {
-            $table->foreignId('collection_method')->nullable();
+        Schema::table('invoice_products', function (Blueprint $table) {
+            $table->foreignId('store_id')->references('id')
+            ->on('store')
+            ->onDelete('cascade');
         });
     }
 
@@ -21,8 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('productsmodels', function (Blueprint $table) {
-            $table->dropColumn('collection_method');
+        Schema::table('invoice_products', function (Blueprint $table) {
+            $table->dropColumn('store_id');
         });
     }
 };

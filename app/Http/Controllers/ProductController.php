@@ -6,6 +6,7 @@ use App\Models\BasicSellingQuantity;
 use App\Models\CollectionType;
 use App\Models\Product;
 use App\Models\Productsmodels;
+use App\Models\StoreProduct;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -20,17 +21,18 @@ class ProductController extends Controller
     public function index(Product $product, Request $request)
     {
         return [
-            'products' => $product->filter(request()->only(['search', 'category']))
+            'products' => $product->withCount("models")->filter(request()->only(['search', 'category']))
                 ->latest()->paginate(10)->withQueryString()
-                ->through(fn ($currentproduct) =>
-                [
-                    'id' => $currentproduct->id,
-                    'updated_at' => $currentproduct->updated_at,
-                    'product_name' => $currentproduct->product_name,
-                    'quantity_in_stock' => $currentproduct->quantity_in_stock,
-                    'basic_quantity' => $currentproduct->basicQuantity->symbol,
-                    'category_name' => $currentproduct->category->category
-                ]),
+                ->through(fn($currentproduct) =>
+                    [
+                        'id' => $currentproduct->id,
+                        'updated_at' => $currentproduct->updated_at,
+                        'product_name' => $currentproduct->product_name,
+                        'quantity_in_stock' => $currentproduct->quantity_in_stock,
+                        'basic_quantity' => $currentproduct->basicQuantity->symbol,
+                        'category_name' => $currentproduct->category->category,
+                        "models_count" => $currentproduct->models_count
+                    ]),
             'filters' => $request->only(['search', 'category']),
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'category')))
         ];
@@ -40,7 +42,7 @@ class ProductController extends Controller
      */
     public function getProductByIdandName($id, $product_name)
     {
-        $product =  Product::where('id', $id)->where('product_name', $product_name)->firstOrFail();
+        $product = Product::where('id', $id)->where('product_name', $product_name)->firstOrFail();
 
         return [
             'product' => $product,
@@ -49,11 +51,77 @@ class ProductController extends Controller
     }
 
 
-    public function productAndModelsJoin()
+    public function productAndModelsJoin(Request $request)
     {
+
+        $storeId = $request->user()->storePreference->store_id;
+
+        $productsCollection = DB::table('store_products')
+            ->join('productsmodels', 'store_products.productsmodel_id', '=', 'productsmodels.id')
+            ->join('products', 'productsmodels.product_id', '=', 'products.id')
+            ->join('basic_selling_quantities', 'products.basic_selling_quantity_id', '=', 'basic_selling_quantities.id')
+            ->where('store_products.store_id', $storeId)
+            ->select(
+                'products.id as product_id',
+                'products.product_name',
+                'products.has_models',
+                'products.category_id',
+                'products.created_at as product_created_at',
+                'products.updated_at as product_updated_at',
+                'basic_selling_quantities.id as basic_quantity_id',
+                'basic_selling_quantities.name as basic_quantity_name',
+                'basic_selling_quantities.symbol as basic_quantity_symbol',
+                'basic_selling_quantities.created_at as basic_quantity_created_at',
+                'basic_selling_quantities.updated_at as basic_quantity_updated_at'
+            )
+            ->distinct()
+            ->get();
+
+
+
+
         return [
-            'products' => Product::with('basicQuantity')->latest()->get(),
-            'models' => Productsmodels::with('collectionType:id,type')->get()
+            'models' => DB::table('store_products')
+                ->join('productsmodels', 'store_products.productsmodel_id', '=', 'productsmodels.id')
+                ->leftJoin('collection_types', 'productsmodels.collection_method', '=', 'collection_types.id')
+                ->where('store_products.store_id', $storeId)
+                ->select(
+                    'productsmodels.id',
+                    'productsmodels.model_name',
+                    DB::raw('productsmodels.unit_price / 100 as unit_price'),
+                    'store_products.quantity_in_stock as quantity_in_stock',
+                    'productsmodels.in_collection',
+                    DB::raw('productsmodels.price_per_collection / 100 as price_per_collection'),
+                    'productsmodels.quantity_per_collection',
+                    DB::raw('productsmodels.cost_per_unit / 100 as cost_per_unit'),
+                    DB::raw('productsmodels.cost_per_collection / 100 as cost_per_collection'),
+                    'productsmodels.collection_method',
+                    'productsmodels.product_id',
+                    'productsmodels.created_at',
+                    'productsmodels.updated_at',
+                    'collection_types.id as collection_type_id',
+                    'collection_types.type as collection_type'
+                )
+                ->distinct()
+                ->get(),
+            'products' => $productsCollection->map(function ($product) {
+                return [
+
+                    'id' => $product->product_id,
+                    'product_name' => $product->product_name,
+                    'has_models' => $product->has_models,
+                    'category_id' => $product->category_id,
+                    'created_at' => $product->product_created_at,
+                    'updated_at' => $product->product_updated_at,
+                    'basic_quantity' => [
+                        'id' => $product->basic_quantity_id,
+                        'name' => $product->basic_quantity_name,
+                        'symbol' => $product->basic_quantity_symbol,
+                        'created_at' => $product->basic_quantity_created_at,
+                        'updated_at' => $product->basic_quantity_updated_at,
+                    ]
+                ];
+            })
         ];
     }
 
@@ -77,7 +145,7 @@ class ProductController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
-            $newproduct =  Product::create([
+            $newproduct = Product::create([
                 'product_name' => $request->product_name,
                 'category_id' => $request->category,
                 'basic_selling_quantity_id' => BasicSellingQuantity::where('name', $request->basic_selling_quantity)->firstOrFail()->id,
@@ -108,13 +176,13 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $product);
         return [
-            'product' => $product->get(['id', 'product_name', 'quantity_in_stock', 'category_id'])->first(),
+            'product' => $product->get(['id', 'product_name', 'category_id'])->first(),
             'basic_selling_quantity' => $product->first()->basicQuantity,
             'models' => $product->first()->models->map(function ($model) {
                 return [
                     'id' => $model->id,
-                    'collection_method' => (bool)$model->in_collection ? CollectionType::where('id', $model->collection_method)->firstOrFail()->type : null,
-                    'in_collection' => (bool)$model->in_collection,
+                    'collection_method' => (bool) $model->in_collection ? CollectionType::where('id', $model->collection_method)->firstOrFail()->type : null,
+                    'in_collection' => (bool) $model->in_collection,
                     'model_name' => $model->model_name,
                     'price_per_collection' => $model->price_per_collection,
                     'quantity_per_collection' => $model->quantity_per_collection,
@@ -132,7 +200,7 @@ class ProductController extends Controller
             ->join('categories', 'products.category_id', 'categories.id')
             ->where('productsmodels.quantity_in_stock', 0)
             ->selectRaw(
-               'categories.category,
+                'categories.category,
                 products.product_name,
                 products.id as product_id,
                 productsmodels.id as model_id,

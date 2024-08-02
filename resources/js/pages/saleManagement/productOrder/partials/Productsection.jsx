@@ -54,20 +54,12 @@ function Productsection({ productsFromDB, modelsFromDB, formData, setFormData, i
         }
     }
 
-
-
-
-
     return (
         <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md '>
             {!requiredAttention ? <nav className='  flex items-center gap-2 p-3 text-blue-950/70  max-w-4xl mx-auto mt-'>
                 <nav className=' flex items-center gap-2'>
                     <Icon icon="material-symbols:shopping-cart" /> <span>Product</span>
                 </nav>
-                <button onClick={() => setShowProductSearchModal(true)} className=' px-2 py-1 border text-sm rounded-full flex items-center gap-1 ml-auto'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M20.031 20.79c.46.46 1.17-.25.71-.7l-3.75-3.76a7.904 7.904 0 0 0 2.04-5.31c0-4.39-3.57-7.96-7.96-7.96s-7.96 3.57-7.96 7.96c0 4.39 3.57 7.96 7.96 7.96c1.98 0 3.81-.73 5.21-1.94l3.75 3.75zM4.11 11.02c0-3.84 3.13-6.96 6.96-6.96c3.84 0 6.96 3.12 6.96 6.96s-3.12 6.96-6.96 6.96c-3.83 0-6.96-3.12-6.96-6.96z" /></svg>
-                    <span>Extended Product Search</span>
-                </button>
             </nav> :
                 <nav className=' flex items-center p-3 py-4 gap-2 bg-red-50'>
                     <svg className=' text-red-500' xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 36 36"><circle cx="17.93" cy="11.9" r="1.4" fill="currentColor" class="clr-i-outline clr-i-outline-path-1" /><path fill="currentColor" d="M21 23h-2v-8h-3a1 1 0 0 0 0 2h1v6h-2a1 1 0 1 0 0 2h6a1 1 0 0 0 0-2Z" class="clr-i-outline clr-i-outline-path-2" /><path fill="currentColor" d="M18 6a12 12 0 1 0 12 12A12 12 0 0 0 18 6Zm0 22a10 10 0 1 1 10-10a10 10 0 0 1-10 10Z" class="clr-i-outline clr-i-outline-path-3" /><path fill="none" d="M0 0h36v36H0z" /></svg>
@@ -80,7 +72,6 @@ function Productsection({ productsFromDB, modelsFromDB, formData, setFormData, i
                 </nav>}
             <hr className='border border-gray-200 w-full border-dotted my-0' />
             <nav className='flex flex-col py-4 relative min-h-[15rem]'>
-
                 {productsFromDB && modelsFromDB &&
                     <Productselection
                         requiredAttention={requiredAttention}

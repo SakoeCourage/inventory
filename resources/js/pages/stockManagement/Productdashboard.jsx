@@ -29,6 +29,7 @@ function Productsdashboard() {
             Api.get(`/product/models/${searchParams.get('model')}/stock/data`)
                 .then(res => {
                     setStockData(res.data)
+                    console.log(res.data)
                 })
                 .catch(err => {
                     console.log(err)
@@ -103,6 +104,7 @@ function Productsdashboard() {
                     />
                     <Productactioncard
                         setShowStockingModal={setShowStockingModal}
+                        stockData={stockData}
                     />
                 </div>
                 <div className=' mt-12 text-sm w-full'>

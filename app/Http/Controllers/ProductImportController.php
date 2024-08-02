@@ -49,14 +49,22 @@ class ProductImportController extends Controller
     function collectProductData($sheet)
     {
         $productsFromSheets = [];
-
+        
         $highestRow = $sheet->getHighestDataRow();
         for ($row = 2; $row <= $highestRow; $row++) {
+            $productName = $sheet->getCell('A' . $row)->getValue();
+            $modelName = $sheet->getCell('B' . $row)->getValue();
+    
+            // Skip rows where product name or model name is empty
+            if (empty($productName) || empty($modelName)) {
+                continue;
+            }
+    
             $productsFromSheets[] = [
-                "product_name" => $sheet->getCell('A' . $row)->getValue(),
+                "product_name" => $productName,
                 "basic_selling_quantity_id" => null,
                 "basic_selling_quantity_name" => $sheet->getCell('E' . $row)->getValue(),
-                "model_name" => $sheet->getCell('B' . $row)->getValue(),
+                "model_name" => $modelName,
                 "unit_price" => $sheet->getCell('G' . $row)->getValue(),
                 "price_per_collection" => $sheet->getCell('F' . $row)->getValue(),
                 "in_collection" => !empty($sheet->getCell('C' . $row)->getValue()) ? (($sheet->getCell('C' . $row)->getValue() !== '-') && !empty($sheet->getCell('D' . $row)->getValue())) : false,
@@ -67,10 +75,10 @@ class ProductImportController extends Controller
                 "cost_per_collection" => $sheet->getCell('H' . $row)->getValue(),
             ];
         }
-
+    
         return $productsFromSheets;
     }
-
+    
     function groupAndNormalizeData($productsFromSheets)
     {
         $incomingBasicUnits = [];

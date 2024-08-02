@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('store_users', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId("user_id")->references("id")
+            $table->foreignId("user_id")->nullable()->references("id")
                 ->on("users")->onDelete('cascade');
-            $table->foreignId("store_id")->references("id")
+            $table->foreignId("store_id")->nullable()->references("id")
                 ->on("stores")->onDelete('cascade');
         });
     }

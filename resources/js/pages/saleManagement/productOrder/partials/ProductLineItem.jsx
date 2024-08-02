@@ -31,7 +31,7 @@ function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductCha
 
     let getCollectionType = (id) => {
         if (id) {
-            return GetmodelfromId(id)?.collection_type?.type
+            return GetmodelfromId(id)?.collection_type
         }
 
     }

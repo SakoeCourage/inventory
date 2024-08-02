@@ -32,8 +32,6 @@ class CategorySheetExport implements FromCollection, WithHeadings, WithTitle, Wi
                 'productsmodels.in_collection',
                 'productsmodels.quantity_per_collection',
                 'basic_selling_quantities.name as basic_unit',
-                'productsmodels.quantity_in_stock as model_quantity_in_stock',
-                'products.quantity_in_stock as product_quantity_in_stock',
                 'collection_types.type as collection_type'
             ])
             ->get()

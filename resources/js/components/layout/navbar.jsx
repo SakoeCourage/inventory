@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,11 +9,18 @@ import { Icon } from '@iconify/react';
 import Badge from '@mui/material/Badge';
 import { useDispatch, useSelector } from 'react-redux';
 import { Logout } from '../../store/authSlice';
-import { getAuth } from '../../store/authSlice';
+import { getAuth, getUser } from '../../store/authSlice';
 import { AccessByPermission } from '../../pages/authorization/AccessControl';
 import { useNavigate } from 'react-router-dom';
 import Loadingwheel from '../Loaders/Loadingwheel';
 import Logo from '../ui/Logo';
+import IconifyIcon from '../ui/IconifyIcon';
+import SelectInput from '@mui/material/Select/SelectInput';
+import FormInputSelect from '../inputs/FormInputSelect';
+import Modal from './modal';
+import Api from '../../api/Api';
+import { useSnackbar } from 'notistack';
+
 
 /**
  * 
@@ -29,28 +36,110 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
   const navigate = useNavigate()
   const open = Boolean(anchorEl);
   const dispatch = useDispatch()
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const [showStoresModal, setShowStoresModal] = useState(false);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const Auth = useSelector(getAuth)
+
   const { auth } = Auth
   const handleClose = () => {
     setAnchorEl(null);
   };
 
 
+  const handleOnChangeStorePreference = (store_id) => {
+    if (store_id == null) return;
+    enqueueSnackbar("Changing Store Please wait...", { variant: "default" })
+    setShowStoresModal(false)
+    Api.post("/user/store/change-preference", {
+      store_id: store_id
+    })
+      .then(res => {
+        enqueueSnackbar("Store Preference Changed", { variant: "success" })
+        dispatch(getUser())
+      })
+      .catch(err => {
+        enqueueSnackbar("Failed to Change Store", { variant: "error" })
+      })
+  }
+
+
   return (
     <div className='bg-info-900/90 h-full'>
+      <Modal onClose={() => setShowStoresModal(false)} label="Stores" hideDivider={true} open={showStoresModal} show>
+        <>
+          {Array.isArray(auth?.stores) ? <>
+            <nav>
+              Please select from the list of available store
+            </nav>
+            <div className='flex flex-col py-2 divide-y'>
+              {auth?.stores.map((store, i) => <nav key={i} className='store-list-item'> <nav className='flex items-start  p-2'>
+                <nav className='bg-green-100 font-medium text-green-900 p-2 w-6 my-auto flex items-center justify-center h-6 text-sm rounded-md aspect-square'>
+                  {i + 1}
+                </nav>
+                <nav className='flex items-center justify-between w-full px-5 '>
+                  <nav className='text-green-950 font-medium'>
+                    {store?.store_name}
+                  </nav>
+                  {store?.id == auth?.store_preference?.store_id ?
+                    <nav className="flex items-center text-xs">
+                      <span>Current</span>
+                      <IconifyIcon className="h-6 w-6" icon="mdi:check-all" />
+                    </nav> : <button onClick={() => handleOnChangeStorePreference(store?.id)} className='flex items-center text-xs gap-2 text-red-700'>
+                      <span>
+                        Switch to store
+                      </span>
+                      <IconifyIcon icon="mdi:arrow-right-thin" className="h-4 w-4" />
+                    </button>
+                  }
+                </nav>
+              </nav>
+                <nav></nav></nav>)
+              }
+            </div>
+          </>
+            :
+            <div className='flex items-center justify-center'>
+              stores not found
+            </div>
+
+          }
+        </>
+      </Modal>
+
       <div className=' container mx-auto flex justify-between items-center h-full px-8'>
         <nav className='flex items-center gap-1'>
           {fullSideBar && <IconButton onClick={() => setFullSideBar(prev => !prev)} size="small"><Icon className='text-gray-300 hidden xl:block' icon="ic:outline-menu-open" fontSize={26} /></IconButton>}
-          {!fullSideBar && <nav className='!text-info-100 h-10 w-40'>
+
+          {!fullSideBar && <nav className='!text-info-100 h-10 w-40 hidden sm:block'>
             <Logo /></nav>}
         </nav>
         {logingOut && <Loadingwheel />}
-        <div>
-          <div className='flex items-center gap-1'>
+        <div className='flex items-center divide-x-2 divide-green-800'>
+          {auth?.current_store_branch?.branch_name &&
+            <nav className='px-2 text-white  flex items-center gap-1'>
+              <IconifyIcon icon="hugeicons:location-05" className="!p-0 !h-4 !w-4" />
+              {auth?.current_store_branch?.branch_name}
+              <span>
+                -
+              </span>
+              <span>
+                {auth?.store_preference?.store?.store_name}
+              </span>
+            </nav>
+          }
+          {(auth?.stores?.length > 1) && auth?.store_preference?.store &&
+            <nav onClick={() => setShowStoresModal(true)} className='px-2 text-white flex items-center gap-1 cursor-pointer'>
+              <IconifyIcon className="!h-6 !w-6" icon="solar:pen-2-broken" />
+              <span className=''>Change Store</span>
+            </nav>
+          }
+          <div className='flex px-2 items-center gap-1'>
             <button onClick={handleClick} className=' bg-info-100/70 flex items-center pr-5 rounded-full'>
               <IconButton
                 size="small"

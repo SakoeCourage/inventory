@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->bigInteger('amount');
             $table->bigInteger('profit');
+            $table->boolean('is_refunded')->comment('0 = item not refunded,1 = item refunded')->default(false);
             $table->timestamps();
         });
     }

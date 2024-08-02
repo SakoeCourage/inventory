@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sales', function (Blueprint $table) {
-            $table->string('sale_invoice')->after('customer_contact')->nullable()->default('SALE-');
+           Schema::table('proforma_invoices', function (Blueprint $table) {
+            $table->foreignId("store_id")
+            ->references("id")
+            ->on("stores")
+            ->onDelete("cascade");
         });
     }
 
@@ -21,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sales', function (Blueprint $table) {
-            $table->dropColumn('sale_invoice');
+        Schema::table('proforma_invoices', function (Blueprint $table) {
+            $table->dropColumn("store_id");
         });
     }
 };

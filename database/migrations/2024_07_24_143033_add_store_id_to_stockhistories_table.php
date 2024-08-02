@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sales', function (Blueprint $table) {
+        Schema::table('stockhistories', function (Blueprint $table) {
             $table->foreignId("store_id")
-            ->nullable()
-            ->references("id")
-            ->on("stores");
+            ->references('id')
+            ->on('stores')
+            ->onDelete('cascade');
         });
     }
 
@@ -24,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sales', function (Blueprint $table) {
-            $table->dropColumn("store_id");
+        Schema::table('stockhistories', function (Blueprint $table) {
+            $table->dropColumn('store_id');
         });
     }
 };

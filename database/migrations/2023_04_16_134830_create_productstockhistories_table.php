@@ -19,6 +19,10 @@ return new class extends Migration
             $table->bigInteger('quantity')->nullable()->default(0);
             $table->bigInteger('net_quantity')->nullable()->default(0);
             $table->foreignId('user_id');
+            $table->foreignId("store_id")
+            ->references("id")
+            ->on("stores")
+            ->onDelete("cascade");
             $table->timestamps();
         });
     }
