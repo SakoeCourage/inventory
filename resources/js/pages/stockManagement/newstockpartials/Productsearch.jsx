@@ -66,7 +66,7 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
 
   useEffect(() => {
     if (Boolean(products?.data?.length)) {
-      console.log(products?.data);
+      // console.log(products?.data);
       let currentEntry = [];
       const regex = new RegExp(filters?.search, 'i');
       products.data.forEach((product, i) => {

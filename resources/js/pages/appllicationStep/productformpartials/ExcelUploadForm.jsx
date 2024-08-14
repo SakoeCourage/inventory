@@ -11,10 +11,12 @@ const fileTypes = ["xlsx", "xls"];
  * @param {{
  *  getFile: (f:File | null)=>void,
  *  handleUpload: ()=> void
+ *  file: any
+ *  reset?: ()=>void
  *  }}  
  * @returns 
  */
-function ExcelUploadForm({ getFile,handleUpload }) {
+function ExcelUploadForm({ getFile, handleUpload, file: pFile }) {
     const [file, setFile] = useState(null);
 
     const handleChange = (file) => {
@@ -24,6 +26,11 @@ function ExcelUploadForm({ getFile,handleUpload }) {
     useEffect(() => {
         getFile(file)
     }, [file])
+
+    
+    useEffect(() => {
+        setFile(pFile)
+    }, [pFile])
 
 
     return (

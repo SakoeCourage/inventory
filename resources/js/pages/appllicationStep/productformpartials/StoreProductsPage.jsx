@@ -12,6 +12,9 @@ import Modal from '../../../components/layout/modal'
 import ExcelUploadForm from './ExcelUploadForm'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import StoreProductsTable from './StoreProductsTable'
+import IconifyIcon from '../../../components/ui/IconifyIcon'
+import AddStoreProductsManually from './AddStoreProductsManually'
+
 
 function StoreProductsPage() {
   const [searchKey, setSearchKey] = useState('')
@@ -22,6 +25,7 @@ function StoreProductsPage() {
   const [fullUrl, setFullUrl] = useState(null)
   const [productUploadTemplate, setProductUploadTemplate] = useState(null)
   const [showUploadOptions, setShowUploadOptions] = useState(false)
+  const [showAddStoreProdManuallyModal, setShowAddStoreProdManuallyModal] = useState(false);
   const [selectItems, setSelectItems] = useState({
     basicQuantityFromDB: null,
     collectionTypesFromDb: null,
@@ -52,7 +56,6 @@ function StoreProductsPage() {
       setFilters(filters)
       setFullUrl(full_url)
       setIsLoading(false)
-      console.log(products)
     })
       .catch(err => {
         console.log(err.response)
@@ -111,7 +114,7 @@ function StoreProductsPage() {
     } catch (error) {
       console.log(error)
       if (error?.response?.status == 422) {
-        enqueueSnackbar(error.response.data, { variant: "error" });
+        enqueueSnackbar(error.response.data ?? "Failed To Upload Store Product - Invalid Template", { variant: "error" });
       }
       setShowUploadOptions(true)
     } finally {
@@ -128,6 +131,13 @@ function StoreProductsPage() {
     <div className='text-sm h-max max-w-6xl mx-auto'>
       <Modal onClose={() => setShowUploadOptions(false)} open={showUploadOptions} label="Upload Products">
         <ExcelUploadForm handleUpload={handleOnProductFileUpload} getFile={setProductUploadTemplate} />
+      </Modal>
+      <Modal
+        maxWidth="lg"
+        fullWidth
+        onClose={() => { fetchAllProducts(); setShowAddStoreProdManuallyModal(false) }} open={showAddStoreProdManuallyModal}
+        label="Add Store Products">
+        <AddStoreProductsManually />
       </Modal>
       <Card className='py-6'>
         <div className='flex flex-col md:flex-row gap-3  justify-between items-center px-6 pb-6'>
@@ -148,6 +158,12 @@ function StoreProductsPage() {
               text="reset"
             />}
           </div>
+          <Button className="w-full  my-auto md:w-auto" info onClick={() => setShowAddStoreProdManuallyModal(true)}>
+            <div className='flex items-center gap-2 text-xs'>
+              <IconifyIcon icon="icon-park:list-add" className='!text-white' fontSize={22} />
+              <span className=''>Add Products Manually</span>
+            </div>
+          </Button>
           <Button className="w-full  my-auto md:w-auto" info onClick={() => setShowUploadOptions(true)}>
             <div className='flex items-center gap-2 text-xs'>
               <Icon icon="flowbite:upload-outline" fontSize={22} />
@@ -158,6 +174,9 @@ function StoreProductsPage() {
         <StoreProductsTable data={data} products={data.data}
           isLoading={isLoading}
           setFilters={setFilters}
+          filters={filters}
+          full_url={fullUrl}
+          setFullUrl={setFullUrl}
           setIsLoading={setIsLoading}
           updateProduct={updateProduct}
           setData={setData}

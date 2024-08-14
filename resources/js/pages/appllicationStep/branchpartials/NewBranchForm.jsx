@@ -12,7 +12,7 @@ function NewBranchForm({ onClose, showBranchForm, fetchBranchedTable }) {
     })
     useEffect(() => {
         const { branch_name, id, mode } = showBranchForm
-        if (mode == 'Update Branch Data') {
+        if (mode == 'Update Location Data') {
             setFormData({
                 id: id,
                 branch_name: branch_name
@@ -42,7 +42,7 @@ function NewBranchForm({ onClose, showBranchForm, fetchBranchedTable }) {
                     helperText={errors?.branch_name}
                     value={formData.branch_name}
                     onChange={(e) => setFormData(cv => cv = { ...cv, branch_name: e.target.value })}
-                    label='Branch Name' />
+                    label='Location Name' />
             </nav>
             <nav className='flex items-center mt-auto w-full p-2'>
                 <Button onClick={() => onClose()} otherClasses="grow" text="cancel" neutral />

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Productsmodels;
 use App\Models\Product;
 use App\Models\StoreProduct;
+use App\Models\CollectionType;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class ProductsmodelsController extends Controller
@@ -137,7 +139,7 @@ class ProductsmodelsController extends Controller
      */
     public function edit(Productsmodels $productsmodels)
     {
-        //
+
     }
 
     /**
@@ -145,7 +147,18 @@ class ProductsmodelsController extends Controller
      */
     public function update(Request $request, Productsmodels $productsmodels)
     {
-        //
+        $productsmodels->update([
+            'model_name' => $request['model_name'],
+            'unit_price' => $request['unit_price'],
+            'cost_per_unit' => $request['cost_per_unit'],
+            'in_collection' => $request['in_collection'],
+            'price_per_collection' => $request['price_per_collection'] ?? null,
+            'cost_per_collection' => $request['cost_per_collection'] ?? null,
+            'quantity_per_collection' => $request['quantity_per_collection'] ?? null,
+            'collection_method' => $request['in_collection'] ? CollectionType::where('type', $request['collection_method'])->firstOrFail()->id : null,
+        ]);
+
+        return response("Model Updated Sucessfully", 200);
     }
 
     /**

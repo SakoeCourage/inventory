@@ -26,7 +26,7 @@ class StoreProductSheetImport implements ToCollection, WithHeadingRow
     {
         $entries = $this->stockHistories;
 
-        if(count($entries) == 0){
+        if (count($entries) == 0) {
             return;
         }
 
@@ -37,7 +37,7 @@ class StoreProductSheetImport implements ToCollection, WithHeadingRow
 
         // Fetch the last entries for each productsmodel_id
         $lastEntries = Productstockhistory::whereIn('productsmodel_id', $productsmodelIds)
-            ->where("store_id",$this->storeId)
+            ->where("store_id", $this->storeId)
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy('productsmodel_id');
@@ -69,11 +69,12 @@ class StoreProductSheetImport implements ToCollection, WithHeadingRow
             'quantity_of_basic_unit',
         ];
 
-       
+
 
         if ($rows->isEmpty() || array_diff($expectedHeaders, array_keys($rows->first()->toArray()))) {
             throw new \Exception('Headers do not match the expected format.');
         }
+
 
         $modelNames = $rows->pluck('model_name')->unique()->map(function ($name) {
             return strtolower($name);
@@ -103,23 +104,32 @@ class StoreProductSheetImport implements ToCollection, WithHeadingRow
                 return $data['product_name'] === $productName && $data['product_model'] === $modelName;
             });
 
-            if (!$productModelData) {
+            if ($productModelData == null) {
                 continue;
             }
 
+
+            
+            $quantityToAdd = 0;
+            
+            if ($productModelData['in_collection']) {
+                $quantityToAdd =
+                (in_array($row['quantity_of_packaging_unit'], $invalidValues) ? 0 : $row['quantity_of_packaging_unit'])
+                * $productModelData['quantity_per_collection']
+                + (in_array($row['quantity_of_basic_unit'], $invalidValues) ? 0 : $row['quantity_of_basic_unit']);
+            } else {
+                $quantityToAdd = in_array($row['quantity_of_basic_unit'], $invalidValues) ? 0 : $row['quantity_of_basic_unit'];
+            }
+
+            if($quantityToAdd == 0){
+                continue;
+            }
+            
             $storeProduct = StoreProduct::firstOrCreate([
                 'productsmodel_id' => $productModelData['product_model_id'],
                 'store_id' => $this->storeId,
             ]);
 
-            $quantityToAdd = 0;
-
-            if ($productModelData['in_collection']) {
-                $quantityToAdd = (in_array($row['quantity_of_packaging_unit'], $invalidValues, true) ? 0 : $row['quantity_of_packaging_unit']) * $productModelData['quantity_per_collection']
-                    + (in_array($row['quantity_of_basic_unit'], $invalidValues) ? 0 : $row['quantity_of_basic_unit']);
-            } else {
-                $quantityToAdd = in_array($row['quantity_of_basic_unit'], $invalidValues) ? 0 : $row['quantity_of_basic_unit'];
-            }
             $storeProduct->increment('quantity_in_stock', $quantityToAdd);
 
             $this->stockHistories[] = [
@@ -128,6 +138,7 @@ class StoreProductSheetImport implements ToCollection, WithHeadingRow
                 'quantity_in_stock' => $storeProduct->quantity_in_stock
 
             ];
+
         }
         $this->updateOrCreateProductStockHistories();
     }

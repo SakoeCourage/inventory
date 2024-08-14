@@ -20,6 +20,7 @@
         "staudenmeir/eloquent-json-relations": "^1.1"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^2.13",
         "fly-apps/dockerfile-laravel": "^1.0",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

@@ -70,10 +70,14 @@ route::group(['middleware' => 'auth:sanctum'], function () {
             return Excel::download(new ProductCategoryExport, 'products_by_category.xlsx');
         });
     });
+    Route::group(['prefix' => 'product-model'], function () {
+        Route::post('/update/{productsmodels}', [App\Http\Controllers\ProductsmodelsController::class, 'update']);
+    });
 
     Route::group(['prefix' => 'store-products'],function(){
         Route::get('/all', [App\Http\Controllers\StoreProductController::class, 'index']);
         Route::post('/import', [App\Http\Controllers\StoreProductController::class, "import"]);
+        Route::get('/unavailable', [App\Http\Controllers\StoreProductController::class, "NotInStoreProducts"]);
     });
 
     Route::group(['prefix' => 'supplier'], function () {
@@ -86,6 +90,8 @@ route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'stock'], function () {
         Route::post('/new', [App\Http\Controllers\StockhistoryController::class, 'store']);
+        Route::get('/low-products', [App\Http\Controllers\LowStockController::class, 'getLowStockProducts']);
+        Route::post('/low-products/export', [App\Http\Controllers\LowStockController::class, 'exportLowStockProduct']);
     });
     Route::group(['prefix' => 'category'], function () {
         Route::get('/all', [App\Http\Controllers\CategoryController::class, 'index']);
@@ -159,6 +165,9 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/create', [\App\Http\Controllers\StoreController::class, "store"]);
         Route::delete('/delete/{store}', [\App\Http\Controllers\StoreController::class, "destroy"]);
         Route::post('/updateorcreate', [\App\Http\Controllers\StoreController::class, "updateorcreate"]);
+        Route::post('/toggle-product', [\App\Http\Controllers\StoreController::class, "toggleProductToStore"]);
+        Route::post('/product-quantity', [\App\Http\Controllers\StoreController::class, "setInitialStoreProductQuantity"]);
+        Route::post('/product-quantity/to-store', [\App\Http\Controllers\StoreController::class, "productQuantityToStore"]);
 
     });
 

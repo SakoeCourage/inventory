@@ -10,17 +10,19 @@ function Addtostockform({ stockData, fetchAllData, setShowStockingModal }) {
     quantity: null,
     description: null,
   })
+
   const [errors, setErrors] = useState({})
+  
   const [calculatedFields, setCalculatedFields] = useState({
     collection: 0,
     units: 0
   })
 
   const getEstimatedQuantity = useMemo(() => {
-    const result = (Number(stockData?.model.quantity_in_stock) + (Number(calculatedFields.collection) * (Number(stockData?.model.quantity_per_collection ?? 1))) + Number(calculatedFields.units))
+    const result = (Number(stockData?.stock_quantity) + (Number(calculatedFields.collection) * (Number(stockData?.model.quantity_per_collection ?? 1))) + Number(calculatedFields.units))
     setFormData(cd => cd = { ...cd, quantity: (Number(calculatedFields.collection) * (Number(stockData?.model.quantity_per_collection ?? 1))) + Number(calculatedFields.units) })
     return result
-  }, [stockData?.model?.quantity_in_stock, calculatedFields])
+  }, [stockData?.stock_quantity, calculatedFields])
 
 
   const handleSubmission = () => {
@@ -53,17 +55,17 @@ function Addtostockform({ stockData, fetchAllData, setShowStockingModal }) {
           <nav className='uppercase text-center'>Stock Balance:</nav>
           <div className="grid grid-cols-2">
             <nav className='font-semibold uppercase flex flex-col gap-3 items-center'>
-              <nav className='text-sm font-normal capitalize'>Before Stocking</nav>
+              <nav className='text-sm font-normal capitalize'>Current</nav>
               <Productcollection
                 in_collections={stockData?.model?.in_collection}
-                quantity={stockData?.model?.quantity_in_stock}
+                quantity={stockData?.stock_quantity}
                 units_per_collection={stockData?.model?.quantity_per_collection}
                 collection_type={stockData?.collection_method}
                 basic_quantity={stockData?.basic_quantity}
               />
             </nav>
             <nav className='font-semibold text-red-950 uppercase flex flex-col gap-3 items-center border-l border-gray-300'>
-              <nav className='text-sm font-normal capitalize'>After Stocking</nav>
+              <nav className='text-sm font-normal capitalize'>Balance</nav>
               <Productcollection
                 in_collections={stockData?.model?.in_collection}
                 quantity={getEstimatedQuantity}

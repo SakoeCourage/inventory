@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('invoice_products', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('store_id')->references('id')
+            ->on('stores')
+            ->onDelete('cascade');
             $table->foreignId("product_id")
             ->references("id")->on("products")->onDelete("cascade");
             $table->foreignId("productsmodel_id")
@@ -24,6 +27,7 @@ return new class extends Migration
             ->onDelete("cascade");
             $table->bigInteger('cost_per_unit');
             $table->bigInteger('cost_per_collection')->nullable()->default(0);
+            
             $table->timestamps();
         });
     }

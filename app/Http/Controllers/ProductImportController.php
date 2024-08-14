@@ -63,16 +63,16 @@ class ProductImportController extends Controller
             $productsFromSheets[] = [
                 "product_name" => $productName,
                 "basic_selling_quantity_id" => null,
-                "basic_selling_quantity_name" => $sheet->getCell('E' . $row)->getValue(),
+                "basic_selling_quantity_name" => $sheet->getCell('E' . $row)->getCalculatedValue(),
                 "model_name" => $modelName,
-                "unit_price" => $sheet->getCell('G' . $row)->getValue(),
-                "price_per_collection" => $sheet->getCell('F' . $row)->getValue(),
-                "in_collection" => !empty($sheet->getCell('C' . $row)->getValue()) ? (($sheet->getCell('C' . $row)->getValue() !== '-') && !empty($sheet->getCell('D' . $row)->getValue())) : false,
+                "unit_price" => $sheet->getCell('G' . $row)->getCalculatedValue(),
+                "price_per_collection" => $sheet->getCell('F' . $row)->getCalculatedValue(),
+                "in_collection" => !empty($sheet->getCell('C' . $row)->getCalculatedValue()) ? (($sheet->getCell('C' . $row)->getCalculatedValue() !== '-') && !empty($sheet->getCell('D' . $row)->getCalculatedValue())) : false,
                 "collection_method" => null,
-                "collection_method_name" => !empty($sheet->getCell('C' . $row)->getValue()) && $sheet->getCell('C' . $row)->getValue() !== '-' ? $sheet->getCell('C' . $row)->getValue() : null,
-                "quantity_per_collection" => $sheet->getCell('D' . $row)->getValue(),
-                "cost_per_unit" => $sheet->getCell('I' . $row)->getValue(),
-                "cost_per_collection" => $sheet->getCell('H' . $row)->getValue(),
+                "collection_method_name" => !empty($sheet->getCell('C' . $row)->getCalculatedValue()) && $sheet->getCell('C' . $row)->getCalculatedValue() !== '-' ? $sheet->getCell('C' . $row)->getCalculatedValue() : null,
+                "quantity_per_collection" => $sheet->getCell('D' . $row)->getCalculatedValue(),
+                "cost_per_unit" => $sheet->getCell('I' . $row)->getCalculatedValue(),
+                "cost_per_collection" => $sheet->getCell('H' . $row)->getCalculatedValue(),
             ];
         }
     
@@ -166,12 +166,12 @@ class ProductImportController extends Controller
             $productModelData = [
                 'product_id' => $product->id,
                 'model_name' => $productData['model_name'],
-                'unit_price' => $productData['unit_price'],
+                'unit_price' => (float)$productData['unit_price'],
                 'in_collection' => $productData['in_collection'],
-                'price_per_collection' => $productData['price_per_collection'],
+                'price_per_collection' => (float)$productData['price_per_collection'],
                 'quantity_per_collection' => $productData['quantity_per_collection'],
-                'cost_per_unit' => $productData['cost_per_unit'],
-                'cost_per_collection' => $productData['cost_per_collection'],
+                'cost_per_unit' => (float)$productData['cost_per_unit'],
+                'cost_per_collection' =>(float)$productData['cost_per_collection'],
             ];
 
             if ($productData['collection_method_name']) {
@@ -242,6 +242,7 @@ class ProductImportController extends Controller
                 // Step 8: Update or create products and product models
                 foreach ($worksheetNames as $sheetName) {
                     $productsFromSheet = $this->collectProductData($spreadsheet->getSheetByName($sheetName));
+                    // throw new \Exception(json_encode($productsFromSheet));
                     $this->updateOrCreateProducts($productsFromSheet, $sheetName);
                 }
             });

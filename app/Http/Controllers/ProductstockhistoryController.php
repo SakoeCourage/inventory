@@ -11,6 +11,7 @@ use App\Models\Supplier;
 use App\Services\ProductStockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -73,6 +74,7 @@ class ProductstockhistoryController extends Controller
             }
             $product_model = Productsmodels::find(request()->productsmodel_id);
             $product = Productsmodels::find(request()->productsmodel_id)->product;
+
             Stockhistory::create([
                 'stock_products' => [
                     ['product_id' => $product->id ,
@@ -83,11 +85,13 @@ class ProductstockhistoryController extends Controller
                      'in_collection' =>(Boolean)$product_model->in_collection,
                     ]
                 ],
+                'store_id' => Auth::user()->storePreference->store_id,
                 // remember to append auth user name
-                'purchase_invoice_number' => 'User Stock Addition - ',
+                'purchase_invoice_number' => 'User Stock Addition - ' . request()->user()?->name,
                 'supplier_id' => null,
                 'record_date' =>now()
                 ]);
+
             $productStockServie->increaseStock((object)[
                 'description' => request()->description,
                 'action_type' => 'addition',

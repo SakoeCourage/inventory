@@ -153,6 +153,7 @@ const ProductDefinitionPage = () => {
         collectionTypesFromDb: null,
         categoriesFromDb: null
     })
+    
     const [edit, setEdit] = useState({
         open: false,
         data: null
@@ -324,7 +325,7 @@ const ProductDefinitionPage = () => {
             <SideModal
                 open={openModal}
                 showDivider
-                maxWidth="2xl"
+                maxWidth="3xl"
                 title={`${edit.open ? "Edit Product" : "New Product"}`}
                 showClose
                 onClose={() => {

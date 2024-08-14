@@ -35,8 +35,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
-
         $data = request()->validate([
             'name' => ['required', 'string', 'min:8', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -52,7 +50,7 @@ class UserController extends Controller
             // creating new using
             $newuser = User::create([
                 'name' => $data['name'],
-                'email' => $data['email'],
+                'email' =>  $data['email'],
                 'password' => Hash::make('inventorylite@'),
             ]);
 
@@ -84,7 +82,6 @@ class UserController extends Controller
             ]);
         });
     }
-
     /**
      * Display the specified resource.
      */

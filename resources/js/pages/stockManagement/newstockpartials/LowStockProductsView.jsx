@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { NewStockContext } from '../Newstock'
+import LowStockProductsTable from './LowStockProductsTable';
+
 
 function LowStockProductsView() {
+  const { getLowStockProducts, lowSockProducts } = useContext(NewStockContext)
+
   return (
-    <div>LowStockProductsView</div>
+    <div>
+      <LowStockProductsTable data={lowSockProducts} />
+    </div>
   )
 }
 

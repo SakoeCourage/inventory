@@ -156,6 +156,34 @@ export const SlideDownAndUpAnimation = {
     exit: { opacity: 0, translateY: '-100vh', transition: { duration: 0.2 } }
 };
 
+export const SlideInFromLeftAnimation = {
+    initial: { opacity: 0, translateX: '-100vw' },
+    animate: {
+        opacity: 1,
+        translateX: '0',
+        transition: {
+            type: 'spring',
+            mass: 0.1,
+            damping: 8
+        }
+    },
+    exit: { opacity: 0, translateX: '-100vw', transition: { duration: 0.2 } }
+};
+
+export const SlideInFromRightAnimation = {
+    initial: { opacity: 0, translateX: '100vw' },
+    animate: {
+        opacity: 1,
+        translateX: '0',
+        transition: {
+            type: 'spring',
+            mass: 0.1,
+            damping: 8
+        }
+    },
+    exit: { opacity: 0, translateX: '100vw', transition: { duration: 0.2 } }
+};
+
 
 export function updateQueryParam(url, param, value) {
     var urlObj = new URL(url);

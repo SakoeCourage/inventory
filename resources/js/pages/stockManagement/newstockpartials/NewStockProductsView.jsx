@@ -8,21 +8,49 @@ import Productcollection from '../../../components/Productcollection'
 import { formatcurrency } from '../../../api/Util'
 import IconifyIcon from '../../../components/ui/IconifyIcon'
 import { Tooltip } from '@mui/material'
-
+import { useSnackbar } from 'notistack'
+import Api from '../../../api/Api'
 
 function UploadProductsView() {
+  const [productUploadTemplate, setProductUploadTemplate] = useState(null)
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const handleOnProductFileUpload = async () => {
+    if (productUploadTemplate == null) {
+      enqueueSnackbar("Failed To Upload", { variant: "error" })
+      return;
+    }
+    const formData = new FormData()
+    formData.append("template_file", productUploadTemplate)
+
+    try {
+      enqueueSnackbar("Uploading Products Please Wait...", { variant: "default" })
+      var response = await Api.post('/store-products/import', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      enqueueSnackbar("Product Upload Success", { variant: "success" });
+      setProductUploadTemplate(null);
+    } catch (error) {
+      if (error?.response?.status == 422) {
+        enqueueSnackbar(error.response.data ?? "Failed To Upload Store Product - Invalid Template", { variant: "error" });
+        return
+      }
+      enqueueSnackbar(error.response.data ?? "Failed To Upload Store Product - Invalid Template", { variant: "error" });
+
+    }
+  }
   return <>
     <ExcelUploadForm
-      handleUpload={() => void (0)}
-      getFile={() => void (0)}
+      handleUpload={() => handleOnProductFileUpload()}
+      getFile={(file) => setProductUploadTemplate(file)}
+      file={productUploadTemplate}
     />
   </>
 }
 function AddProductsManuallyView(
 ) {
-
-
-
   return <>
     <Newstocklineitem
     />
@@ -71,7 +99,7 @@ function NewStockProductsView() {
     <div className=' grid grid-cols-1 lg:grid-cols-10 !grow  h-full  '>
       <nav className='  lg:col-span-5 !h-full '>
         <div className='min-h-[30rem] h-full lg:h-[30rem] overflow-y-scroll'>
-          <div  className=' w-full sticky top-0 '>
+          <div className=' w-full sticky top-0 '>
             <nav className='w-full text-gray-500 grid grid-cols-8 gap-1  bg-white z-20  font-medium py-1 border-b'>
               <nav className='flex items-center !py-1 justify-center col-span-1 text-sm'>#</nav>
               <nav className=' flex items-center !py-1 ml-3 justify-start col-span-2 text-sm'>Product</nav>

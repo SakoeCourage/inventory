@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Models\Productsmodels;
 use App\Models\StoreProduct;
 use Illuminate\Support\Facades\Route;
 
@@ -21,62 +22,115 @@ use Illuminate\Http\Request;
 use App\Exports\ProductCategoryExport;
 use App\Exports\NewProductTemplateExport;
 use App\Imports\ProductImport;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
+use Illuminate\Support\Facades\DB;
 
+// function getProducts($storeId = 3, $search = null, $category = null, $minCurrentBasicQuantity = 0, $minCurrentCollectionQuantity = 0, $maxCurrentBasicQuantity = 400, $maxCurrentCollectionQuantity = 400, $perPage = 20)
+// {
+//     $searchQuery = $search ? '%' . $search . '%' : '%';
+//     $categoryQuery = $category ? '%' . $category . '%' : '%';
 
+//     $query="
+//         SELECT 
+//             sp.id,
+//             sp.updated_at,
+//             p.product_name,
+//             sp.quantity_in_stock,
+//             sp.productsmodel_id,
+//             pm.model_name,
+//             bsq.symbol AS basic_quantity,
+//             c.category AS category_name,
+//             pm.in_collection,
+//             ct.type AS collection_type,
+//             pm.quantity_per_collection AS units_per_collection,
+//             sp.quantity_in_stock AS quantity,
+//             CASE 
+//                 WHEN pm.in_collection THEN FLOOR(sp.quantity_in_stock / pm.quantity_per_collection)
+//                 ELSE NULL
+//             END AS current_collection_quantity,
+//             CASE 
+//                 WHEN pm.in_collection THEN sp.quantity_in_stock % pm.quantity_per_collection
+//                 ELSE sp.quantity_in_stock
+//             END AS current_basic_quantity
+//         FROM 
+//             store_products sp
+//         JOIN 
+//             productsmodels pm ON sp.productsmodel_id = pm.id
+//         JOIN 
+//             products p ON pm.product_id = p.id
+//         LEFT JOIN 
+//             basic_selling_quantities bsq ON p.basic_selling_quantity_id = bsq.id
+//         LEFT JOIN 
+//             categories c ON p.category_id = c.id
+//         LEFT JOIN 
+//             collection_types ct ON pm.collection_method = ct.id
+//         WHERE 
+//             sp.store_id = :storeId
+//         AND (
+//             p.product_name LIKE :searchQuery OR 
+//             c.category LIKE :categoryQuery
+//         )
+//     ";
 
-Route::get('/test-excel', function (Request $request) {
-    return Excel::download(new ProductCategoryExport, 'products_by_category.xlsx');
+//     $bindings = [
+//         'storeId' => $storeId,
+//         'searchQuery' => $searchQuery,
+//         'categoryQuery' => $categoryQuery
+//     ];
+
+//     if ($minCurrentBasicQuantity !== null) {
+//         $query .= " AND ((pm.in_collection = 0 AND sp.quantity_in_stock >= :minCurrentBasicQuantity) OR (pm.in_collection = 1 AND (sp.quantity_in_stock % pm.quantity_per_collection) >= :minCurrentBasicQuantityCol))";
+//         $bindings['minCurrentBasicQuantity'] = $minCurrentBasicQuantity;
+//         $bindings['minCurrentBasicQuantityCol'] = $minCurrentBasicQuantity;
+//     }
+//     if ($minCurrentCollectionQuantity !== null) {
+//         $query .= " AND (pm.in_collection = 0 OR (FLOOR(sp.quantity_in_stock / pm.quantity_per_collection) >= :minCurrentCollectionQuantity))";
+//         $bindings['minCurrentCollectionQuantity'] = $minCurrentCollectionQuantity;
+//     }
+//     if ($maxCurrentBasicQuantity !== null) {
+//         $query .= " AND ((pm.in_collection = 0 AND sp.quantity_in_stock <= :maxCurrentBasicQuantity) OR (pm.in_collection = 1 AND (sp.quantity_in_stock % pm.quantity_per_collection) <= :maxCurrentBasicQuantityCol))";
+//         $bindings['maxCurrentBasicQuantity'] = $maxCurrentBasicQuantity;
+//         $bindings['maxCurrentBasicQuantityCol'] = $maxCurrentBasicQuantity;
+//     }
+//     if ($maxCurrentCollectionQuantity !== null) {
+//         $query .= " AND (pm.in_collection = 0 OR (FLOOR(sp.quantity_in_stock / pm.quantity_per_collection) <= :maxCurrentCollectionQuantity))";
+//         $bindings['maxCurrentCollectionQuantity'] = $maxCurrentCollectionQuantity;
+//     }
+
+//     $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+//     $results = DB::select($query, $bindings);
+
+//     $paginator = new LengthAwarePaginator(
+//         array_slice($results, ($currentPage - 1) * $perPage, $perPage),
+//         count($results),
+//         $perPage,
+//         $currentPage,
+//         ['path' => LengthAwarePaginator::resolveCurrentPath()]
+//     );
+
+//     return $paginator;
+// }
+
+Route::get("/test-lsp", function () {
+    dd(getProducts());
 });
-Route::get('/test-new-template', function (Request $request) {
-    return Excel::download(new NewProductTemplateExport, 'IL_New_Template_Form.xlsx');
-});
 
 
-Route::get("/test-upload", function () {
-    return view("excelupload");
-});
 
-Route::get("/import", function () {
-    $file = '../resources/asset/IL_New_Template_Form.xlsx';
-    $process = new \App\Http\Controllers\ProductImportController();
+Route::get('/test-not-in-store',function(){
+    $excludedStoreId = 3;
+    $productModels = Productsmodels::with('stores')
+        ->whereDoesntHave('stores', function ($query) use ($excludedStoreId) {
+            $query->where('store_id', $excludedStoreId);
+        })
+        ->get();
 
-    return $process->processExcelFile(new Request([
-        'template_file' => $file
-    ]));
+    return $productModels;
+}); 
 
-});
-
-
-route::get('/test-store-products', function () {
-    $store_product = StoreProduct::where('store_id', 3)->with([
-        'models' => [
-            'product' => ['basicQuantity', 'category'],
-            'collectionType'
-        ]
-    ])->filter(request()->only(['search', 'category']))
-        ->get()
-        ->map(fn($currentproduct) =>
-            [
-                'id' => $currentproduct->id,
-                'updated_at' => $currentproduct->updated_at,
-                'product_name' => $currentproduct->models->product->product_name,
-                'quantity_in_stock' => $currentproduct->quantity_in_stock,
-                'model_name' => $currentproduct->models->model_name,
-                'basic_quantity' => $currentproduct->models->product->basicQuantity->symbol,
-                'category_name' => $currentproduct->models->product->category->category,
-                'in_collection' => $currentproduct->models->in_collection,
-                'collection_type' => $currentproduct->models?->collectionType?->type,
-                'units_per_collection' => $currentproduct->models?->quantity_per_collection,
-                'quantity' => $currentproduct->quantity_in_stock
-            ]);
-
-            dd($store_product);
-
-});
-
-Route::get('/text-store-p',[\App\Http\Controllers\DashboardController::class,'getUnattendedProducts']);
 
 
 Route::get('/{any}', function () {

@@ -8,7 +8,7 @@ import IconifyIcon from '../../../components/ui/IconifyIcon';
  *  onClick: ()=>void,
  *  active:boolean,
  *  className?: string,
- *  label: string
+ *  label: string | React.ReactNode
  *  }} props 
  * @returns 
  */

@@ -99,15 +99,13 @@ function Newstock() {
         addToNewStockList(cv => cv = [...cv, newValue])
     }
 
- 
+
 
     useEffect(() => {
         getAllProductsAndModels()
     }, [])
 
-    useEffect(() => {
-        console.log(stockToDbList)
-    }, [stockToDbList])
+ 
 
     const getAllSuppliers = () => {
         Api.get('/supplier/all').then(res => {
@@ -138,19 +136,21 @@ function Newstock() {
             purchase_invoice_number: '',
             supplier: null
         })
-        addToNewStockList([])
+        addToNewStockList([structuredClone({ ...emptyListRecord })])
+        setStockToDbDbList([])
     }
 
     const handleSubmit = () => {
         checkForAnyWrongPricingIcon()
         setIsLoading(true)
-        Api.post('/stock/new', { ...stockMetaData, new_stock_products: newStockList })
+        Api.post('/stock/new', { ...stockMetaData, new_stock_products: stockToDbList })
             .then(res => {
                 setIsLoading(false)
                 resetForm()
                 setErrors({})
                 enqueueSnackbar('New Stock Added', { variant: 'success' })
                 const { products, models } = res.data
+                console.log(products)
                 setProductsFromDB(products)
                 setModelsFromDB(models)
             })
@@ -168,8 +168,19 @@ function Newstock() {
             })
     }
 
+    // Low Stock Product Section 
+    const [lowSockProducts, setLowStockProducts] = useState([]);
 
-
+    const getLowStockProducts = (url) => {
+        Api.get(url ?? '/stock/low-products')
+            .then(res => {
+                console.log(res.data)
+                setLowStockProducts(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
 
 
     return (
@@ -181,8 +192,11 @@ function Newstock() {
             modelsFromDB: modelsFromDB,
             addToNewStockList: addToNewStockList,
             stockToDbList: stockToDbList,
-            setStockToDbDbList:setStockToDbDbList,
+            setStockToDbDbList: setStockToDbDbList,
             errors: errors,
+            getLowStockProducts: getLowStockProducts,
+            lowSockProducts: lowSockProducts,
+            setLowStockProducts: setLowStockProducts
         }}>
             <div className=' container mx-auto  py-10 min-h-max'>
                 {showProductSearchModal && <div className=' fixed inset-0  bg-black/60 z-30 isolate flex flex-col'>
@@ -232,25 +246,7 @@ function Newstock() {
                             addToNewStockList={addToNewStockList}
                             errors={errors}
                         />
-                        {/* {Boolean(newStockList?.length) ?
-                        <Newstocklist
-                            newStockList={newStockList}
-                            AddEmptyRecordToList={AddEmptyRecordToList}
-                            setShowProductSearchModal={setShowProductSearchModal}
-                            productsFromDB={productsFromDB}
-                            modelsFromDB={modelsFromDB}
-                            addToNewStockList={addToNewStockList}
-                            errors={errors}
-                        />
-                        :
-                        <EmptyList setShowProductSearchModal={setShowProductSearchModal}
-                            addToNewStockList={addToNewStockList}
-                            AddEmptyRecordToList={AddEmptyRecordToList}
-                        />
-                    } */}
-
                     </div>
-
                     <div className='bg-white w-full border border-gray-400/70 rounded-md p-2 flex flex-col'>
                         <Button processing={isLoading} onClick={() => handleSubmit()} text="Add Current Data to Stock" className=" !min-w-full" />
                     </div>

@@ -148,7 +148,6 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     }, []);
 
 
-
     return <div className='flex  max-w-4xl mx-auto gap-4 w-full p-2 pt-2 '>
         {showProductSearchModal && <div className=' fixed inset-0 bg-black/60 z-[70] isolate flex flex-col'>
             <div className=" max-w-3xl mx-auto w-full">

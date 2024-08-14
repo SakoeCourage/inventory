@@ -56,7 +56,7 @@ function branchDefinition() {
         <div className='text-sm h-max '>
             <div className='bg-info-900/90 h-[35vh] md:px-10 overflow-visible '>
                 <div className='max-w-6xl mx-auto h-full '>
-                    <h3 className='pb-3 text-info-100 ml-4 text-lg '><span className="mr-4">Store Branch Definition</span>
+                    <h3 className='pb-3 text-info-100 ml-4 text-lg '><span className="mr-4">Store Location Setup</span>
                         <Icon icon="bi:plus-circle" />
                     </h3>
                     <Card className='py-6 pb-36'>
@@ -76,10 +76,9 @@ function branchDefinition() {
                             <Button className="w-full  my-auto md:w-auto" onClick={() => setShowBranchForm(cv => cv = { ...cv, mode: "New Branch" })} info >
                                 <div className='flex items-center gap-2 text-xs'>
                                     <Icon icon="carbon:tag-group" fontSize={22} />
-                                    <span>Add A Branch</span>
+                                    <span>Add A Location</span>
                                 </div>
                             </Button>
-
                         </div>
                         <BranchTable
                             isLoading={isLoading}

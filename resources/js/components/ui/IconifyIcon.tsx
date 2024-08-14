@@ -29,7 +29,7 @@ const IconifyIcon = ({
         <div onClick={onClick}
             className={`p-1 rounded-full h-8 w-8 aspect-square flex items-center justify-center bg-transparent ${className}`}
             {...rest}>
-            <Icon fill={fill} icon={icon} fontSize={fontSize} />
+            <Icon fill={fill} icon={icon} className="" fontSize={fontSize} />
         </div>
     );
 };

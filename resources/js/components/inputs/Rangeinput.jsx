@@ -1,6 +1,22 @@
 import { Button } from '@mui/material'
-import { useEffect, useRef,useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
+
+/**
+ * @typedef {Object} RangeInputProps
+ * @property {function} onChange - Callback function to handle change events.
+ * @property {number} [min] - Minimum value for the input.
+ * @property {number} [max] - Maximum value for the input.
+ * @property {number} [value] - Current value of the input.
+ * @property {boolean} [error] - Flag indicating if there is an error.
+ * @property {string} [className] - Additional CSS classes for the component.
+ * @property {string} [label] - Label for the input.
+ * @property {string} [placeholder] - Placeholder text for the input.
+ */
+
+/**
+ * @param {RangeInputProps} props
+ */
 function Rangeinput(props) {
     const [hasError, setHasError] = useState(false)
     const inputRef = useRef()
@@ -53,30 +69,26 @@ function Rangeinput(props) {
     }
 
     useEffect(() => {
-        if (props.value) {
             rangeCheck((props.value), inputRef.current)
-        }
     }, [props.value])
 
-    
+
     useEffect(() => {
         if (props?.error) {
-          setHasError(true)
+            setHasError(true)
         }
-      }, [props.error])
-
-
+    }, [props.error])
 
 
     return <div className={`flex flex-col gap-1 ' ${props.className}`}>
         {props?.label && <label htmlFor="" className=' text-gray-500 text-xs'> {props.label}</label>}
-        <div className={`flex items-center border w-full rounded-md focus-within:border-none focus-within:ring-info-300 focus-within:ring-1  ${hasError && 'border-red-600 focus-within:ring-red-600 Mui-error'}`}>
-            <Button onClick={handleDecrease} className=' p-2 grid place-items-center  '>
-            <svg className='text-info-700' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15 11.5a.5.5 0 0 1 0 1H9a.5.5 0 0 1 0-1Z"/><path fill="currentColor" d="M12 21.934A9.933 9.933 0 1 1 21.932 12A9.945 9.945 0 0 1 12 21.934Zm0-18.866A8.933 8.933 0 1 0 20.932 12A8.944 8.944 0 0 0 12 3.068Z"/></svg>    
+        <div className={`flex items-center border  w-full rounded-md ${hasError && 'border-red-600 focus-within:ring-red-600 Mui-error'}`}>
+            <Button onClick={handleDecrease} className=' !py-2 !px-1 h-full grid place-items-center  '>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="18" fill='currentColor' className='text-red-600' viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
             </Button>
-            <input ref={inputRef} placeholder={props.placeholder ?? '0'} onChange={(e) => hanleOnChange(e.target.value, e.target)} max={14} min={0} className=' border-x outline-none bg-inherit focus:border-x focus:outline-none grow px-1 hidespin text-info-700' type='number' />
-            <Button onClick={handleIncrease} className='p-2 grid place-items-center '>
-            <svg className='text-info-700' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15 12.5h-2.5V15a.5.5 0 0 1-1 0v-2.5H9a.5.5 0 0 1 0-1h2.5V9a.5.5 0 0 1 1 0v2.5H15a.5.5 0 0 1 0 1Z"/><path fill="currentColor" d="M12 21.932A9.934 9.934 0 1 1 21.932 12A9.944 9.944 0 0 1 12 21.932Zm0-18.867A8.934 8.934 0 1 0 20.932 12A8.944 8.944 0 0 0 12 3.065Z"/></svg>
+            <input ref={inputRef} placeholder={props.placeholder ?? '0'} onChange={(e) => hanleOnChange(e.target.value, e.target)} max={14} min={0} className='  px-2 py-1 text-center outline-none bg-inherit focus:border-x focus:outline-none grow hidespin text-gray-700' type='number' />
+            <Button onClick={handleIncrease} className='!py-2 !px-1 h-full grid place-items-center '>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="18" fill='currentColor' className='text-green-600' viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
             </Button>
         </div>
     </div>

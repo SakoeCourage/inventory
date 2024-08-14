@@ -48,8 +48,8 @@ const setupList = [
     {
         iconElement: <IconifyIcon className=" !h-14 !w-14 !bg-violet-900 text-violet-100 !rounded-md" fontSize='10rem' icon="solar:branching-paths-down-bold" />,
         path: "/app-setup/branch/definition",
-        name: "Store Branches",
-        description: "Setup Branches of your business"
+        name: "Store Locations",
+        description: "Setup Locations of your stores"
     },
     {
         iconElement: <IconifyIcon className=" !h-14 !w-14 !bg-red-900 text-red-100 !rounded-md" fontSize='10rem' icon="ion:card" />,

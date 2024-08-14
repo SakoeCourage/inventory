@@ -14,8 +14,7 @@ const FormInputText = ({ label, name, type, onChange, variant, value, onClick, c
       variant={variant || 'outlined'}
       value={value}
       onClick={onClick}
-      size="medium"
-
+      size={props?.size ?? 'medium'}
       {...props}
     />
   )

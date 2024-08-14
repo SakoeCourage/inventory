@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Store;
+use App\Models\StoreProduct;
 use App\Models\User;
 use App\Models\UserCurrentStoreSelection;
+use App\Services\ProductStockService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use \Illuminate\Support\Facades\DB;
 
 class StoreController extends Controller
 {
@@ -42,12 +45,12 @@ class StoreController extends Controller
 
     public function toggleUserPreferredStore(Request $request)
     {
-        UserCurrentStoreSelection::where("user_id",Auth()->user()->id)
-        ->update([
-            'store_id' => $request->store_id
-        ]);
-        
-        return response("Store Preference Changed",200);
+        UserCurrentStoreSelection::where("user_id", Auth()->user()->id)
+            ->update([
+                'store_id' => $request->store_id
+            ]);
+
+        return response("Store Preference Changed", 200);
     }
     public function toSelect()
     {
@@ -119,4 +122,100 @@ class StoreController extends Controller
 
         return response("Store Not Found", 404);
     }
+
+
+    public function toggleProductToStore(Request $request, ProductStockService $stockService)
+    {
+
+        $validationResponse = $request->validate([
+            'store_id' => ['required'],
+            'model_id' => ['required']
+        ]);
+
+        $model_in_store = StoreProduct::where([
+            'store_id' => $validationResponse['store_id'],
+            'productsmodel_id' => $validationResponse['model_id']
+        ])->first();
+
+        if ($model_in_store) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($model_in_store, $stockService, $request) {
+                if ($model_in_store->quantity_in_stock > 0) {
+                    $stockService->decreasestock((object) [
+                        'quantity' => $model_in_store->quantity_in_stock,
+                        'description' => 'for store reset',
+                        'productsmodel_id' => $request['model_id']
+                    ]);
+                }
+                $model_in_store->delete();
+            });
+
+        } else {
+            StoreProduct::create([
+                'store_id' => $validationResponse['store_id'],
+                'productsmodel_id' => $validationResponse['model_id'],
+                'quantity_in_stock' => 0
+            ]);
+        }
+        $model = \App\Models\Productsmodels::with(['collectionType', 'product' => ['basicQuantity']])
+            ->where("id", $validationResponse['model_id'])
+            ->first();
+
+        return response()->json($model, \Illuminate\Http\Response::HTTP_OK);
+    }
+
+    public function setInitialStoreProductQuantity(Request $request, ProductStockService $stockService)
+    {
+        $validationResponse = $request->validate([
+            'store_id' => ['required'],
+            'model_id' => ['required'],
+            'quantity' => ['required', 'numeric', 'min:1']
+        ]);
+
+        $model_in_store = StoreProduct::where([
+            'store_id' => $validationResponse['store_id'],
+            'productsmodel_id' => $validationResponse['model_id']
+        ])->first();
+
+        if ($model_in_store) {
+            DB::transaction(function () use ($model_in_store, $validationResponse, $stockService, $request) {
+                $stockService->increasestock((object) [
+                    'quantity' => $request['quantity'],
+                    'description' => 'from manual initial stock entry',
+                    'productsmodel_id' => $request['model_id'],
+                    'store_id' => $request['store_id']
+                ]);
+            });
+        } else {
+            return response("Store Product Not Found", \Illuminate\Http\Response::HTTP_NOT_FOUND);
+        }
+
+        return response("Store Product Updated", \Illuminate\Http\Response::HTTP_OK);
+    }
+
+    public function productQuantityToStore(Request $request, ProductStockService $stockService)
+    {
+        $validationResponse = $request->validate([
+            'store_id' => ['required'],
+            'model_id' => ['required'],
+            'quantity' => ['required', 'numeric', 'min:1']
+        ]);
+
+        DB::transaction(function () use ($validationResponse, $stockService, $request) {
+            StoreProduct::create([
+                'store_id' => $validationResponse['store_id'],
+                'productsmodel_id' => $validationResponse['model_id']
+            ]);
+
+            $stockService->increasestock((object) [
+                'quantity' => $request['quantity'],
+                'description' => 'from manual initial stock entry',
+                'productsmodel_id' => $request['model_id'],
+                'store_id' => $request['store_id']
+
+            ]);
+        });
+
+        return response("Store Product Updated", \Illuminate\Http\Response::HTTP_OK);
+    }
+
 }

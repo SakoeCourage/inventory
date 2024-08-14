@@ -54,7 +54,7 @@ function BranchTable({ data, setData, isLoading, setIsLoading, setFilters, fetch
                                         Date modified
                                     </th>
                                     <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
-                                        Branch Name
+                                        Location Name
                                     </th>
                                     <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                         Action
@@ -92,10 +92,10 @@ function BranchTable({ data, setData, isLoading, setIsLoading, setFilters, fetch
                                                 </div>
                                             </td>
                                             <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap">
-                                                <Tooltip title="Update Branch data" arrow TransitionComponent={Zoom}>
+                                                <Tooltip title="Update Location Data" arrow TransitionComponent={Zoom}>
                                                     <span
                                                         onClick={() => setShowBranchForm({
-                                                            mode: 'Update Branch Data',
+                                                            mode: 'Update Location Data',
                                                             id: x.id,
                                                             branch_name: x.branch_name
                                                         })}
@@ -104,7 +104,7 @@ function BranchTable({ data, setData, isLoading, setIsLoading, setFilters, fetch
                                                         <Icon className='' icon="mdi:database-edit-outline" fontSize={20} />
                                                     </span>
                                                 </Tooltip>
-                                                <Tooltip title="Remove Branch" arrow TransitionComponent={Zoom}>
+                                                <Tooltip title="Remove Location Data" arrow TransitionComponent={Zoom}>
                                                     <button
                                                         onClick={() => setDeletedById(x.id)
                                                         }
@@ -147,7 +147,7 @@ function BranchTable({ data, setData, isLoading, setIsLoading, setFilters, fetch
                         className=' max-w-2xl bg-white w-full mx-auto min-h-[18rem] rounded-t-md flex flex-col'>
                         <nav className='flex flex-col items-center justify-center grow'>
                             <nav className=' text-gray-400 p-2 bg-gray-100 rounded-full my-3'><Icon icon="ph:warning-circle-light" fontSize={70} /></nav>
-                            <nav className=''>Branch will be removed </nav>
+                            <nav className=''>Location will be removed </nav>
                             <nav className=' mt-2 text-sm'>Do want to continue? </nav>
                         </nav>
                         <nav className="mt-auto flex items-center w-full pb-1 px-2 gap-1 flex-col lg:flex-row">

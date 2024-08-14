@@ -102,11 +102,11 @@ function StoreDefinition() {
                                 <FormInputSelect className="w-full md:w-56 "
                                     type="text"
                                     value={filters?.branch}
-                                    label="Filter by Branch"
+                                    label="Filter by Location"
                                     options={Boolean(storeBranches?.length) ?
                                         storeBranches.map(br => ({ name: br.branch_name, value: br.id })) : []
                                     }
-                                    name="Branch"
+                                    name="Location"
                                     onChange={(e) =>{fullUrl && fetchStoreTable(addOrUpdateUrlParam(fullUrl,'branch',e.target.value))}}
                                     
                                 />

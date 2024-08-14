@@ -57,9 +57,10 @@ const ProductsTable = ({
     setRowsPerPage(+event.target.value);
   };
 
+  const handleOnAddToStore = () => {
 
-
-
+  }
+  
   return (
     <div className="flex flex-col w-full min-h-[36rem] h-max relative ">
       <div className="flex flex-col  overflow-hidden w-full">

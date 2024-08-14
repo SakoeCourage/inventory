@@ -7,15 +7,17 @@ import Loadingspinner from '../Loaders/Loadingspinner'
 const FormInputsearch = forwardRef((props, ref) => {
     const [searchKey, setSearchKey] = useState('')
     const [processing, setProcessing] = useState(false)
+
     const delayedQuery = useCallback(debounce(() => {
         props.getSearchKey(searchKey)
     }, 300), [searchKey])
+
     useEffect(() => {
         setProcessing(true)
         delayedQuery();
         return delayedQuery.cancel;
     }
-        , [searchKey, delayedQuery])
+    , [searchKey, delayedQuery])
 
     useEffect(() => {
         props.processing == false && setProcessing(false)

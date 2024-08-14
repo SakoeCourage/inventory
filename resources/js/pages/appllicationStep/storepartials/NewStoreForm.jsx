@@ -80,7 +80,7 @@ function NewStoreForm({ onClose, showStoreForm, fetchStoreTable }) {
             </div>}
             <nav className="flex flex-col my-auto max-w-lg w-full mx-auto gap-5">
                 <FormInputSelect
-                    label="Branch"
+                    label="Location"
                     options={Boolean(storeBranches?.length) ?
                         storeBranches.map(br => ({ name: br.branch_name, value: br.id })) : []
                     }

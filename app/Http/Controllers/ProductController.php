@@ -21,7 +21,7 @@ class ProductController extends Controller
     public function index(Product $product, Request $request)
     {
         return [
-            'products' => $product->withCount("models")->filter(request()->only(['search', 'category']))
+            'products' => $product->withCount("models")->with('storeProducts')->filter(request()->only(['search', 'category']))
                 ->latest()->paginate(10)->withQueryString()
                 ->through(fn($currentproduct) =>
                     [
@@ -31,7 +31,8 @@ class ProductController extends Controller
                         'quantity_in_stock' => $currentproduct->quantity_in_stock,
                         'basic_quantity' => $currentproduct->basicQuantity->symbol,
                         'category_name' => $currentproduct->category->category,
-                        "models_count" => $currentproduct->models_count
+                        "models_count" => $currentproduct->models_count,
+                        'store_products' => $currentproduct->sstoreProducts
                     ]),
             'filters' => $request->only(['search', 'category']),
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'category')))
@@ -76,9 +77,6 @@ class ProductController extends Controller
             )
             ->distinct()
             ->get();
-
-
-
 
         return [
             'models' => DB::table('store_products')
@@ -149,16 +147,17 @@ class ProductController extends Controller
                 'product_name' => $request->product_name,
                 'category_id' => $request->category,
                 'basic_selling_quantity_id' => BasicSellingQuantity::where('name', $request->basic_selling_quantity)->firstOrFail()->id,
-                'has_models' => true,
-                'quantity_in_stock' => 0
+                'has_models' => true
             ]);
 
             foreach ($request->product_models as $model) {
                 Productsmodels::create([
                     'model_name' => $model['model_name'],
                     'unit_price' => $model['unit_price'],
+                    'cost_per_unit' => $model['cost_per_unit'],
                     'in_collection' => $model['in_collection'],
                     'price_per_collection' => $model['price_per_collection'] ?? null,
+                    'cost_per_collection' => $model['cost_per_collection'] ?? null,
                     'quantity_per_collection' => $model['quantity_per_collection'] ?? null,
                     'collection_method' => $model['in_collection'] ? CollectionType::where('type', $model['collection_method'])->firstOrFail()->id : null,
                     'product_id' => $newproduct->id
@@ -178,7 +177,7 @@ class ProductController extends Controller
         return [
             'product' => $product->get(['id', 'product_name', 'category_id'])->first(),
             'basic_selling_quantity' => $product->first()->basicQuantity,
-            'models' => $product->first()->models->map(function ($model) {
+            'models' => $product->first()->models()->orderBy('created_at', 'desc')->get()->map(function ($model) {
                 return [
                     'id' => $model->id,
                     'collection_method' => (bool) $model->in_collection ? CollectionType::where('id', $model->collection_method)->firstOrFail()->type : null,
@@ -186,7 +185,10 @@ class ProductController extends Controller
                     'model_name' => $model->model_name,
                     'price_per_collection' => $model->price_per_collection,
                     'quantity_per_collection' => $model->quantity_per_collection,
+                    'cost_per_unit' => $model->cost_per_unit,
+                    'cost_per_collection' => $model->cost_per_collection,
                     'unit_price' => $model->unit_price,
+                    'stores' => $model->stores
                 ];
             })
         ];
@@ -234,7 +236,6 @@ class ProductController extends Controller
         DB::transaction(function () use ($request, $product) {
             $product->update([
                 'product_name' => $request->product_name,
-                'product_name' => $request->product_name,
                 'category_id' => $request->category,
                 'basic_selling_quantity_id' => BasicSellingQuantity::where('name', $request->basic_selling_quantity)->firstOrFail()->id,
             ]);
@@ -248,8 +249,10 @@ class ProductController extends Controller
                     [
                         'model_name' => $model['model_name'],
                         'unit_price' => $model['unit_price'],
+                        'cost_per_unit' => $model['cost_per_unit'],
                         'in_collection' => $model['in_collection'],
                         'price_per_collection' => $model['price_per_collection'] ?? null,
+                        'cost_per_collection' => $model['cost_per_collection'] ?? null,
                         'quantity_per_collection' => $model['quantity_per_collection'] ?? null,
                         'collection_method' => $model['in_collection'] ? CollectionType::where('type', $model['collection_method'])->firstOrFail()->id : null,
                         'product_id' => $product->id

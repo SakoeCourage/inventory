@@ -1,5 +1,8 @@
 :root {
     --navbar-height: 4rem;
+    --sidebar-width: 16rem;
+    --sidebar-mini-width: 5.5rem;
+    --header-height: 4rem;
 }
 
 .addleftline {
@@ -491,3 +494,66 @@ table.report-table td {
 .store-list-item:nth-child(odd) {
     @apply bg-green-50/20
 }
+
+
+.ps-list-item{
+    @apply hover:scale-y-[1.01] transition-transform duration-300
+}
+
+.ps-list-item:hover:not(.inactive) .ps-indicator{
+    @apply !w-[12px]
+}
+
+.ps-list-item:nth-child(odd){
+    @apply !bg-green-950/10
+}
+.ps-list-item:nth-child(even){
+    @apply !bg-green-900/5
+}
+
+.p-tr:nth-child(odd){
+    @apply !bg-gray-100/5
+}
+.p-tr:nth-child(even){
+    @apply !bg-gray-400/10
+}
+
+.add-sidebar-bezier {
+    transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+    transition-duration: 0.5s;
+  }
+
+  .route-active {
+    @apply flex py-2 px-2 relative text-[#4D4D4D] w-full gap-2 items-center bg-red-900/90 rounded-md
+  }
+  
+  .route-inactive {
+    @apply flex py-2 px-2 w-full gap-2 items-center
+  }
+  
+  .route-active .route-icon {
+    @apply text-white
+  }
+  
+  
+  
+  .route-active .route-title {
+    @apply text-white font-semibold
+  }
+  
+  .route-inactive .route-icon {
+    @apply text-[#fef2f2] 
+  }
+  
+  .route-inactive .route-title {
+    @apply text-[#fef2f2]
+  }
+
+  .sidebarclosed {
+    @apply !left-[-100%] md:!left-0
+  }
+  
+  .sidebaropened {
+    @apply left-0 isolate
+  }
+  

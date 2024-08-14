@@ -57,7 +57,7 @@ function StoreTable({ data, setData, isLoading, setIsLoading, setFilters, fetchS
                                         Store Name
                                     </th>
                                     <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
-                                        Branch Name
+                                        Location
                                     </th>
                                     <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                                         Action

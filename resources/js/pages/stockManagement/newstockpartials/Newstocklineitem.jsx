@@ -36,7 +36,6 @@ function NewstockcurrentItem() {
     const [showPricingModal, setShowPricingModal] = useState(false)
     const [showProductSearchModal, setShowProductSearchModal] = useState(false)
 
-    console.log(modelsFromDB)
 
     const [quantity, setQuantity] = useState({
         collection: '',
@@ -44,7 +43,7 @@ function NewstockcurrentItem() {
     })
 
     const addNewItem = (data) => {
-        console.log(data)
+        // console.log(data)
     }
     const removeItemFromIndex = () => {
         let newitems = [...newStockList];
@@ -62,8 +61,6 @@ function NewstockcurrentItem() {
             cost_per_unit: null,
             cost_per_collection: null
         };
-        setCollectionType(null)
-        setInCollection(false)
         setQuantity(cv => cv = {
             collection: '',
             units: ''
@@ -99,6 +96,24 @@ function NewstockcurrentItem() {
         return selectProductsModels.find((m, i) => m.id == lineItem['model_id'])
     }
 
+    const getCurrentProductInformation = useMemo(() => {
+        if ((lineItem['product_id'] && lineItem['model_id']) == null) return
+
+        var product = productsFromDB
+            .find(product => product?.id == lineItem['product_id'])
+            ?.product_name;
+
+        var model = modelsFromDB.find(model => model?.id == lineItem['model_id'])
+
+        return {
+            product: product,
+            model: model?.model_name,
+            cost_per_collection: model?.cost_per_collection,
+            cost_per_unit: model?.cost_per_unit,
+        }
+    }, [lineItem, productsFromDB, modelsFromDB])
+
+
     const checkAttentionIfRequired = () => {
         if (getCurrentModel()) {
             if (Boolean(getCurrentModel()?.in_collection)) {
@@ -130,17 +145,30 @@ function NewstockcurrentItem() {
 
     const addCurrentSelection = () => {
         if (requireAttention == true) return;
+
+
         const data = newStockList[0]
+        if (Incollection) {
+            const cost_per_collection = (Number(data['cost_per_collection']) == 0 || Number(data['cost_per_collection']) == null) ? getCurrentProductInformation?.cost_per_collection : Number(data['cost_per_collection'])
+            data['cost_per_collection'] = cost_per_collection
+        }
+
+        const cost_per_unit = (Number(data['cost_per_unit']) == 0 || Number(data['cost_per_unit']) == null) ? getCurrentProductInformation?.cost_per_unit : Number(data['cost_per_unit'])
+        data['cost_per_unit'] = cost_per_unit
+
         const exist = stockToDbList?.some(entry => entry?.model_id == data['model_id'])
         if (exist) {
             enqueueSnackbar("Current Product Found In Line Item", { variant: "error" });
             return;
         }
-
         if (Incollection) {
             if (Number(data['cost_per_collection']) == 0) {
+                console.log({
+                    source: "in collection",
+                    cpc: cost_per_collection,
+                    data: data
+                })
                 enqueueSnackbar("Failed to add incomplete selection", { variant: "error" });
-
                 return;
             }
         }
@@ -150,6 +178,11 @@ function NewstockcurrentItem() {
             || Number(data['quantity'] == 0)
             || Number(data['product_id'] == null)
         ) {
+            console.log({
+                source: "in unit",
+                cpc: cost_per_unit,
+                data: data
+            })
             enqueueSnackbar("Failed to add incomplete selection", { variant: "error" });
             return;
         }
@@ -164,10 +197,10 @@ function NewstockcurrentItem() {
 
 
     useEffect(() => {
-        if (lineItem['product_id'] && Boolean(modelsFromDB.length)) {
-            const models = modelsFromDB.filter((model, i) => model.product_id === newStockList[index]['product_id'])
+        if (lineItem['product_id'] && Boolean(modelsFromDB?.length)) {
+            const models = modelsFromDB?.filter((model, i) => model?.product_id === newStockList[index]['product_id'])
             setselectProductsModels(models)
-            setBasicUnit(productsFromDB.find(product => product.id == newStockList[index]['product_id'])?.basic_quantity?.name)
+            setBasicUnit(productsFromDB?.find(product => product?.id == newStockList[index]['product_id'])?.basic_quantity?.name)
         }
     }, [lineItem['product_id']])
 
@@ -189,7 +222,6 @@ function NewstockcurrentItem() {
         handleChangeAtIndex('quantity', calculatedQuantity)
     }, [quantity])
 
-
     const handleCtrlS = (event) => {
         if (event.ctrlKey && event.key === 'f') {
             event.preventDefault();
@@ -205,42 +237,45 @@ function NewstockcurrentItem() {
         };
     }, []);
 
-    const getCurrentProductInformation = useMemo(() => {
-        if ((lineItem['product_id'] && lineItem['model_id']) == null) return
 
-        var product = productsFromDB
-            .find(product => product?.id == lineItem['product_id'])
-            ?.product_name;
 
-        var model = modelsFromDB.find(model => model?.id == lineItem['model_id'])
-
-        return {
-            product: product,
-            model: model?.model_name,
-            cost_per_collection: model?.cost_per_collection,
-            cost_per_unit: model?.cost_per_unit,
+    const focusOnColl = () => {
+        const CiUCollection = document.querySelector('.cost-input-coll');
+        if (CiUCollection) {
+            const firstInput = CiUCollection.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            return;
         }
-    }, [lineItem, productsFromDB, modelsFromDB])
+    }
 
-    // useEffect(() => {
-    //     const CiUCollection = document.querySelector('.cost-input-coll');
-    //     if (CiUCollection) {
-    //         const firstInput = CiUCollection.querySelector('input');
-    //         console.log(firstInput)
-    //         if (firstInput) {
-    //             firstInput.focus();
-    //         }
-    //         return;
-    //     }
+    const focusOnBasic = () => {
+        const CiUParent = document.querySelector('.cost-input-unit');
+        if (CiUParent) {
+            const firstInput = CiUParent.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }
+    }
 
-    //     const CiUParent = document.querySelector('.cost-input-unit');
-    //     if (CiUParent) {
-    //         const firstInput = CiUParent.querySelector('input');
-    //         if (firstInput) {
-    //             firstInput.focus();
-    //         }
-    //     }
-    // }, [basicUnit, lineItem]);
+    useEffect(() => {
+        if (lineItem['product_id'] && lineItem['model_id']) {
+            if (Incollection == true) {
+                setTimeout(() => {
+                    focusOnColl()
+                }, 200);
+            } else {
+                setTimeout(() => {
+                    focusOnBasic()
+                }, 200);
+            }
+        }
+    }, [lineItem, Incollection])
+
+
+
 
 
     return <nav className='flex flex-col w-full p-2  grow py-4 relative min-h-full h-full overflow-hidden'>
@@ -306,7 +341,7 @@ function NewstockcurrentItem() {
                 </nav>
 
                 <nav className='flex items-center justify-between'>
-                    <h4 className=' text-sm text-gray-500 font-medium'>{`Current Cost Per ${basicUnit ?? 'Units'}`}</h4>
+                    <h4 className=' text-sm text-gray-500 font-medium'>{`Current Cost Per ${basicUnit ?? '...'}`}</h4>
                     <nav className=' text-sm font-thin'>
                         {getCurrentProductInformation ?
                             <nav className='flex gap-2'>
@@ -317,7 +352,7 @@ function NewstockcurrentItem() {
                 </nav>
 
                 {Incollection && <nav className='flex items-center justify-between'>
-                    <h4 className=' text-sm text-gray-500 font-medium'>{`Current Cost Per ${collectionType ?? 'Crate'}`}</h4>
+                    <h4 className=' text-sm text-gray-500 font-medium'>{`Current Cost Per ${getCurrentModel()?.collection_type ?? '...'}`}</h4>
                     <nav className=' text-sm font-thin'>
                         {getCurrentProductInformation ?
                             <nav className='flex gap-2'>
@@ -334,7 +369,7 @@ function NewstockcurrentItem() {
                     error={errors[`new_stock_products.${index}.quantity`]}
                     value={quantity.collection}
                     onChange={(e) => setQuantity(cq => cq = { ...cq, collection: e.target.value })}
-                    className='w-full cost-input-coll' label={`Number of ${collectionType ?? 'Crate'}`} />}
+                    className='w-full cost-input-coll' label={`Number of ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
                 {basicUnit && <FormInputText
                     value={quantity.units}
                     error={errors[`new_stock_products.${index}.quantity`]}
@@ -347,7 +382,7 @@ function NewstockcurrentItem() {
                 {Incollection && <FormInputText
                     error={errors[`new_stock_products.${index}.cost_per_collection`]}
                     onChange={(e) => handleChangeAtIndex('cost_per_collection', e.target.value)}
-                    className='w-full ' label={`New Cost per ${collectionType ?? 'Crate'}`} />}
+                    className='w-full ' label={`New Cost per ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
                 {basicUnit && <FormInputText
                     error={errors[`new_stock_products.${index}.cost_per_unit`]}
                     onChange={(e) => handleChangeAtIndex('cost_per_unit', e.target.value)}
