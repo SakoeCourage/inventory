@@ -4,8 +4,10 @@ import FormInputText from '../../../../components/inputs/FormInputText'
 function Customerinformation({ errors, formData, setFormData }) {
     return (
         <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md'>
-            <nav className=' max-w-4xl mx-auto border-dotted flex items-center gap-2 p-3 text-blue-950/70'>
-                <Icon icon="mdi:user" /> <span>Customer Information</span>
+            <nav className=' max-w-4xl mx-auto border-dotted flex items-center gap-2 p-3 text-blue-950/70 '>
+                <nav className='text-orange-800 p-1 bg-orange-100 rounded-full px-3'>
+                    <Icon icon="mdi:user" /> <span>Customer Information</span>
+                </nav>
             </nav>
             <hr className='border border-gray-200 w-full border-dotted my-0' />
             <nav className='flex flex-col lg:flex-row gap-5 w-full px-3 py-1 my-5 max-w-4xl mx-auto'>

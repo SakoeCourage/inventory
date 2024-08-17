@@ -6,6 +6,7 @@ import { Tooltip } from '@mui/material'
 import { formatcurrency } from '../../../../api/Util'
 import Button from '../../../../components/inputs/Button'
 import Productsearch from '../../../stockManagement/newstockpartials/Productsearch'
+import IconifyIcon from '../../../../components/ui/IconifyIcon'
 const EmptyProductData = { product_id: '', productsmodel_id: '', units: '', unit_price: '', amount: '', price_per_collection: '', collections: '' }
 
 function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowProductSearchModal, showProductSearchModal, items, checkForImproperPricing, requiredAttention }) {
@@ -16,6 +17,23 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     let getProductsModelsfromProductId = (id) => {
         return modelsFromDB.filter((data) => data?.product_id == id)
     }
+
+    const getCurrentProductInformation = useMemo(() => {
+        if ((currentList['product_id'] && currentList['productsmodel_id']) == null) return
+
+        var product = productsFromDB
+            .find(product => product?.id == currentList['product_id'])
+            ?.product_name;
+
+        var model = modelsFromDB.find(model => model?.id == currentList['productsmodel_id'])
+
+        return {
+            product: product,
+            model: model?.model_name,
+            cost_per_collection: model?.cost_per_collection,
+            cost_per_unit: model?.cost_per_unit,
+        }
+    }, [currentList['product_id'], currentList['productsmodel_id'], productsFromDB, modelsFromDB])
 
 
     let GetmodelfromId = (id) => {
@@ -108,14 +126,14 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
 
 
     useEffect(() => {
-        console.log()
         if (currentList['productsmodel_id']) {
             setShowModelError(Boolean(items.find(item => Number(item?.productsmodel_id) == Number(currentList['productsmodel_id']))))
             setCurrentList({
                 ...currentList, collections: '', units: ''
             })
             checkForImproperPricing(GetmodelfromId(currentList['productsmodel_id']))
-
+        } else {
+            checkForImproperPricing({})
         }
     }, [currentList['productsmodel_id'], currentList['product_id'], items])
 
@@ -148,6 +166,43 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     }, []);
 
 
+    const focusOnColl = () => {
+        const CiUCollection = document.querySelector('.qty-input-coll');
+        if (CiUCollection) {
+            const firstInput = CiUCollection.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            return;
+        }
+    }
+
+    const focusOnBasic = () => {
+        const CiUParent = document.querySelector('.qty-input-unit');
+        if (CiUParent) {
+            const firstInput = CiUParent.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (currentList['product_id'] && currentList['productsmodel_id']) {
+            const InCollection = checkIfInCollection(currentList['productsmodel_id'])
+            if (InCollection == true) {
+                setTimeout(() => {
+                    focusOnColl()
+                }, 200);
+            } else {
+                setTimeout(() => {
+                    focusOnBasic()
+                }, 200);
+            }
+        }
+    }, [currentList])
+
+
     return <div className='flex  max-w-4xl mx-auto gap-4 w-full p-2 pt-2 '>
         {showProductSearchModal && <div className=' fixed inset-0 bg-black/60 z-[70] isolate flex flex-col'>
             <div className=" max-w-3xl mx-auto w-full">
@@ -161,33 +216,36 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
             </div>
         </div>}
         <div className='item flex w-full flex-col '>
-            <nav className='grid grid-cols-2 gap-4'>
-                <button onClick={() => setShowProductSearchModal(true)} className='w-full mb-4 px-2 py-[1.1rem] border border-gray-300 bg-gray-100 text-gray-700 text-sm rounded flex items-center gap-1 ml-auto'>
-                    <span className='text-xs'>Search Product Catalogue</span>
-                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + F</kbd>
+            <nav className='grid grid-cols-1 gap-4'>
+                <button onClick={() => setShowProductSearchModal(true)} className='w-full mb-4 px-2 py-[1.1rem] border border-gray-400  text-gray-700 text-sm rounded-md flex items-center gap-5 ml-auto'>
+                    <nav className='flex items-center gap-1'>
+                        <IconifyIcon icon="la:search" className="!h-6 !w-6 !p-0" />
+                        <span className='text-xs'>Search Product Catalogue</span>
+                    </nav>
+                    <kbd class="pointer-events-none   h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + F</kbd>
                 </button>
-                <FormInputSelect
-                    disabled
-                    options={Boolean(productsFromDB) ? [...productsFromDB.map(product => { return ({ name: product['product_name'], value: product['id'] }) })] : []}
-                    onChange={(e) => handleProductChange(e.target.value)}
-                    value={currentList['product_id']}
-                    className="w-full" label='Product' />
             </nav>
-            <nav className='flex flex-col mt-4 lg:flex-row gap-4 w-full'>
-                <FormInputSelect
-                    error={showModelError}
-                    options={currentList['product_id'] ? [...getProductsModelsfromProductId(currentList['product_id']).map(model => { return ({ name: model['model_name'], value: model['id'] }) })] : []}
-                    onChange={(e) => {
-                        handleValueChange('units', '')
-                        handleValueChange('collections', '')
-                        handleValueChange('price_per_collection', '')
-                        handleValueChange('unit_price', '')
-                        handleValueChange('productsmodel_id', e.target.value)
-                    }}
-                    value={currentList['productsmodel_id']}
-                    className="w-full"
-                    label='Model'
-                />
+            <nav className=' bg-gray-100 px-2 rounded-md shadow-md border'>
+                <nav className='flex items-start flex-col gap-2  py-5'>
+                    <nav className=' text-base text-gray-500 font-bold flex pb-2 border-b min-w-full border-gray-300'>
+                        <p className=' text-lg'>Current Product</p>
+                        <nav className='flex ml-auto items-center justify-end text-xs text-blue-950/65  bg-red-50/20 py-2'>
+                            <nav className='flex items-center gap-3'>
+                                <span>Amount :</span>
+                                <span>{formatcurrency(calculateAmount)}</span>
+                            </nav>
+                        </nav>
+                    </nav>
+                    <nav className=' text-lg text-gray-600  '>{getCurrentProductInformation?.product ?
+                        <nav className='flex '>
+                            <span className=' font-bold pr-2'> {getCurrentProductInformation?.product}  </span>
+                            <span className='font-medium pl-2'>
+                                {getCurrentProductInformation?.model}
+                            </span>
+                        </nav>
+                        : 'N/A'}</nav>
+                </nav>
+                <nav />
             </nav>
             <nav className='flex flex-col lg:flex-row gap-4 mt-4'>
                 {currentList['productsmodel_id'] && checkIfInCollection(currentList['productsmodel_id']) &&
@@ -197,12 +255,12 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
                             handleValueChange('collections', Number(e.target.value))
                         }}
                         type='number' inputProps={{ min: 0 }} inputMode='numeric' min="0"
-                        className="w-full product-quantity-input"
+                        className="w-full product-quantity-input qty-input-coll"
                         label={`Number of ${getCollectionType(currentList['productsmodel_id'])}`}
                     />
                 }
 
-                <FormInputText autocomplete="off"
+                <FormInputText inputMode='numeric' autocomplete="off"
                     onChange={(e) => {
                         handleValueChange('units', Number(e.target.value))
                     }
@@ -211,14 +269,9 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
                     type='number' inputProps={{
                         min: 0,
                         max: currentList['productsmodel_id'] && checkIfInCollection(currentList['productsmodel_id']) && Getmaxcollection(currentList['productsmodel_id'])
-                    }} className="w-full product-quantity-input" label={currentList['product_id'] ? `Number of ${getBasicQuantity(currentList['product_id'])}` : 'Number of Units'} />
+                    }} className="w-full product-quantity-input qty-input-unit" label={currentList['product_id'] ? `Number of ${getBasicQuantity(currentList['product_id'])}` : 'Number of Units'} />
             </nav>
-            <nav className='flex items-center justify-end text-xs text-blue-950  bg-red-50/20 py-2'>
-                <nav className='flex items-center gap-3'>
-                    <span>Amount :</span>
-                    <span>{formatcurrency(calculateAmount)}</span>
-                </nav>
-            </nav>
+
             <nav className="grid grid-cols-2 mt-2 gap-5">
                 <Button className="" onClick={() => addToCart()} {...((CartListConditions()) ? { success: true } : { neutral: true })} text="Add to Cart" />
                 <Button alert className="" onClick={() => setCurrentList({ ...EmptyProductData })} text="Reset" />

@@ -214,7 +214,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
         <div className=' max-w-7xl  mx-auto'>
             {Boolean(invoiceData) && <Invoicepreview invoiceData={invoiceData} onClose={() => setInvoiceData(null)} />}
             {/* popup on out of stock */}
-            {Boolean(outOfStockProducts.length) && <nav className=' bg-black/30 fixed inset-0 z-40 flex items-end'>
+            {Boolean(outOfStockProducts.length) && <nav className=' bg-black/30 fixed inset-0 z-50 flex items-end'>
                 <AnimatePresence>
                     <OutofstockUi formData={formData} setOutOfStockProducts={setOutOfStockProducts} products={outOfStockProducts} />
                 </AnimatePresence>
@@ -270,7 +270,8 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                     getBalance={getBalance}
                 />
             </nav>
-            <nav className='w-full grid grid-cols-2 md:grid-cols-4 gap-5 !mx-auto mt-5 px-2 pb-2 md:pb-0'>
+            
+            <nav className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 !mx-auto mt-5 px-2 pb-2 md:pb-0'>
                 <Button processing={processing} onClick={() => handleOnRegularCheckOut()} info className="grow flex-nowrap !flex items-center gap-2">
                     <span>Check Out</span>
                     <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>

@@ -2,13 +2,13 @@ import { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
 import React from 'react';
 import { Icon } from '@iconify/react';
 import classNames from "classnames";
-import Sidebarpopup from "./Sidebarpopup";
+import Sidebarpopup from './Sidebarpopup';
 import { useSidebar } from '../../providers/Sidebarserviceprovider';
 import { AccessByPermission } from './Sidebar';
 import { useLocation, Link } from 'react-router-dom';
 
 export default function Sidebardropdown(props) {
-    const { sidebarStateOpen, setSidebarItemLocation, setCurrentPopupElement, setPopupVisible, handleLeave, visibilityTimeout } = useSidebar();
+    const { sidebarStateOpen, setSidebarItemLocation,setSidebarStateOpen, setCurrentPopupElement, setPopupVisible, handleLeave, visibilityTimeout } = useSidebar();
     const { mini } = sidebarStateOpen;
     const location = useLocation();
     const pathname = location?.pathname;
@@ -18,6 +18,7 @@ export default function Sidebardropdown(props) {
     const sidebarItemRef = useRef(null);
 
     const handleHover = () => {
+        if(sidebarStateOpen.mini == false) return;
         clearTimeout(visibilityTimeout?.current);
         if (sidebarItemRef.current) {
             const { top } = sidebarItemRef.current.getBoundingClientRect();
@@ -95,7 +96,7 @@ export default function Sidebardropdown(props) {
                     <AccessByPermission key={i} abilities={link.permissions}>
                         <li className="list-none">
                             <Link
-                                onClick={props.toggleSidebar}
+                                onClick={()=>setSidebarStateOpen({ full: false, mini: true })}
                                 to={link.link}
                                 className={classNames({
                                     'flex items-center gap-1 py-1 pl-2 w-full text-sm': true,

@@ -6,7 +6,7 @@ import { AccessByPermission } from './Sidebar'
 
 const Sidebarpopup = ({ links, title:pathname }) => {
     const { setPopupVisible} = useSidebar()
-
+    
     return <ul className={`z-50 rounded-md overflow-hidden h-max bg-gray-100/95   add-customer-bezier duration-300 w-[var(--sidebar-width)]  list-none pl-2 pr-3 py-[0.03rem]  `}>
         {links.map((link, i) =><AccessByPermission key={i} abilities={link.permissions}>
              <li key={i} className=" list-none ">

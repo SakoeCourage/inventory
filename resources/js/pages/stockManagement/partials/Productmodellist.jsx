@@ -39,7 +39,7 @@ function Productmodellist() {
         <div className='w-full transition-[heigth] min-h-[30rem] duration-500 h-max bg-gray-100 rounded-lg shadow-md border border-gray-400/70 p-1 relative'>
             <div className=' w-full rounded-lg mb-1 border focus-within:ring-2 focus-within:ring-info-200 transition-all duration-500 focus-within:border-none bg-white border-gray-400/70 flex items-center px-2'>
                 <Icon icon="ic:round-search" fontSize={30} className=' text-gray-300' />
-                <input type="search" name="" onChange={(e=>handleModelSearch(e.target.value))} placeholder='Search Model Name' className='w-full pl-1 pr-5 py-3 rounded-t-lg border-none outline-none focus:outline-none focus:border-none' id="" />
+                <input type="search" name="" onChange={(e=>handleModelSearch(e.target.value))} placeholder='Search Model Name' className='w-full pl-1 pr-5 py-3 bg-white rounded-t-lg border-none outline-none focus:outline-none focus:border-none' id="" />
             </div>
             <div className='flex flex-col text-blue-950 '>
                 {Boolean(data?.length) &&

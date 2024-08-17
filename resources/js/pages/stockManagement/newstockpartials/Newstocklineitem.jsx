@@ -366,11 +366,14 @@ function NewstockcurrentItem() {
 
             <nav className='flex flex-col lg:flex-row w-full gap-4'>
                 {Incollection && <FormInputText
+                    inputMode='numeric'
                     error={errors[`new_stock_products.${index}.quantity`]}
                     value={quantity.collection}
                     onChange={(e) => setQuantity(cq => cq = { ...cq, collection: e.target.value })}
                     className='w-full cost-input-coll' label={`Number of ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
+               
                 {basicUnit && <FormInputText
+                    inputMode='numeric'
                     value={quantity.units}
                     error={errors[`new_stock_products.${index}.quantity`]}
                     onChange={(e) => setQuantity(cq => cq = { ...cq, units: e.target.value })}
@@ -380,10 +383,12 @@ function NewstockcurrentItem() {
 
             <nav className='flex flex-col lg:flex-row w-full gap-2'>
                 {Incollection && <FormInputText
+                    inputMode='numeric'
                     error={errors[`new_stock_products.${index}.cost_per_collection`]}
                     onChange={(e) => handleChangeAtIndex('cost_per_collection', e.target.value)}
                     className='w-full ' label={`New Cost per ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
                 {basicUnit && <FormInputText
+                    inputMode='numeric'
                     error={errors[`new_stock_products.${index}.cost_per_unit`]}
                     onChange={(e) => handleChangeAtIndex('cost_per_unit', e.target.value)}
                     className='w-full' label={`New Cost per ${basicUnit ?? 'Units'}`} />}

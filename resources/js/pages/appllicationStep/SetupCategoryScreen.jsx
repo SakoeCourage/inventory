@@ -125,7 +125,7 @@ function SetupCategoryScreen() {
                     </div>
                     <div className={`w-full max-w-md rounded-lg mb-1 border focus-within:ring-2 focus-within:ring-info-200 transition-all duration-500 focus-within:border-none bg-white border-gray-400/70 flex items-center px-2 `}>
                         <Icon icon="ic:round-search" fontSize={30} className=' text-gray-700' />
-                        <input onChange={(e) => handleOnSettingsSearch(e.target.value)} autoComplete='off' placeholder='Search Settings' id="setup-search-bar" type="search" name="" className='w-full text-gray-700 pl-1 pr-5 py-4 rounded-t-lg border-none outline-none focus:outline-none focus:border-none' />
+                        <input onChange={(e) => handleOnSettingsSearch(e.target.value)} autoComplete='off' placeholder='Search Settings' id="setup-search-bar" type="search" name="" className='w-full text-gray-700 pl-1 pr-5 py-4 rounded-t-lg border-none outline-none bg-white focus:outline-none focus:border-none' />
                     </div>
                 </div>
             </div>

@@ -34,11 +34,16 @@ function Productsection({ productsFromDB, modelsFromDB, formData, setFormData, i
     const handleOnToDashboard = () => {
         if (Boolean(formData?.items?.length)) {
             localStorage.setItem('interrupted_sale', JSON.stringify({ datetime: new Date(), ...formData }))
-            navigate(`/stockmanagement/product/${routeParams.product_id}/${routeParams.product_name}/manage?model=${routeParams.model_id}`)
         }
+        navigate(`/stockmanagement/product/${routeParams.product_id}/${routeParams.product_name}/manage?model=${routeParams.model_id}`)
     }
 
     const checkForImproperPricing = ({ id: model_id, product_id, cost_per_collection, cost_per_unit, price_per_collection, unit_price, in_collection }) => {
+        if (model_id == null) {
+            setRequireAttention(false)
+            return;
+        }
+
         if (Boolean(in_collection)) {
             if ((Number(cost_per_collection) >= Number(price_per_collection)) || (Number(cost_per_unit) >= Number(unit_price))) {
                 prepareRouteParams(getProductNameFromID(product_id), product_id, model_id)
@@ -55,10 +60,10 @@ function Productsection({ productsFromDB, modelsFromDB, formData, setFormData, i
     }
 
     return (
-        <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md '>
-            {!requiredAttention ? <nav className='  flex items-center gap-2 p-3 text-blue-950/70  max-w-4xl mx-auto mt-'>
-                <nav className=' flex items-center gap-2'>
-                    <Icon icon="material-symbols:shopping-cart" /> <span>Product</span>
+        <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md overflow-hidden '>
+            {!requiredAttention ? <nav className='  flex items-center gap-2 p-3    max-w-4xl mx-auto mt-'>
+                <nav className=' flex items-center gap-2 text-red-800 p-1 bg-red-100 rounded-full px-3'>
+                    <Icon icon="material-symbols:shopping-cart" /> <span>Product Selection</span>
                 </nav>
             </nav> :
                 <nav className=' flex items-center p-3 py-4 gap-2 bg-red-50'>

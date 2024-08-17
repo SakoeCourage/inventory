@@ -152,8 +152,8 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
             </div>
           </div>
         }
-        <IconifyIcon onClick={() => setSidebarStateOpen(cv => cv = { mini: cv.mini, full: true })} className=' !text-gray-100 cursor-pointer !bg-transparent md:hidden' icon='gravity-ui:bars-unaligned' />
-        <IconifyIcon onClick={() => toggleMiniSidebar()} className={`!text-gray-100 cursor-pointer !bg-transparent hidden md:block transform transition-transform add-customer-bezier ${!sidebarStateOpen.mini && " scale-x-[-1] "}`} icon='gravity-ui:bars-unaligned' />
+        <IconifyIcon onClick={() => setSidebarStateOpen(cv => cv = { mini: false, full: true })} className=' !text-gray-100 cursor-pointer !bg-transparent md:hidden' icon='gravity-ui:bars-unaligned' />
+        <IconifyIcon onClick={() => setSidebarStateOpen(cv => cv = { mini: !cv.mini, full: false })} className={`!text-gray-100 cursor-pointer !bg-transparent hidden md:block transform transition-transform add-customer-bezier ${!sidebarStateOpen.mini && " scale-x-[-1] "}`} icon='gravity-ui:bars-unaligned' />
       </nav>
       <Modal onClose={() => setShowStoresModal(false)} label="Stores" hideDivider={true} open={showStoresModal} show>
         <AvailableStoresList />
@@ -161,7 +161,7 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
 
       <div className=' container mx-auto flex justify-between items-center h-full px-8'>
         {logingOut && <Loadingwheel />}
-        <div className='flex items-center divide-x-2 divide-green-800'>
+        <div className='flex items-center divide-x-2 divide-green-800 ml-auto'>
           {auth?.current_store_branch?.branch_name &&
             <nav className='px-2 text-white hidden  lg:flex items-center gap-1'>
               <IconifyIcon icon="hugeicons:location-05" className="!p-0 !h-4 !w-4" />
@@ -180,7 +180,7 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
               <span className=' text-xs md:text-sm lg:text-base'>Change Store</span>
             </nav>
           }
-          <div className='flex px-2 items-center gap-1'>
+          <div className='flex px-2 items-center gap-1 '>
             <button onClick={handleClick} className=' bg-info-100/70 flex items-center pr-5 rounded-full'>
               <IconButton
                 size="small"

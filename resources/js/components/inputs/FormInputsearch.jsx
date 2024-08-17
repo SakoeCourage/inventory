@@ -34,7 +34,7 @@ const FormInputsearch = forwardRef((props, ref) => {
         <div className={` w-full rounded-lg mb-1 border focus-within:ring-2 focus-within:ring-info-200 transition-all duration-500 focus-within:border-none bg-white border-gray-400/70 flex items-center px-2 ${props.className}`}>
             {processing ? <Loadingspinner /> : <Icon icon="ic:round-search" fontSize={30} className=' text-gray-300' />
             }
-            <input autoComplete='off' ref={ref} id="search-bar" type="search" name="" value={props?.searchKey} onChange={(e => setSearchKey(e.target.value))} placeholder={`${props.placeholder ?? 'Enter search item'}`} className='w-full pl-1 pr-5 py-3 rounded-t-lg border-none outline-none focus:outline-none focus:border-none' />
+            <input autoComplete='off' ref={ref} id="search-bar"  type="search" name="" value={props?.searchKey} onChange={(e => setSearchKey(e.target.value))} placeholder={`${props.placeholder ?? 'Enter search item'}`} className='w-full pl-1 pr-5 py-3 rounded-t-lg bg-white border-none outline-none focus:outline-none focus:border-none' />
         </div>
     )
 }

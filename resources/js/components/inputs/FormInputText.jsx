@@ -1,7 +1,7 @@
 import React from 'react'
 import TextField from '@mui/material/TextField'
-
-const FormInputText = ({ label, name, type, onChange, variant, value, onClick, className, ...props }) => {
+import InputAdornment from '@mui/material/InputAdornment';
+const FormInputText = ({ label, name, type, onChange, variant, value, onClick, Adorm,className, ...props }) => {
   return (
     <TextField
       // id="outlined-basic"

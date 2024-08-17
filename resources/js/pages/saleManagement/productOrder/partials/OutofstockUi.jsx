@@ -23,7 +23,7 @@ function OutofstockUi({ products, setOutOfStockProducts,formData }) {
         initial='initial'
         animate='animate'
         exit='exit'
-        className=' min-h-[30rem] h-max bg-white w-full max-w-6xl mx-auto flex rounded-t-md overflow-hidden flex-col lg:flex-row'>
+        className='  min-h-[30rem] h-max bg-white w-full max-w-6xl mx-auto flex rounded-t-md overflow-hidden flex-col lg:flex-row'>
         <div className='w-full min-h-full grow p-5 bg-info-100/40  flex items-center justify-center flex-col gap-5  lg:basis-[30%]'>
           <img src={outofstockimage} alt="" className='  aspect-square min-h-[14rem] min-w-[12rem] ' />
           <nav className=' text-sm font-medium text-info-900/75 rounded-md bg-white p-2'>
