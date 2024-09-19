@@ -3,8 +3,7 @@ import ProductDefinitionPage from './productformpartials/ProductDefinitionPage'
 import StoreProductsPage from './productformpartials/StoreProductsPage'
 import { Pilltab } from '../saleManagement/productOrder'
 import { Icon } from '@iconify/react'
-import { useSearchParams } from 'react-router-dom'
-
+import { Routes, Route,useSearchParams } from 'react-router-dom'
 
 const components = {
   ProductsDefinition: ProductDefinitionPage,
@@ -22,16 +21,18 @@ const productDefinition = () => {
   const Component = components[currentComponent]
 
   useEffect(() => {
-     setCurrentComponent(searchParams?.get('view') ?? "ProductsDefinition")
+    setCurrentComponent(searchParams?.get('view') ?? "ProductsDefinition")
   }, [searchParams?.get('view')])
-  
+
 
   return (
     <>
+   
+
       <nav className=" w-full  z-30   bg-info-900/50 p-2 pt-3">
         <header className="flex items-center gap-4 max-w-6xl mx-auto ">
           <Pilltab active={currentComponent == "ProductsDefinition"} onClick={() => setsearchParams({ view: "ProductsDefinition" })} Pillicon={<Icon fontSize={20} icon="mdi:tags" />} title='All Products' />
-          <Pilltab active={currentComponent == 'StoreProducts'} onClick={() => setsearchParams({view: 'StoreProducts'})} Pillicon={<Icon fontSize={20} icon="mdi:tag" />} title='Store Product' />
+          <Pilltab active={currentComponent == 'StoreProducts'} onClick={() => setsearchParams({ view: 'StoreProducts' })} Pillicon={<Icon fontSize={20} icon="mdi:tag" />} title='Store Product' />
         </header>
       </nav>
       <main className=" mt-6">

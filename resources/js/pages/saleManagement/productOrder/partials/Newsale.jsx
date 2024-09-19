@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef, useContext } from 'react'
 import FormInputText from '../../../../components/inputs/FormInputText'
 import { Icon } from '@iconify/react'
 import Productsection from './Productsection'
@@ -12,9 +12,9 @@ import { SnackbarProvider, useSnackbar } from 'notistack'
 import { handleOutOfStock, checkForInterruptedSale, ini_sale, ini_sale_items } from './handlers'
 import Customerinformation from './Customerinformation'
 import Itemscheckout from './Itemscheckout'
-import Invoicepreview from './Invoicepreview'
 import Wrapable from '../../../../components/layout/Wrappable'
 import Payoutsection from './Payoutsection'
+import { PrintPrevewContext } from '..'
 
 function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsAndModels, setProductsFromDB, setModelsFromDB }) {
     const initial_sale = { ...ini_sale }
@@ -27,9 +27,9 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
     const [outOfStockProducts, setOutOfStockProducts] = useState([])
     const [interreptedSaleAvailable, setInterruptedSaleAvailable] = useState(false)
     const [saleDiscount, setSaleDiscount] = useState(true)
-    const [invoiceData, setInvoiceData] = useState(null)
     const [items, setItems] = useState([])
     const [processingLeaseSale, setProcessingLeaseSale] = useState(false);
+    const { setInvoiceData } = useContext(PrintPrevewContext)
 
     const getProductfromId = (product_id) => {
         return productsFromDB.find(product => product.id == product_id)
@@ -90,8 +90,12 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
     }
 
     const handleOnRegularCheckOut = () => {
-        setProcessing(true)
-        checkOut(formData);
+        setFormData(cv => {
+            const updatedFormData = { ...cv, sale_type: "regular" };
+            setProcessing(true);
+            checkOut(updatedFormData);
+            return updatedFormData;
+        });
     }
 
 
@@ -210,9 +214,11 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
     }, [modelsFromDB, modelsFromDB])
 
 
+
+
     return (
         <div className=' max-w-7xl  mx-auto'>
-            {Boolean(invoiceData) && <Invoicepreview invoiceData={invoiceData} onClose={() => setInvoiceData(null)} />}
+
             {/* popup on out of stock */}
             {Boolean(outOfStockProducts.length) && <nav className=' bg-black/30 fixed inset-0 z-50 flex items-end'>
                 <AnimatePresence>
@@ -270,7 +276,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                     getBalance={getBalance}
                 />
             </nav>
-            
+
             <nav className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 !mx-auto mt-5 px-2 pb-2 md:pb-0'>
                 <Button processing={processing} onClick={() => handleOnRegularCheckOut()} info className="grow flex-nowrap !flex items-center gap-2">
                     <span>Check Out</span>

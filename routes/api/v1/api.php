@@ -108,7 +108,9 @@ route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::group(['prefix' => 'lease'], function () {
+        Route::patch('/make-payment/{saleId}', [App\Http\Controllers\LeasePaymentHistoryController::class, "update"]);
         Route::get('/mark-as-settled/{saleId}', [App\Http\Controllers\LeaseController::class, "handleOnLeaseSettled"]);
+        Route::get('/sale/{saleId}/history', [App\Http\Controllers\LeasePaymentHistoryController::class, "index"]);
     });
 
     Route::group(['prefix' => 'proforma'], function () {

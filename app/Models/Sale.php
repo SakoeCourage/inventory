@@ -81,4 +81,9 @@ class Sale extends Model
     });
     }
 
+
+    public function leasePaymentHistory (){
+        return $this->hasMany(LeasePaymentHistory::class);
+    }
+
 }

@@ -28,4 +28,16 @@ class LeaseController extends Controller
 
         return response("Sale Updated",Response::HTTP_NO_CONTENT);
     }
+
+    public function handleOnLeasePayment($saleId,Request $request){
+
+        $validationResponse = $request->validate([
+                
+        ]);
+
+       \Illuminate\Support\Facades\DB::transaction(function()use($saleId,$request){
+            $sale = $sale = \App\Models\Sale::find($saleId);
+       });
+    }
+    
 }

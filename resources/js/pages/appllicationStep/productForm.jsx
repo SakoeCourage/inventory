@@ -12,8 +12,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SlideUpAndDownAnimation } from '../../api/Util';
 import ProductStoreAvailabilityForm from './productformpartials/ProductStoreAvailabilityForm';
 import { enqueueSnackbar } from 'notistack';
+import MoveProductModelView from './productformpartials/MoveProductModelView';
+import Loadingwheel from '../../components/Loaders/Loadingwheel';
 
-const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal, setEdit, fetchAllProducts, data }) => {
+const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +57,8 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal, setEdit,
         if (err.response?.status === 422) {
           setErrors(err.response.data.errors);
           setProcessing(false);
+        } else {
+          enqueueSnackbar({ message: "Failed To Add Product", variant: "error" })
         }
       });
   };
@@ -156,55 +160,122 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal, setEdit,
   }, [showNewModelForm, showStoreAvailabilityForm?.open, editIndex])
 
 
-  return (
-    <div className={`text-blue-950 flex-grow m-6 relative py-5 ${showNewModelForm || showStoreAvailabilityForm?.open == true || editIndex == null && 'overflow-y-scroll'}  `}>
-      {isLoading && <div className="absolute inset-0 flex items-center justify-center bg-white z-30">
-        <Loadingspinner />
-      </div>}
-      <div className={`flex flex-col gap-6  ${(showNewModelForm || showStoreAvailabilityForm?.open == true || editIndex == null) == false && '!hidden'}`} >
-        <FormInputText type="text" required label="Product name" name="product_name" value={formValues.product_name} onChange={(e) => setFormValues(cv => ({ ...cv, product_name: e.target.value }))}
-          helperText={errors.product_name && errors?.product_name}
-          error={errors.product_name && errors?.product_name}
-        />
+  return (<>
+    <AnimatePresence>
+      {showStoreAvailabilityForm?.open &&
+        <div className='absolute z-30 inset-0 bg-black/50  overflow-hidden backdrop-grayscale-0'>
+          <motion.div
+            variants={SlideUpAndDownAnimation}
+            initial="initial"
+            animate="animate"
+            exit='exit'
+            className="absolute inset-0 z-30 flex items-end justify-center">
+            <div className='max-w-3xl w-full bg-white h-max rounded-md overflow-hidden'>
+              <ProductStoreAvailabilityForm
+                handleOnSaveOrCancel={findCurrentProduct}
+                showStoreAvailabilityForm={showStoreAvailabilityForm}
+                setShowStoreAvailabilityForm={setShowStoreAvailabilityForm}
+                current_stores={showStoreAvailabilityForm?.current_stores}
+                model_name={showStoreAvailabilityForm?.model_name}
+              />
+            </div>
+          </motion.div>
+        </div>
+      }
+    </AnimatePresence>
 
-        <FormInputSelect type="text" required label="Basic unit of sale" options={selectItems?.basicQuantityFromDB ? selectItems.basicQuantityFromDB.map(entry => ({ name: entry.name, value: entry.name })) : []} name="Basic selling unit"
-          value={formValues.basic_selling_quantity}
-          onChange={(e) => setFormValues(cv => ({ ...cv, basic_selling_quantity: e.target.value }))}
-          helperText={errors.basic_selling_quantity && errors?.basic_selling_quantity}
-          error={errors.basic_selling_quantity && errors?.basic_selling_quantity}
-        />
+    <AnimatePresence>
+      {false &&
+        <motion.div
+          variants={SlideUpAndDownAnimation}
+          initial="initial"
+          animate="animate"
+          exit='exit'
+          className="absolute inset-0 bg-white/50  backdrop-grayscale-0 backdrop-blur-sm  z-30 flex items-end justify-center">
+          <MoveProductModelView />
+        </motion.div>}
+    </AnimatePresence>
 
-        <FormInputSelect type="text" required label="Category of Product" options={selectItems?.categoriesFromDb ? selectItems.categoriesFromDb.map(entry => ({ name: entry.category, value: entry.id })) : []} name="Basic selling unit"
-          value={formValues.category}
-          onChange={(e) => setFormValues(cv => ({ ...cv, category: e.target.value }))}
-          helperText={errors.category && errors?.category}
-          error={errors.category && errors?.category}
-        />
+    <AnimatePresence>
+      {(showNewModelForm || editIndex !== null)
+        &&
+        <div className='absolute z-30 inset-0 bg-black/50 overflow-hidden  backdrop-grayscale-0'>
+          <motion.div
+            variants={SlideUpAndDownAnimation}
+            initial="initial"
+            animate="animate"
+            exit='exit'
+            className="absolute inset-0 z-30 flex items-end justify-center">
+            <div className='max-w-3xl w-full bg-white'>
+              <Newproductmodel
+                editIndex={editIndex}
+                handleModelEdit={handleModelEdit}
+                basic_selling_quantity={formValues.basic_selling_quantity}
+                selectItems={selectItems}
+                models={formValues.product_models}
+                handelNewProductModel={handelNewProductModel}
+                setShowNewModelForm={() => { setShowNewModelForm(false); setEditIndex(null) }}
+              />
+            </div>
+          </motion.div>
 
-        <Fieldset className={`${errors.product_models && '!border-red-400 !rounded-md'}`}>
-          <div className='border overflow-hidden rounded-md border-gray-300 my-2 focus-within:ring-1 focus-within:ring-gray-700 focus-within:ring-offset-1 transition-all duration-500'>
-            <input
-              type="search"
-              className='bg-white p-3 w-full focus:border-none active:border-none focus:outline-none active:outline-none'
-              placeholder="Search product model name"
-              name=""
-              id=""
-              value={modelSearchKey}
-              onChange={(e) => setModelSearchKey(e.target.value)}
-            />
-          </div>
-          <nav className='text-sm text-info-600 border-b mb-1 flex items-center justify-between w-full py-2'>
-            <span>Products type pricing model</span>
-            <button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} className='text-info-600 font-medium'>
-              <span className='mr-2'>Add new model</span>
+        </div>
+      }
+    </AnimatePresence>
+
+    <div className={`text-blue-950 flex-grow m-6 relative py-5 `}>
+      {isLoading && <Loadingwheel />}
+
+      <div className={`flex flex-col gap-6`} >
+
+        <div className='flex flex-col gap-2 pb-10 border-b '>
+          <h4 className=' text-lg text-gray-500'>Products Details </h4>
+
+          <FormInputText type="text" required label="Product name" name="product_name" value={formValues.product_name} onChange={(e) => setFormValues(cv => ({ ...cv, product_name: e.target.value }))}
+            helperText={errors.product_name && errors?.product_name}
+            error={errors.product_name && errors?.product_name}
+          />
+
+          <FormInputSelect type="text" required label="Basic unit of sale" options={selectItems?.basicQuantityFromDB ? selectItems.basicQuantityFromDB.map(entry => ({ name: entry.name, value: entry.name })) : []} name="Basic selling unit"
+            value={formValues.basic_selling_quantity}
+            onChange={(e) => setFormValues(cv => ({ ...cv, basic_selling_quantity: e.target.value }))}
+            helperText={errors.basic_selling_quantity && errors?.basic_selling_quantity}
+            error={errors.basic_selling_quantity && errors?.basic_selling_quantity}
+          />
+
+          <FormInputSelect type="text" required label="Category of Product" options={selectItems?.categoriesFromDb ? selectItems.categoriesFromDb.map(entry => ({ name: entry.category, value: entry.id })) : []} name="Basic selling unit"
+            value={formValues.category}
+            onChange={(e) => setFormValues(cv => ({ ...cv, category: e.target.value }))}
+            helperText={errors.category && errors?.category}
+            error={errors.category && errors?.category}
+          />
+        </div>
+
+        <div className={`px-2 bg-gray-100/50 py-2`}>
+          <h4 className=' text-lg text-gray-500'>Products type pricing model {Boolean(filteredModels?.length) && "(" + filteredModels.length + ")"} </h4>
+          <nav className='text-sm text-info-600 border-b flex items-center px-2 gap-2 justify-between w-full '>
+            <div className='border grow overflow-hidden rounded-md border-gray-800 my-2 focus-within:ring-1 focus-within:ring-gray-700 focus-within:ring-offset-1 transition-all duration-500'>
+              <input
+                type="search"
+                className='bg-white p-3 w-full focus:border-none active:border-none focus:outline-none active:outline-none'
+                placeholder="Search product model name"
+                name=""
+                id=""
+                value={modelSearchKey}
+                onChange={(e) => setModelSearchKey(e.target.value)}
+              />
+            </div>
+            <Button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} className='!py-0'>
+              <span className='mr-2 capitalize '>Add new model</span>
               <Icon fontSize='1.2rem' icon="mdi:plus-circle-outline" />
-            </button>
+            </Button>
           </nav>
           {!Boolean(formValues.product_models.length) ? <nav className="py-2 rounded-md flex items-center justify-center min-h-[7rem]">
             <nav className='my-32 flex items-center flex-col'>
               <Button onClick={(e) => { e.preventDefault(); setShowNewModelForm(true) }} neutral text='new pricing model' />
             </nav>
-          </nav> : <nav className='flex flex-col gap-2 h-full'>
+
+          </nav> : <nav className='flex flex-col gap-4 h-full py-2'>
             {/* Product Models List Starts Here */}
             {filteredModels.map((model, i) => (
               <ProductModelListItem
@@ -221,7 +292,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal, setEdit,
             ))}
           </nav>
           }
-        </Fieldset>
+        </div>
 
         <div className='flex justify-end gap-2'>
           <Button onClick={() => setOpenModal(false)} type="button" text="Cancel" neutral />
@@ -232,45 +303,10 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal, setEdit,
       </div>
       {/* Product Model form with overlay */}
 
-      <AnimatePresence>
-        {showStoreAvailabilityForm?.open &&
-          <motion.div
-            variants={SlideUpAndDownAnimation}
-            initial="initial"
-            animate="animate"
-            exit='exit'
-            className="absolute inset-0 bg-white/50  backdrop-grayscale-0 backdrop-blur-sm  z-30 flex items-end justify-center">
-            <ProductStoreAvailabilityForm
-              handleOnSaveOrCancel={findCurrentProduct}
-              showStoreAvailabilityForm={showStoreAvailabilityForm}
-              setShowStoreAvailabilityForm={setShowStoreAvailabilityForm}
-              current_stores={showStoreAvailabilityForm?.current_stores}
-              model_name={showStoreAvailabilityForm?.model_name}
-            />
-          </motion.div>}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {(showNewModelForm || editIndex !== null) &&
-          <motion.div
-            variants={SlideUpAndDownAnimation}
-            initial="initial"
-            animate="animate"
-            exit='exit'
-            className="absolute inset-0 bg-white/50  backdrop-grayscale-0 backdrop-blur-sm  z-30 flex items-end justify-center">
-            <Newproductmodel
-              editIndex={editIndex}
-              handleModelEdit={handleModelEdit}
-              basic_selling_quantity={formValues.basic_selling_quantity}
-              selectItems={selectItems} 
-              models={formValues.product_models}
-              handelNewProductModel={handelNewProductModel}
-              setShowNewModelForm={() => { setShowNewModelForm(false); setEditIndex(null) }}
-            />
-          </motion.div>}
-      </AnimatePresence>
 
     </div>
+  </>
   );
 }
 

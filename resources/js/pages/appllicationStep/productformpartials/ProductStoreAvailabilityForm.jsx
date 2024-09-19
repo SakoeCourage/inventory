@@ -449,18 +449,18 @@ function ProductStoreAvailabilityForm({ model_name, current_stores, setShowStore
                         <Inscription title='Need Help - Store Actions'>
                             <ul className=' list-outside list-disc px-3 py-2 space-y-1'>
                                 <li>
-                                    Removing a product from the store?
-                                    <br />
-                                    <small>Click and wait for store to turn transparent</small>
-                                    <br />
-                                    <small>This action will clear the current stock quantity of this product.</small>
-                                </li>
-                                <li>
                                     Adding product to store?
                                     <br />
-                                    <small>Click and wait for store to turn green</small>
+                                    <small>Click and wait for selected store name to turn green</small>
                                     <br />
                                     <small>You can optionally set initial stock quantity</small>
+                                </li>
+                                <li>
+                                    Removing a product from the store?
+                                    <br />
+                                    <small>Click and wait for selected store name to turn transparent</small>
+                                    <br />
+                                    <small>This action will clear the current stock quantity of this product.</small>
                                 </li>
                             </ul>
                         </Inscription>

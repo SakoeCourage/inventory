@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\PrintController;
 use App\Models\Productsmodels;
 use App\Models\StoreProduct;
 use Illuminate\Support\Facades\Route;
@@ -117,6 +118,10 @@ use Illuminate\Support\Facades\DB;
 Route::get("/test-lsp", function () {
     dd(getProducts());
 });
+
+
+Route::get('/test/print-receipt', [PrintController::class, 'handleNewTestPrint']);
+
 
 
 

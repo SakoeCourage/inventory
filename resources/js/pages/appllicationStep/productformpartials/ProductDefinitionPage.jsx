@@ -15,7 +15,7 @@ import Modal from '../../../components/layout/modal'
 import ExcelUploadForm from './ExcelUploadForm'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import saveAs from 'file-saver'
-
+import { useNavigate, useNavigation } from 'react-router-dom'
 /**
  * @typedef TemplateDownloadItem
  * @property {string | JSX.Element} icon - Describes the icon for current item
@@ -84,7 +84,7 @@ const ProductDefinitionPage = () => {
     const [selectedProduct, setSelectedProducts] = useState([])
     const [productUploadTemplate, setProductUploadTemplate] = useState(null)
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-
+    const navigate = useNavigate();
 
 
     const handleDonwloadNewProductsTemplate = () => {
@@ -286,7 +286,7 @@ const ProductDefinitionPage = () => {
                             </span>}
                         </div>
                     </div>
-                    <Button className="w-full my-auto md:w-auto" info onClick={() => { setEdit(val => val = { ...val, data: null }); setOpenModal(true) }}>
+                    <Button className="w-full my-auto md:w-auto" info onClick={() => navigate('new')}>
                         <div className='flex items-center gap-2 text-xs'>
                             <Icon icon="streamline:money-cashier-tag-codes-tags-tag-product-label" fontSize={22} />
                             <span className=''>Add A product</span>

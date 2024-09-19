@@ -35,11 +35,11 @@ function Newproductmodel(props) {
         model_name: '',
         in_collection: '',
         collection_method: '',
-        price_per_collection: '',
-        quantity_per_collection: '',
+        price_per_collection: null,
+        quantity_per_collection: null,
         unit_price: '',
         cost_per_unit: '',
-        cost_per_collection: '',
+        cost_per_collection: null,
     })
     const [errors, setErrors] = useState({})
     const [choosenmodels, setChoosenModel] = useState([])
@@ -70,7 +70,6 @@ function Newproductmodel(props) {
             .typeError('This field is required')
             .test("cost_price_to_unit_price_check", "Improper Price Configuration", function (value) {
                 const { unit_price } = this.parent;
-                console.log('cost_per_unit test:', value, unit_price);
                 return Number(value) <= Number(unit_price);
             })
         ,
@@ -89,7 +88,7 @@ function Newproductmodel(props) {
                     const { price_per_collection } = this.parent;
                     return typeof price_per_collection === 'undefined' || typeof value === 'undefined' || Number(value) <= Number(price_per_collection);
                 }),
-            otherwise: schema => schema.notRequired()
+            otherwise: schema => schema.notRequired().nullable()
         }),
         quantity_per_collection: number().when('in_collection', {
             is: (value) => value === true,
@@ -110,6 +109,7 @@ function Newproductmodel(props) {
                 props.handelNewProductModel(modelData)
             })
             .catch(err => {
+                console.log(err)
                 setErrors(err)
             })
     }
@@ -123,11 +123,16 @@ function Newproductmodel(props) {
             })
     }
 
+    useEffect(() => {
+      console.log(modelData)
+    }, [modelData])
+    
+
     return <nav className="flex flex-col gap-2 border bg-gray-100/60 border-gray-400 rounded-md p-2 min-w-full">
 
         <Fieldset>
             <nav>
-                <nav className='text-sm text-blue-950 addleftline flex items-center justify-between uppercase bg-white/25 py-2 border-b'><span>Model selling option </span>
+                <nav className='text-sm text-blue-950  flex items-center justify-between uppercase bg-white/25 py-2 border-b'><span>Product Pricing Model </span>
 
                 </nav>
                 <nav className='grid grid-cols-1 gap-4 my-4 mt-8'>

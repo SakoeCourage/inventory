@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState ,useRef,useContext} from 'react'
 import Api from '../../../../api/Api'
 import { Tooltip, TablePagination, Zoom } from '@mui/material'
 import { Icon } from '@iconify/react'
@@ -14,18 +14,19 @@ import Loadingwheel from '../../../../components/Loaders/Loadingwheel'
 import { NavLink } from 'react-router-dom'
 import Refundinfo from '../../../../components/inputs/Refundinfo'
 import { useSnackbar } from 'notistack'
-import Invoicepreview from './Invoicepreview'
+import { PrintPrevewContext } from '..'
+
 
 function Salehistory({ sales, setSales, filters, setFilters }) {
   const {enqueueSnackbar,closeSnackbar} = useSnackbar()
   const [isLoading, setIsLoading] = useState(false)
-  const [invoiceData, setInvoiceData] = useState(null)
   const [processing, setProcessing] = useState(false)
   const [fullUriWithQuery, setfullUriWithQuery] = useState()
   const [showSaleById, setShowSaleById] = useState({
     id: null,
     title: null
   })
+  const { setInvoiceData } = useContext(PrintPrevewContext);
 
   const fetchSalesData = (url) => {
     setIsLoading(true)
@@ -82,10 +83,10 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
     }
   }
 
+
   return (
     <div className=' max-w-6xl mx-auto bg-white min-h-[12rem] p-2 border border-gray-400/70 rounded-md'>
-      {invoiceData && <Invoicepreview invoiceData={invoiceData} onClose={() => setInvoiceData(null)} />}
-      
+  
       {showSaleById.id && showSaleById.title && <SideModal onClose={() => setShowSaleById({ id: null, title: null })} showClose title={showSaleById.title} showDivider={true} open={true} maxWidth='2xl'>
         <Viewsaleitem saleId={showSaleById?.id} setShowSaleById={setShowSaleById} />
       </SideModal>}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SaleEnum;
+use App\Models\LeasePaymentHistory;
 use App\Models\Sale;
 use App\Models\Saleitem;
 use Illuminate\Http\Request;
@@ -24,8 +25,12 @@ class SaleController extends Controller
         return [
             'sales' => $sale->where([
                 "sale_type" => $request->sale_type ?? SaleEnum::Regular->value,
-                'store_id' => $request->user()->storePreference->store_id
-            ])->filter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
+                'store_id' => $request->user()->storePreference->store_id,
+            ])->filter(request()->only('search', 'day'))
+                ->with(['salerepresentative:id,name', 'leasePaymentHistory'])
+                ->withCount('refunds')
+                ->latest()
+                ->paginate(10),
             'filters' => request()->only('search', 'day'),
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
         ];
@@ -48,9 +53,14 @@ class SaleController extends Controller
     public function showinvoice($invoiceID)
     {
         $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $invoiceID)->firstOrFail();
+        $currentStore = Auth()->user()?->storePreference;
         return response([
             ...$newdata->toArray(),
-            'business_profile' => Businessprofile::get()->first()
+            'business_profile' => Businessprofile::get()->first(),
+            'store' => [
+                'name' => $currentStore?->store->store_name,
+                'branch' => $currentStore?->store?->branch?->branch_name
+            ],
         ], 200);
     }
 
@@ -101,12 +111,18 @@ class SaleController extends Controller
     {
         $newdata = null;
         $request->validate([
-            'customer_fullname' => ['nullable', 'string', 'max:255'],
-            'customer_contact' => ['nullable', 'string', 'min:10', 'max:10'],
-            'payment_method' => ['required'],
+            'customer_fullname' => [
+                Rule::when(fn() => $request->sale_type == "lease" | $request->sale_type == "un_collected", ['required', 'string', 'max:255']),
+                'nullable',
+            ],
+            'customer_contact' => [
+                Rule::when(fn() => $request->sale_type == "lease" | $request->sale_type == "un_collected", ['required', 'string', 'min:10', 'max:10']),
+                'nullable',
+            ],
+            'payment_method' => ['nullable', Rule::when(fn() => $request->amount_paid != null || $request->sale_type == "regular", ['required'])],
             'sub_total' => ['required'],
             'balance' => ['nullable'],
-            'amount_paid' => ['nullable', Rule::when(fn() => $request->amount_paid < $request->total, ['min:' . $request->total])],
+            'amount_paid' => ['nullable', Rule::when(fn() => $request->sale_type == 'regular' && $request->amount_paid < $request->total, ['min:' . $request->total])],
             'discount_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'total' => ['required'],
             'items' => ['required', 'array', 'min:1'],
@@ -155,10 +171,17 @@ class SaleController extends Controller
                 $productStockService->decreasestock((Object) $value);
             }
 
-            if($request->sale_type == 'regular'){
+            if ($request->sale_type == 'regular') {
                 PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
+            } else {
+                $newLeaseHistory = LeasePaymentHistory::create([
+                    'sale_id' => $newSale->id,
+                    'amount' => $newSale->amount_paid ?? 0,
+                    'balance' => ($request->amount_paid ?? 0) - $newSale->total_amount,
+                    'paymentmethod_id' => $request->payment_method ?? null
+                ]);
             }
-            
+
             $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $newSale->id)->firstOrFail();
         });
         return [

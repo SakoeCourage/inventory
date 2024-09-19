@@ -182,26 +182,6 @@ function StoreProductsPage() {
           setData={setData}
         />
       </Card>
-      <SideModal
-        open={openModal}
-        showDivider
-        maxWidth="2xl"
-        title={`${edit.open ? "Edit Product" : "New Product"}`}
-        showClose
-        onClose={() => {
-          setOpenModal(false)
-          setEdit({})
-        }}
-      >
-        <ProductForm
-          setOpenModal={setOpenModal}
-          handleOnSucess={() => { setOpenModal(false); setEdit(cv => cv = { ...cv, data: null }); fetchAllProducts() }}
-          selectItems={selectItems} edit={edit}
-          fetchAllProducts={fetchAllProducts}
-          setEdit={setEdit}
-          data={data}
-        />
-      </SideModal>
     </div>
   )
 }

@@ -9,11 +9,17 @@ import StoreDefininition from './storeDefininition'
 import BranchDefinition from './branchDefinition'
 import PackagingUnit from './packagingUnit'
 import BasicUnit from './basicUnit'
+import UpdateOrNewProductPage from './productformpartials/UpdateOrNewProductPage'
 
 const Index = () => {
   return (
     <Routes>
-      <Route path='products/definition' exact element={<ProductDefinition />} />
+      <Route path='products/definition' element={<ProductDefinition />} />
+      <Route path='products/definition/new' element={<UpdateOrNewProductPage />} />
+      <Route path='products/definition/update/:id' element={<UpdateOrNewProductPage />} />
+      {/* <Routes>
+        <Route path='new' exact  element={<div className=' bg-red-600'>new Product hosdfi osid foisdfoisd </div>} />
+      </Routes > */}
       <Route path='products/suppliers' exact element={<Productsuppliers />} />
       <Route path='products/categories' exact element={<Productcategories />} />
       <Route path='expense/definition' exact element={<ExpenseDefinition />} />

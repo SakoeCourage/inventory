@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import Api from '../../../../api/Api'
 import { Tooltip, TablePagination, Zoom } from '@mui/material'
 import { Icon } from '@iconify/react'
@@ -15,24 +15,28 @@ import { NavLink } from 'react-router-dom'
 import Refundinfo from '../../../../components/inputs/Refundinfo'
 import { useSnackbar } from 'notistack'
 import Invoicepreview from './Invoicepreview'
+import { useReactToPrint } from 'react-to-print'
+import { PrintPrevewContext } from '..'
+import Modal from '../../../../components/layout/modal'
+import CreaditSalePayment from './CreaditSalePayment'
 
 function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const [isLoading, setIsLoading] = useState(false)
-  const [invoiceData, setInvoiceData] = useState(null)
   const [processing, setProcessing] = useState(false)
-  const [fullUriWithQuery, setfullUriWithQuery] = useState()
+  const [fullUriWithQuery, setfullUriWithQuery] = useState(null)
   const [showSaleById, setShowSaleById] = useState({
     id: null,
     title: null
   })
+  const { setInvoiceData } = useContext(PrintPrevewContext);
+  const [makeLeasePayment, setMakeLeasePayment] = useState(null)
 
   const fetchSalesData = (url) => {
     setIsLoading(true)
     Api.get(url ?? '/sale/all?sale_type=lease').then(res => {
       const { sales, filters, full_url } = res.data
       setfullUriWithQuery(full_url)
-      console.log(sales, filters)
       setFilters(filters)
       setSales(sales)
       setIsLoading(false)
@@ -86,27 +90,30 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
    * 
    * @param {string?} saleId 
    */
-  const handleOnLeaseSettled = (saleId) => {
-    if (saleId == null) return;
-    enqueueSnackbar('Marking Lease As Settled', { variant: 'default', key: 'leaseSettledStatus' })
-    Api.get(`lease/mark-as-settled/${saleId}`)
-      .then(res => {
-        closeSnackbar('leaseSettledStatus')
-        enqueueSnackbar('Sale Marked As Settled', { variant: "success" })
-        fetchSalesData();
-      })
-      .catch(err => {
-        enqueueSnackbar('Failed to Settle invoice', { variant: 'error' })
-      })
+  const handleOnMakeLeasePayment = (item) => {
+    if (item == null) return;
+    setMakeLeasePayment(item);
+    // enqueueSnackbar('Marking Lease As Settled', { variant: 'default', key: 'leaseSettledStatus' })
+    // Api.get(`lease/mark-as-settled/${saleId}`)
+    //   .then(res => {
+    //     closeSnackbar('leaseSettledStatus')
+    //     enqueueSnackbar('Sale Marked As Settled', { variant: "success" })
+    //     fetchSalesData();
+    //   })
+    //   .catch(err => {
+    //     enqueueSnackbar('Failed to Settle invoice', { variant: 'error' })
+    //   })
   }
+
 
   return (
     <div className=' max-w-6xl mx-auto bg-white min-h-[12rem] p-2 border border-gray-400/70 rounded-md'>
-      {invoiceData && <Invoicepreview invoiceData={invoiceData} onClose={() => setInvoiceData(null)} />}
-
       {showSaleById.id && showSaleById.title && <SideModal onClose={() => setShowSaleById({ id: null, title: null })} showClose title={showSaleById.title} showDivider={true} open={true} maxWidth='2xl'>
         <Viewsaleitem saleId={showSaleById?.id} setShowSaleById={setShowSaleById} />
       </SideModal>}
+      <Modal open={makeLeasePayment?.id != null} hideCloseIcon={false} hideDivider={true} onClose={() => setMakeLeasePayment(null)} label="Credit Sale Payment">
+        <CreaditSalePayment sale={makeLeasePayment} />
+      </Modal>
       <div className='flex flex-col md:flex-row items-center gap-4 justify-end my-2'>
         {(filters?.day || filters?.search) &&
           <Button onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
@@ -138,7 +145,10 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
                 Customer Contact
               </th>
               <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
-                Amount Payable
+                Amount
+              </th>
+              <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
+                Balance
               </th>
               <th className="px-6 py-3 text-left rtl:text-right  whitespace-nowrap font-semibold ">
                 Action
@@ -190,6 +200,13 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
                       </h6>
                     </div>
                   </td>
+                  <td className="px-6 py-2 !text-xs whitespace-nowrap">
+                    <div className="flex items-center">
+                      <h6 className="mb-0  ">
+                        {formatcurrency(Math.abs(x.lease_payment_history[x.lease_payment_history?.length-1]?.balance))}
+                      </h6>
+                    </div>
+                  </td>
 
                   <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap text-gray-500">
                     <Tooltip title="View Invoice" arrow TransitionComponent={Zoom}>
@@ -208,21 +225,15 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
                         <svg className=' text-info-700' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="currentColor" d="M6.25 4.5A1.75 1.75 0 0 0 4.5 6.25v7.5c0 .966.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-2a.75.75 0 0 1 1.5 0v2A3.25 3.25 0 0 1 13.75 17h-7.5A3.25 3.25 0 0 1 3 13.75v-7.5A3.25 3.25 0 0 1 6.25 3h2a.75.75 0 0 1 0 1.5h-2Zm4.25-.75a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0V5.56l-3.72 3.72a.75.75 0 1 1-1.06-1.06l3.72-3.72h-3.19a.75.75 0 0 1-.75-.75Z" /></svg>
                       </span>
                     </Tooltip>
-                    <Tooltip title="Lease Settled" arrow TransitionComponent={Zoom}>
+                    <Tooltip title="Make Payment" arrow TransitionComponent={Zoom}>
                       <span
-                        onClick={() => handleOnLeaseSettled(x.id)}
+                        onClick={() => handleOnMakeLeasePayment(x)}
                         className=" p-1 hover:cursor-pointer"
                       >
-                        <Icon className=' text-orange-700' icon="icons8:checked" fontSize={20} />
+                        <Icon className=' text-orange-700' icon="solar:money-bag-line-duotone" fontSize={20} />
                       </span>
                     </Tooltip>
-                    <Tooltip title="Refund Sale" arrow TransitionComponent={Zoom}>
-                      <NavLink to={`/salemanagement/refund?sale=` + x.sale_invoice}
-                        className=" p-1 hover:cursor-pointer"
-                      >
-                        <Icon className=' text-red-700' fontSize={20} icon="heroicons:receipt-refund" />
-                      </NavLink>
-                    </Tooltip>
+          
 
                   </td>
                 </tr>

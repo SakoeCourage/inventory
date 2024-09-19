@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Api from '../../../../api/Api'
 import { Tooltip, TablePagination, Zoom } from '@mui/material'
 import { Icon } from '@iconify/react'
@@ -11,13 +11,14 @@ import dayjs from 'dayjs'
 import Loadingwheel from '../../../../components/Loaders/Loadingwheel'
 import { useSnackbar } from 'notistack'
 import Invoicepreview from './Invoicepreview'
+import { PrintPrevewContext } from '..'
 function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
-  const {enqueueSnackbar,closeSnackbar} = useSnackbar()
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const [isLoading, setIsLoading] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [fullUriWithQuery, setfullUriWithQuery] = useState()
   const [filters, setFilters] = useState()
-  const [invoiceData, setInvoiceData] = useState(null)
+  const { setInvoiceData } = useContext(PrintPrevewContext);
 
   const fetchProformaData = (url) => {
     setIsLoading(true)
@@ -63,18 +64,17 @@ function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
 
   const generateGenerateInvoice = (proformaInvoiceID) => {
     if (proformaInvoiceID) {
-      enqueueSnackbar('Loading invoice',{variant: 'default',key:'proformaloadingstus'})
+      enqueueSnackbar('Loading invoice', { variant: 'default', key: 'proformaloadingstus' })
       Api.get(`proforma/view-invoice/${proformaInvoiceID}`)
-        .then(res => {   
+        .then(res => {
           closeSnackbar('proformaloadingstus')
-         
           setInvoiceData({
             data: res.data,
             type: 'PROFORMA INVOICE'
           })
         })
-        .catch(err=>{
-          enqueueSnackbar('Failed to load invoice',{variant: 'error'})
+        .catch(err => {
+          enqueueSnackbar('Failed to load invoice', { variant: 'error' })
         })
     }
   }
@@ -84,13 +84,13 @@ function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
     if (proformaInvoiceID) {
       setIsLoading(true)
       Api.delete(`proforma/delete/${proformaInvoiceID}`)
-        .then(res => {   
+        .then(res => {
           fetchProformaData(fullUriWithQuery)
         })
-        .catch(err=>{
+        .catch(err => {
           console.log(err)
           setIsLoading(false);
-          enqueueSnackbar('Failed to remove invoice',{variant: 'error'})
+          enqueueSnackbar('Failed to remove invoice', { variant: 'error' })
         })
     }
   }
@@ -99,7 +99,7 @@ function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
 
   return (
     <div className=' max-w-6xl mx-auto bg-white min-h-[12rem] p-2 border border-gray-400/70 rounded-md'>
-      {invoiceData && <Invoicepreview invoiceData={invoiceData} onClose={() => setInvoiceData(null)} />}
+
       <div className='flex items-center flex-col md:flex-row gap-4 justify-end my-2'>
         {(filters?.day || filters?.search) &&
           <Button onClick={() => { fetchProformaData(); setFilters([]) }} text='reset filters' />
@@ -186,7 +186,7 @@ function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
                   <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap text-gray-500">
                     <Tooltip title="View Invoice" arrow TransitionComponent={Zoom}>
                       <button
-                        onClick={() => generateGenerateInvoice (x.id)}
+                        onClick={() => generateGenerateInvoice(x.id)}
                         className=" p-1 hover:cursor-pointer"
                       >
                         <Icon className=' text-info-700' icon="solar:round-arrow-right-up-outline" fontSize={20} />
@@ -203,7 +203,7 @@ function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
                       <button onClick={() => handelOnDelete(x.id)}
                         className=" p-1 hover:cursor-pointer"
                       >
-                        <svg className='text-red-700' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.413-.588T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.588 1.413T17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z"/></svg>
+                        <svg className='text-red-700' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.413-.588T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.588 1.413T17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z" /></svg>
                       </button>
                     </Tooltip>
 

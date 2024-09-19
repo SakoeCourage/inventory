@@ -4,9 +4,11 @@ import TextField from '@mui/material/TextField'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 function FormInputDate({label, value, onChange,views, minDate, maxDate, name,inputFormat, ...props}) {
-    const convertToDefEventPara = (name, value) => ({
+    
+  const convertToDefEventPara = (name, value) => ({
       target: {name, value}
     })
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DesktopDatePicker 

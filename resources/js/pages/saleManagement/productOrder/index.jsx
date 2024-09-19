@@ -1,7 +1,7 @@
 
 import Newsale from "./partials/Newsale"
 import Salehistory from "./partials/Salehistory"
-import React, { useState, lazy, Suspense } from "react"
+import React, { useState, lazy, Suspense, createContext,useRef } from "react"
 import { Icon } from "@iconify/react"
 import { useEffect } from "react"
 import Api from "../../../api/Api"
@@ -9,8 +9,9 @@ import Loadingwheel from "../../../components/Loaders/Loadingwheel"
 import LeaseSaleHistory from "./partials/LeaseSaleHistory"
 const Paymenthistory = lazy(() => import("./partials/Paymenthistory"))
 const Proformalist = lazy(() => import("./partials/Proformalist"))
-
-
+import Invoicepreview from "./partials/Invoicepreview"
+import { useReactToPrint } from 'react-to-print'
+import { dateReformat } from "../../../api/Util"
 const components = {
   newsale: Newsale,
   salehistory: Salehistory,
@@ -23,6 +24,7 @@ export function Pilltab({ title, Pillicon, onClick, active }) {
     {Pillicon} <span className="hidden md:block text-sm">{title}</span>
   </button>
 }
+export const PrintPrevewContext = createContext({});
 
 const Index = () => {
   /**
@@ -36,6 +38,9 @@ const Index = () => {
   const [invoices, setInvoices] = useState([])
   const [paymentMethods, setPaymentMethods] = useState([])
   const [leaseSalseHisotry, setLeaseSaleHistory] = useState([])
+  const [invoiceData, setInvoiceData] = useState(null)
+  const PrintinvoiceRef = useRef()
+
 
   const getPaymentMethods = () => {
     Api.get('/toselect/paymentmethods')
@@ -67,9 +72,28 @@ const Index = () => {
     getPaymentMethods()
   }, [])
 
+  const handlePrint = useReactToPrint({
+    content: () => PrintinvoiceRef.current,
+    documentTitle: `${invoiceData?.type} ${invoiceData?.sale_invoice ?? ''} ${String(invoiceData?.customer_name ?? '').toUpperCase()} - ${dateReformat(invoiceData?.created_at)}`,
+    onAfterPrint: () => setInvoiceData(null)
+  })
+
+  useEffect(() => {
+    if (Boolean(invoiceData)) {
+      // console.log(invoiceData)
+      console.log(invoiceData?.type)
+      handlePrint();
+    }
+  }, [invoiceData])
+
   const Component = components[currentComponent]
 
-  return (<div className=" ">
+  return (<PrintPrevewContext.Provider value={{ invoiceData: invoiceData, setInvoiceData: setInvoiceData }} className=" ">
+    {invoiceData && (
+      <div style={{ display: 'none' }}>
+        <Invoicepreview invoiceData={invoiceData} ref={PrintinvoiceRef} />
+      </div>
+    )}
     <nav className=" w-full  z-30   bg-info-900/50 p-2 pt-3">
       <header className="flex items-center gap-4 max-w-6xl mx-auto ">
         <Pilltab active={currentComponent == 'newsale'} onClick={() => setCurrentComponent('newsale')} Pillicon={<Icon fontSize={20} icon="bi:plus-circle" />} title='New Sale' />
@@ -82,7 +106,7 @@ const Index = () => {
         <Pilltab active={currentComponent == 'salehistory'} onClick={() => setCurrentComponent("salehistory")} Pillicon={<Icon fontSize={20} icon="dashicons:money-alt" />} title='UnCollected Sales' />
       </header>
     </nav>
-    
+
     <main className=" mt-6">
       <Suspense fallback={<Loadingwheel />}>
         <Component
@@ -103,7 +127,7 @@ const Index = () => {
       </Suspense>
     </main>
 
-  </div>)
+  </PrintPrevewContext.Provider>)
 }
 
 export default Index

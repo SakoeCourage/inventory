@@ -16,9 +16,7 @@ const ProductsTable = ({
   selectedProducts,
   setSelectedProducts
 }) => {
-
-
-
+  
   const toggleSelectedByIDProduct = (id) => {
 
     setSelectedProducts((prevSelected) => {
@@ -134,12 +132,12 @@ const ProductsTable = ({
 
                       <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap">
                         <Tooltip title="Edit product details" arrow TransitionComponent={Zoom}>
-                          <span
-                            onClick={() => updateProduct(x.id)}
+                          <NavLink
+                            to={"update/"+x.id}
                             className=" p-1 rounded-full border border-gray-400/70 active:border-gray-400/40 text-red-900   text-sm font-semibold leading-5  hover:cursor-pointer"
                           >
                             <Icon className='' icon="mdi:database-edit-outline" fontSize={20} />
-                          </span>
+                          </NavLink>
                         </Tooltip>
                         <Tooltip title="Products Dashboard" arrow TransitionComponent={Zoom}>
                           <NavLink to={`/stockmanagement/product/${x.id}/${x.product_name}/manage`}

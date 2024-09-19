@@ -55,9 +55,9 @@ const AddStoreProductTableRowItem = (props) => {
     })
 
     useEffect(() => {
-        setData('store_id',store_id)
-        setData('model_id',ProductData?.model_id)
-    }, [ProductData,store_id])
+        setData('store_id', store_id)
+        setData('model_id', ProductData?.model_id)
+    }, [ProductData, store_id])
 
 
 
@@ -74,6 +74,7 @@ const AddStoreProductTableRowItem = (props) => {
     });
 
     const handleOnSubmit = () => {
+        enqueueSnackbar("Adding Product... ", { variant: "info" })
         post('store/product-quantity/to-store', {
             onSuccess: () => {
                 setCalculatedFields({
@@ -82,6 +83,7 @@ const AddStoreProductTableRowItem = (props) => {
                 })
                 setData('quantity', 0)
                 fetcthNotInStoreProducts();
+                enqueueSnackbar("Added to Store ", { variant: "success" })
             },
             onError: (err) => { enqueueSnackbar("Failed to add ", { variant: "error" }) }
         })
@@ -148,6 +150,11 @@ function AddStoreProductsManually() {
     const [products, setProducts] = useState([])
     const [isLoading, setIsLoading] = useState(false);
 
+    const scrollToTop = () => {
+        var scrollContainer = document.querySelector('.css-ypiqx9-MuiDialogContent-root')
+        scrollContainer.scrollTo({ top: 0 })
+    }
+
     const fetcthNotInStoreProducts = (url) => {
         setIsLoading(true);
         Api.get(url ?? '/store-products/unavailable').then(res => {
@@ -158,6 +165,9 @@ function AddStoreProductsManually() {
             setPrevPageUrl(products?.prev_page_url)
             setProducts([...products?.data])
             setCurrentPageUrl(full_url)
+            if (url) {
+                scrollToTop()
+            }
         })
             .catch(err => {
                 console.log(err?.response)
@@ -169,6 +179,7 @@ function AddStoreProductsManually() {
         if (currentPageUrl == null) return;
         fetcthNotInStoreProducts(addOrUpdateUrlParam(currentPageUrl, 'search', sk));
     }
+
 
     useEffect(() => {
         fetcthNotInStoreProducts();

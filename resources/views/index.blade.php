@@ -72,7 +72,7 @@
             left: 0%;
             right: 100%;
             width: 0%;
-            background: #991b1b;
+            background: #881337;
         }
 
         10% {
@@ -85,13 +85,13 @@
             left: 0%;
             right: 75%;
             width: 25%;
-            background: #fff7ed;
+            background: #881337;
         }
         50% {
             left: 0%;
             right: 75%;
             width: 35%;
-            background: #4c0519;
+            background: #881337;
         }
 
         90% {
@@ -105,27 +105,27 @@
             left: 100%;
             right: 0%;
             width: 40%;
-            background: #451a03;
+            background: #450a0a;
         }
     }
 
     @keyframes loadingwheel {
         0% {
-            background: #7c3aed;
+            background: #fb923c;
         }
 
         10% {
-            background: #3f6212;
+            background: #fb923c;
 
         }
 
         90% {
-            background: #854d0e;
+            background: #fb923c;
 
         }
 
         100% {
-            background: #be185d;
+            background: #fb923c;
 
         }
     }

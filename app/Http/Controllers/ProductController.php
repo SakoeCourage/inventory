@@ -227,7 +227,7 @@ class ProductController extends Controller
     {
         // return $product;
         $request->validate([
-            'product_name' => ['required', 'string', 'unique:products,product_name,' . $product->id],
+            'product_name' => ['required', 'string', 'unique:products,product_name,'.$product->id],
             'basic_selling_quantity' => ['required', 'string'],
             'product_models' => ['required', 'array', 'min:1'],
             'category' => ['required'],
@@ -243,8 +243,7 @@ class ProductController extends Controller
             foreach ($request->product_models as $model) {
                 $product->models()->updateOrCreate(
                     [
-                        'id' => $model['id'] ?? null,
-
+                        'id' => $model['id'] ?? null
                     ],
                     [
                         'model_name' => $model['model_name'],
