@@ -161,6 +161,26 @@ class ProductsmodelsController extends Controller
         return response("Model Updated Sucessfully", 200);
     }
 
+    // Transfer a model to another product using their ids
+    public function transfer(Request $request)
+    {
+        $request->validate([
+            'model_id' => ['required'],
+            'product_id' => ['required']
+        ]);
+
+        $productModel = Productsmodels::find($request->model_id);
+        if ($productModel) {
+            $productModel->update([
+                'product_id'=> $request->product_id
+            ]);
+            
+        } else {
+            return response("Product Model Not Found", 404);
+        }
+        return response("Model Transfered", 200);
+    }
+
     /**
      * Remove the specified resource from storage.
      */

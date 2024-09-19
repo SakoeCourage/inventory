@@ -14,23 +14,28 @@ import ProductStoreAvailabilityForm from './productformpartials/ProductStoreAvai
 import { enqueueSnackbar } from 'notistack';
 import MoveProductModelView from './productformpartials/MoveProductModelView';
 import Loadingwheel from '../../components/Loaders/Loadingwheel';
-
+import { useParams } from 'react-router-dom';
 const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [modelSearchKey, setModelSearchKey] = useState('');
+  const [showNewModelForm, setShowNewModelForm] = useState(false);
+  const { id } = useParams();
+
+  const [tranferData, setTransferData] = useState({
+    modelName: null,
+    currentProductId: id,
+    modelId: null
+  })
+
   const [formValues, setFormValues] = useState({
     product_name: '',
     basic_selling_quantity: '',
     category: '',
     product_models: []
   });
-  const [editIndex, setEditIndex] = useState(null);
-  const [modelSearchKey, setModelSearchKey] = useState('');
-
-
-
-  const [showNewModelForm, setShowNewModelForm] = useState(false);
 
   const [showStoreAvailabilityForm, setShowStoreAvailabilityForm] = useState({
     open: false,
@@ -183,18 +188,33 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
         </div>
       }
     </AnimatePresence>
-
     <AnimatePresence>
-      {false &&
-        <motion.div
-          variants={SlideUpAndDownAnimation}
-          initial="initial"
-          animate="animate"
-          exit='exit'
-          className="absolute inset-0 bg-white/50  backdrop-grayscale-0 backdrop-blur-sm  z-30 flex items-end justify-center">
-          <MoveProductModelView />
-        </motion.div>}
+      {tranferData?.modelName && tranferData.modelId &&
+        <div className='absolute z-30 inset-0 bg-black/50  overflow-hidden backdrop-grayscale-0'>
+          <motion.div
+            variants={SlideUpAndDownAnimation}
+            initial="initial"
+            animate="animate"
+            exit='exit'
+            className="absolute inset-0 z-30 flex items-end justify-center">
+            <div className='max-w-3xl w-full bg-white h-max rounded-md overflow-hidden'>
+              <MoveProductModelView
+                onProductChange={() => {
+                  setTransferData({ modelId: null, modelName: null, currentProductId: id });
+                  findProductById(id)
+                }}
+                modelId={tranferData.modelId}
+                modelName={tranferData.modelName}
+                currentProductId={id}
+                onClose={() => setTransferData({ modelId: null, modelName: null, currentProductId: id })}
+              />
+            </div>
+          </motion.div>
+        </div>
+      }
     </AnimatePresence>
+
+
 
     <AnimatePresence>
       {(showNewModelForm || editIndex !== null)
@@ -212,7 +232,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
                 handleModelEdit={handleModelEdit}
                 basic_selling_quantity={formValues.basic_selling_quantity}
                 selectItems={selectItems}
-                models={formValues.product_models}
+                models={filteredModels}
                 handelNewProductModel={handelNewProductModel}
                 setShowNewModelForm={() => { setShowNewModelForm(false); setEditIndex(null) }}
               />
@@ -288,6 +308,12 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
                 removable={Boolean(!edit?.data)}
                 setShowStoreAvailabilityForm={setShowStoreAvailabilityForm}
                 showStoreAvailabilityForm={showStoreAvailabilityForm}
+                onTransferModel={() => setTransferData({
+                  modelName: model?.model_name,
+                  modelId: model?.id,
+                  currentProductId: id
+                })}
+
               />
             ))}
           </nav>

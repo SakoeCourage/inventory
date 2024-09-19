@@ -72,6 +72,7 @@ route::group(['middleware' => 'auth:sanctum'], function () {
     });
     Route::group(['prefix' => 'product-model'], function () {
         Route::post('/update/{productsmodels}', [App\Http\Controllers\ProductsmodelsController::class, 'update']);
+        Route::post('transfer', [App\Http\Controllers\ProductsmodelsController::class, 'transfer']);
     });
 
     Route::group(['prefix' => 'store-products'],function(){

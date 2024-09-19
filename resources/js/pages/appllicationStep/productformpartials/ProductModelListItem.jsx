@@ -31,6 +31,7 @@ import QuestionAnswerSection from '../../../components/ui/QuestionAnswerSection'
  *  removable: boolean,
  *  setShowStoreAvailabilityForm: React.Dispatch<React.SetStateAction<StoreState>>
  *  showStoreAvailabilityForm: StoreState
+ *  onTransferModel?: ()=>void
  * }
  * } props 
  * @returns 
@@ -54,10 +55,10 @@ function ProductModelListItem(props) {
     })
   }
 
-  // useEffect(() => {
-  //   console.log(props)
+  useEffect(() => {
+    console.log(props)
 
-  // }, [props])
+  }, [props])
 
 
   return <nav className='flex flex-col gap-2 odd:bg-gray-100 even:bg-gray-100/30 shadow-sm overflow-hidden  rounded-md  border p-4 pt-5 relative model-list'>
@@ -157,12 +158,12 @@ function ProductModelListItem(props) {
         </nav>
           : <nav className='flex flex-col gap-2  items-center p-2 rounded shadow border bg-white/10 hover:bg-white hover:scale-105 transition-all'>
             <nav className='flex flex-col gap-2 text-rose-500 text-xs font-semibold'>
-              Move Product Model
+              Transfer Product Model
             </nav>
             <nav className='flex items-center gap-1 divide-x-2'>
-              {<button onClick={(e) => { e.preventDefault(); props.setIndexToEdit(props.index) }} className='  flex items-center text-xs px-2 py-1 justify-center gap-1'>
+              {<button onClick={(e) => { e.preventDefault(); props?.onTransferModel && props.onTransferModel() }} className='  flex items-center text-xs px-2 py-1 justify-center gap-1'>
                 <IconifyIcon className="!h-4 !w-4" icon="tabler:transfer" />
-                Move
+                Transfer
               </button>}
             </nav>
           </nav>
