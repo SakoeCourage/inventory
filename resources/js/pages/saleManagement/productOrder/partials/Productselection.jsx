@@ -13,7 +13,6 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     const [currentList, setCurrentList] = useState({ ...EmptyProductData })
     const [showModelError, setShowModelError] = useState(false)
 
-
     let getProductsModelsfromProductId = (id) => {
         return modelsFromDB.filter((data) => data?.product_id == id)
     }
@@ -138,7 +137,7 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     }, [currentList['productsmodel_id'], currentList['product_id'], items])
 
 
-    const handleCtrlS = (event) => {
+    const handleCtrlF = (event) => {
         if (event.ctrlKey && event.key === 'f') {
             event.preventDefault();
             setShowProductSearchModal(cv => cv = !cv)
@@ -159,9 +158,9 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     }
 
     useEffect(() => {
-        window.addEventListener('keydown', handleCtrlS);
+        window.addEventListener('keydown', handleCtrlF);
         return () => {
-            window.removeEventListener('keydown', handleCtrlS);
+            window.removeEventListener('keydown', handleCtrlF);
         };
     }, []);
 
@@ -215,16 +214,29 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
                 />
             </div>
         </div>}
-        <div className='item flex w-full flex-col '>
-            <nav className='grid grid-cols-1 gap-4'>
-                <button onClick={() => setShowProductSearchModal(true)} className='w-full mb-4 px-2 py-[1.1rem] border border-gray-400  text-gray-700 text-sm rounded-md flex items-center gap-5 ml-auto'>
-                    <nav className='flex items-center gap-1'>
-                        <IconifyIcon icon="la:search" className="!h-6 !w-6 !p-0" />
-                        <span className='text-xs'>Search Product Catalogue</span>
-                    </nav>
-                    <kbd class="pointer-events-none   h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + F</kbd>
+        <div className='item flex w-full flex-col'>
+            <div onClick={() => setShowProductSearchModal(true)}   class="flex rounded-full cursor-pointer bg-gray-300 overflow-hidden px-2 w-full max-w-[600px] my-2 focus:ring-1 focus-within:ring-1 ring-info-800">
+                <button class="self-center flex text-white p-1 cursor-pointer ">
+                    <kbd class="pointer-events-none bg-info-900/50 text-white rounded-full  select-none items-center gap-1 whitespace-nowrap py-2 px-3 border border-gray-300 bg-muted  font-mono text-[10px] font-medium opacity-100 sm:flex">
+                        <span class="text-xs">⌘</span>Ctrl + F
+                    </kbd>
                 </button>
-            </nav>
+                <nav className='w-full my-auto bg-gray-300 flex bg-transparent pl-2 text-gray-600 outline-0'>
+                    Click to search product
+                </nav>
+                <button type="submit" class="relative p-2 bg-gray-300 rounded-full">
+                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                        <g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /> </g>
+
+                    </svg>
+                </button>
+            </div>
+      
             <nav className=' bg-gray-100 px-2 rounded-md shadow-md border'>
                 <nav className='flex items-start flex-col gap-2  py-5'>
                     <nav className=' text-base text-gray-500 font-bold flex pb-2 border-b min-w-full border-gray-300'>

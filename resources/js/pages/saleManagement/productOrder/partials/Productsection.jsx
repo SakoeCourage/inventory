@@ -61,11 +61,7 @@ function Productsection({ productsFromDB, modelsFromDB, formData, setFormData, i
 
     return (
         <div className=' min-h-[12rem] bg-white border border-gray-400/70 rounded-md overflow-hidden '>
-            {!requiredAttention ? <nav className='  flex items-center gap-2 p-3    max-w-4xl mx-auto mt-'>
-                <nav className=' flex items-center gap-2 text-red-800 p-1 bg-red-100 rounded-full px-3'>
-                    <Icon icon="material-symbols:shopping-cart" /> <span>Product Selection</span>
-                </nav>
-            </nav> :
+            {!requiredAttention ? <></> :
                 <nav className=' flex items-center p-3 py-4 gap-2 bg-red-50'>
                     <svg className=' text-red-500' xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 36 36"><circle cx="17.93" cy="11.9" r="1.4" fill="currentColor" class="clr-i-outline clr-i-outline-path-1" /><path fill="currentColor" d="M21 23h-2v-8h-3a1 1 0 0 0 0 2h1v6h-2a1 1 0 1 0 0 2h6a1 1 0 0 0 0-2Z" class="clr-i-outline clr-i-outline-path-2" /><path fill="currentColor" d="M18 6a12 12 0 1 0 12 12A12 12 0 0 0 18 6Zm0 22a10 10 0 1 1 10-10a10 10 0 0 1-10 10Z" class="clr-i-outline clr-i-outline-path-3" /><path fill="none" d="M0 0h36v36H0z" /></svg>
                     <nav className=' text-sm'>

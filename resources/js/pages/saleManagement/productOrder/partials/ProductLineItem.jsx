@@ -68,7 +68,7 @@ function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductCha
 
         <nav className='flex items-center justify-center col-span-2 '>
             <nav className=' flex flex-col items-start ml-3  gap-2 w-full'>
-                <span className=' text-black'>{getProductNameFromProductId(item['product_id'])}</span>
+                <span className=' text-gray-500 text-xs'>{getProductNameFromProductId(item['product_id'])}</span>
                 {item['productsmodel_id']
                     &&
                     <span className=' text-sm'>
@@ -81,6 +81,7 @@ function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductCha
         <nav className=' flex items-center justify-center col-span-3'>
             <nav className='flex flex-col  gap-4'>
                 <Productcollection
+                    className='text-sm'
                     in_collections={item?.in_collection}
                     quantity={item?.quantity}
                     units_per_collection={item?.quantity_per_collection}
@@ -89,7 +90,7 @@ function ProductLineItem({ index, modelsFromDB, productsFromDB, handleProductCha
                 />
             </nav>
         </nav>
-        <nav className='  flex items-center justify-center col-span-2'>
+        <nav className=' text-sm  flex items-center justify-center col-span-2'>
             <nav>{formatcurrency(calculateAmount)}</nav>
         </nav>
         <nav onClick={() => removeItemat(index)} className=' col-span-1 inset-y-[40%] left-2 p-1 rounded-full text-xs grid place-items-center text-info-500 '>

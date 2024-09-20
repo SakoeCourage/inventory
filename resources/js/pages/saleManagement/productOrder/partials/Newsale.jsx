@@ -233,6 +233,20 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
             </nav>}
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-full'>
+                <div className='flex flex-col gap-2 h-full w-full'>
+                    <Customerinformation errors={errors} formData={formData} setFormData={setFormData} />
+                    <Productsection
+                        setShowProductSearchModal={setShowProductSearchModal}
+                        showProductSearchModal={showProductSearchModal}
+                        productsFromDB={productsFromDB}
+                        modelsFromDB={modelsFromDB}
+                        setFormData={setFormData}
+                        formData={formData}
+                        items={items}
+                        errors={errors}
+                        setItems={setItems}
+                    />
+                </div>
                 <Wrapable title={"Customer Cart " + Boolean(items.length) && ` Cart Items (${items.length}) `} asmodal={true} className={'w-full'}>
                     <div className='  w-full bg-white border border-gray-400/70 rounded-md pb-5 '>
                         <Itemscheckout
@@ -251,20 +265,6 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                         />
                     </div>
                 </Wrapable>
-                <div className='flex flex-col gap-2 h-full w-full'>
-                    <Customerinformation errors={errors} formData={formData} setFormData={setFormData} />
-                    <Productsection
-                        setShowProductSearchModal={setShowProductSearchModal}
-                        showProductSearchModal={showProductSearchModal}
-                        productsFromDB={productsFromDB}
-                        modelsFromDB={modelsFromDB}
-                        setFormData={setFormData}
-                        formData={formData}
-                        items={items}
-                        errors={errors}
-                        setItems={setItems}
-                    />
-                </div>
             </div>
             <nav>
                 <Payoutsection
@@ -277,23 +277,43 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                 />
             </nav>
 
-            <nav className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 !mx-auto mt-5 px-2 pb-2 md:pb-0'>
-                <Button processing={processing} onClick={() => handleOnRegularCheckOut()} info className="grow flex-nowrap !flex items-center gap-2">
-                    <span>Check Out</span>
-                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                </Button>
-                <Button processing={processingProforma} onClick={() => handleProforma()} alert className="grow  flex-nowrap !flex items-center gap-2">
-                    Create Proforma
-                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                </Button>
-                <Button disabled={processing} processing={processingLeaseSale} onClick={() => handleOnLeaseCheckOut()} danger className="   flex-nowrap !flex items-center gap-2">
-                    Credit Sale
-                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                </Button>
-                <Button disabled={processing} processing={false} onClick={() => void (0)} primary text="" className="   flex-nowrap !flex items-center gap-2">
-                    Uncollected Sale
-                    <kbd class="pointer-events-none  ml-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                </Button>
+            <nav className='
+           bg-gray-50 shadow border border-gray-300 rounded-md my p-2  w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5'>
+                <button disabled={processing} onClick={() => handleOnRegularCheckOut()} info
+                    className="bg-indigo-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-indigo-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
+                >
+                    <nav>Check Out</nav>
+                    <nav>
+                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                    </nav>
+                </button>
+
+                <button disabled={processingProforma} onClick={() => handleProforma()}
+                    className="bg-purple-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-purple-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
+                >
+                    <nav>  Create Proforma</nav>
+                    <nav>
+                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                    </nav>
+                </button>
+                <button disabled={processing} onClick={() => handleOnLeaseCheckOut()}
+                    className="bg-rose-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-rose-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
+                >
+                    <nav>     Credit Sale</nav>
+                    <nav>
+                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                    </nav>
+                </button>
+                <button disabled={processing} processing={processingLeaseSale} onClick={() => void (0)}
+                    className="bg-red-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-red-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
+                >
+                    <nav>Uncollected Sale</nav>
+                    <nav>
+                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
+                    </nav>
+                </button>
+
+
             </nav>
         </div >
     )
