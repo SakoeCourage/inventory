@@ -103,20 +103,42 @@ const ProductDefinitionPage = () => {
             });
     }
 
+
+    const handleDonwloadSelectedNewProductsTemplate = () => {
+        setShowDownloadOptions(false);
+        if (Boolean(selectedProduct.length) == 0) {
+            enqueueSnackbar("No product selection made", { variant: "warning" })
+            return;
+        }
+
+        enqueueSnackbar("Downloading Template Please Wait...", { variant: "default" })
+        Api.post("/product/all-quantity-to-stock-template", {
+            product_ids: selectedProduct
+        }, {
+            responseType: "blob"
+        })
+            .then(res => {
+                const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                saveAs(blob, 'IL_Product_Template.xlsx');
+            })
+            .catch(err => {
+                console.log(err?.response)
+                enqueueSnackbar("Failed to donwload Template", { variant: "error" })
+            });
+    }
+
     const handleDonwloadQuantityToStockProductsTemplate = () => {
         setShowDownloadOptions(false);
         enqueueSnackbar("Downloading Template Please Wait...", { variant: "default" })
         Api.get("/product/all-quantity-to-stock-template", {
             responseType: "blob"
-        })
-            .then(res => {
-                const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                saveAs(blob, 'IL_Products_QTS.xlsx');
-            })
-            .catch(err => {
-                console.log(err)
-                enqueueSnackbar("Failed to donwload Template", { variant: "error" })
-            });
+        }).then(res => {
+            const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(blob, 'IL_Products_QTS.xlsx');
+        }).catch(err => {
+            console.log(err)
+            enqueueSnackbar("Failed to donwload Template", { variant: "error" })
+        });
     }
 
     /**
@@ -128,7 +150,7 @@ const ProductDefinitionPage = () => {
             icon: null,
             title: "Selected Products",
             description: "Export Selected Products to Excel",
-            onClick: () => void (0),
+            onClick: () => handleDonwloadSelectedNewProductsTemplate(),
             actionName: "Export"
         },
         {
@@ -153,7 +175,7 @@ const ProductDefinitionPage = () => {
         collectionTypesFromDb: null,
         categoriesFromDb: null
     })
-    
+
     const [edit, setEdit] = useState({
         open: false,
         data: null

@@ -14,15 +14,20 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class CategorySheetExport implements FromCollection, WithHeadings, WithTitle, WithStyles, WithColumnWidths
 {
     protected $category;
+    protected $product_ids;
 
-    public function __construct(Category $category)
+    public function __construct(Category $category, $product_ids = null)
     {
         $this->category = $category;
+        $this->product_ids = $product_ids;
     }
 
     public function collection()
     {
         return Product::where('category_id', $this->category->id)
+            ->when($this->product_ids,function($query){
+                $query->whereIn('products.id', $this->product_ids);
+            })
             ->join('basic_selling_quantities', 'products.basic_selling_quantity_id', '=', 'basic_selling_quantities.id')
             ->leftJoin('productsmodels', 'products.id', '=', 'productsmodels.product_id')
             ->leftJoin('collection_types', 'productsmodels.collection_method', '=', 'collection_types.id')

@@ -66,8 +66,12 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get("/product-template", function (Request $request) {
             return Excel::download(new NewProductTemplateExport, 'IL_Product_Template.xlsx');
         });
+
         Route::get("/all-quantity-to-stock-template", function (Request $request) {
-            return Excel::download(new ProductCategoryExport, 'products_by_category.xlsx');
+            return Excel::download(new ProductCategoryExport(null), 'products_by_category.xlsx');
+        });
+        Route::post("/all-quantity-to-stock-template", function (Request $request) {
+            return Excel::download(new ProductCategoryExport($request->product_ids), 'products_by_category.xlsx');
         });
     });
     Route::group(['prefix' => 'product-model'], function () {

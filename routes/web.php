@@ -3,8 +3,10 @@
 
 use App\Http\Controllers\PrintController;
 use App\Models\Productsmodels;
-use App\Models\StoreProduct;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
+use App\Exports\ProductCategoryExport;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,13 +19,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Illuminate\Http\Request;
-use App\Exports\ProductCategoryExport;
-use App\Exports\NewProductTemplateExport;
-use App\Imports\ProductImport;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 
 use Illuminate\Support\Facades\DB;
@@ -122,7 +117,9 @@ Route::get("/test-lsp", function () {
 
 Route::get('/test/print-receipt', [PrintController::class, 'handleNewTestPrint']);
 
-
+Route::get("/all-quantity-to-stock-template", function (Request $request) {
+    return Excel::download(new ProductCategoryExport(null), 'products_by_category.xlsx');
+});
 
 
 Route::get('/test-not-in-store',function(){

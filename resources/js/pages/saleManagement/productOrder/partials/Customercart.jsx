@@ -37,58 +37,8 @@ function Customercart({ productsFromDB, modelsFromDB, formData, setFormData, ite
         newitems[i]['price_per_collection'] = ''
         setItems(newitems)
     }
+ 
 
-    const [connected, setConnected] = useState(false);
-
-    function findPrinters() {
-      qz.printers.find().then(function(data) {
-         var list = '';
-         for(var i = 0; i < data.length; i++) {
-            list += "&nbsp; " + data[i] + "<br/>";
-        }
-        console.log( list);
-     }).catch(function(e) { console.error(e); });
-   }
-    const connectToQZ = async () => {
-      try {
-        await qz.websocket.connect();
-        setConnected(true);
-        findPrinters();
-      } catch (err) {
-        console.error('Failed to connect to QZ Tray:', err);
-      }
-    };
-
-
-    const printContent = async () => {
-      try {
-        await connectToQZ();
-        // if (!connected) {
-        // }
-    
-        const config = qz.configs.create('EPSON_TM'); // Ensure this matches your printer's name
-    
-        // ESC/POS command for simple text
-        const data = '\x1B\x40\x1B\x61\x01Hello World\x1B\x64\x02'; // Adjust command as needed
-    
-        await qz.print(config, [data]);
-        console.log('Print command sent');
-      } catch (err) {
-        console.error('Print error:', err);
-      } finally {
-        // Always ensure disconnection happens only if connected
-        if (qz.websocket.isActive()) {
-          await qz.websocket.disconnect();
-          setConnected(false);
-          console.log('Disconnected from QZ Tray');
-        }
-      }
-    };
-
-//     useEffect( () => {
-//       printContent().then(res=>{console.log(res)})
-//       .catch(err=>console.log(err));
-//  }, [])
 
     return (
         <div className=''>
