@@ -5,6 +5,20 @@ import Unauthorizedaccess from './Unauthorizedaccess'
 import { Navigate } from 'react-router-dom'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 
+/**
+ * @typedef {"view dashboard" | "create expense" | "authorize expense" | "manage stock data" | "generate product order" | "generate report" | "manage users" | "define system data"} AvailablePermission
+ * This type represents one of the available permissions.
+ */
+
+
+/**
+ * 
+ * @param {{
+*  abilities: AvailablePermission[],
+*  children: React.ReactNode
+* }}  
+* @returns 
+*/
 export function AcessControlPage({ abilities, children }) {
    
     if (abilities?.length == 0) {
@@ -40,6 +54,14 @@ export function AcessControlPage({ abilities, children }) {
 }
 
 
+/**
+ * 
+ * @param {{
+ *  abilities: AvailablePermission[],
+ *  children: React.ReactNode
+ * }}  
+ * @returns 
+ */
 export function AccessByPermission({ abilities, children }) {
     if (abilities?.length == 0) {
         return <> {children}</>;

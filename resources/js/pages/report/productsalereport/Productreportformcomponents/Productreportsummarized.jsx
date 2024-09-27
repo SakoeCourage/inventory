@@ -4,7 +4,7 @@ import Productcollection from '@/components/Productcollection'
 function ReportSaleBannerCard(props) {
   return <div className={`flex flex-col shadow-light min-w-[25rem]  rounded-md p-5 font-sans ${props.className}`}>
     <nav className=' basis-[10%] font-semibold text-gray-600 '>
-       Sale Summary (All Products)
+       Sale Summary (Current Products)
     </nav>
     <nav className=' basis-[15%] font-medium  text-3xl my-4 text-gray-600'>
        {formatcurrency(props.data['DAILY SALE'])}
@@ -36,7 +36,7 @@ function ReportSaleBannerCard(props) {
 }
 function ReportSaleItemQuantity(props) {
   const { basic_quantity, collection_type, in_collection, models, product_name, quantity_per_model, units_per_crate, total_sale_quantity } = props.data
-  return <div className={`flex flex-col shadow-light min-w-[25rem]  rounded-md p-5 font-sans ${props.className}`}>
+  return <div className={`flex flex-col shadow-light min-w-[25rem] h-max  rounded-md p-5 font-sans ${props.className}`}>
     <nav className=' basis-[10%] font-semibold text-gray-600 '>
       {product_name} <span className="mx-1 text-sm">(Sale Qty)</span>
     </nav>

@@ -1,10 +1,23 @@
 
 import React, { useEffect } from 'react'
 
-import Productcollection from '@/components/Productcollection'
+import Productcollection from '../../../../components/Productcollection'
+
 function Productreporttable(props) {
     const { basic_quantity, data, date_range, product_name, models
     } = props.reportData
+    
+    // useEffect(() => {
+    //   console.log(data)
+    // }, [data])
+    
+    // useEffect(() => {
+    //     Object.values(data).map((dt, i) => {
+    //         models.map((model, i) => {
+    //             console.log(dt[String(model).toUpperCase()])
+    //         })    
+    //     })
+    // }, [data])
     
     return <div className=''>
         <nav className='text-center py-2 border-b-2 border-black'>
@@ -40,13 +53,13 @@ function Productreporttable(props) {
                             <td>{dt['DATE']}</td>
                             {models.map((model, i) => {
                                 return (<td key={i}>
-                                    <Productcollection
+                                    {/* <Productcollection
                                         in_collections={dt[String(model).toUpperCase()]['in_collection']}
                                         collection_type={dt[String(model).toUpperCase()]['collection_method']}
                                         units_per_collection={dt[String(model).toUpperCase()]['quantity_per_collection']}
                                         quantity={dt[String(model).toUpperCase()]['quantity']}
                                         basic_quantity={basic_quantity}
-                                    />
+                                    /> */}
                                 </td>)
                             })}
                             <td>

@@ -56,7 +56,7 @@ function Dateselection({ setFormData,formData ,collationMethod, setCollationMeth
     const Component = components[currentComponent]
     return (
         <div className='my-4'>
-            <nav className=' rounded-md mb-1 py-2 px-5 bg-info-300 text-white'>
+            <nav className=' rounded-md mb-1 py-2 px-5 bg-info-100/50 text-info-900'>
                 Choose how result is collated
             </nav>
             <nav className='p-3 my-2 text-gray-600 bg-white rounded-md shadow-medium flex flex-col  '>

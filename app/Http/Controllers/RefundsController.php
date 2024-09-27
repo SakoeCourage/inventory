@@ -9,6 +9,7 @@ use App\Services\ProductStockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RefundsController extends Controller
 {
@@ -19,6 +20,7 @@ class RefundsController extends Controller
     {
         return [
             'history' => Productstockhistory::where('description', 'product return (sale refund)')
+                ->where('store_id','=',Auth::user()->storePreference->store_id)
                 ->with(['author', 'productsmodel' => ['collectionType', 'product' => ['basicQuantity']]])->filter(request()->only('date'))->latest()
                 ->paginate(10)->withQueryString()
                 ->through(function ($currentItem) {

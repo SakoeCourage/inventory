@@ -20,7 +20,7 @@ function Salereportproducts({ formData, setFormData, setProductsFromDB, products
 
     const fetchAllProducts = (url) => {
         setIsLoading(true);
-        Api.get(url ?? '/product/all')
+        Api.get(url ?? 'store-products/product/all')
           .then((res) => {
             const { full_url, products } = res.data;
             setData(products?.data);
@@ -94,10 +94,11 @@ function Salereportproducts({ formData, setFormData, setProductsFromDB, products
             </nav>
             <nav className='flex flex-col md:flex-row !w-full '>
                 <Selectedproductslist toggleFromSelectedListById={toggleFromSelectedListById} products={productsFromDB} selectedList={formData?.product_ids} />
+                
                 <div className=' grow flex flex-col p-2 bg-white rounded-md shadow-medium relative '>
                     <div className='  sticky top-1 w-full rounded-lg mb-1 border focus-within:ring-2 focus-within:ring-info-200 transition-all duration-500 focus-within:border-none bg-white border-gray-400/70 flex items-center px-2'>
                         <Icon icon="ic:round-search" fontSize={30} className=' text-gray-300' />
-                        <input type="search" name="" onChange={(e => fetchAllProducts("/product/all?search=" + e.target.value))} placeholder='Search Product Name' className='bg-white w-full pl-1 pr-5 py-3 rounded-t-lg border-none outline-none focus:outline-none focus:border-none' id="" />
+                        <input type="search" name="" onChange={(e => fetchAllProducts("/store-products/product/all?search=" + e.target.value))} placeholder='Search Product Name' className='bg-white w-full pl-1 pr-5 py-3 rounded-t-lg border-none outline-none focus:outline-none focus:border-none' id="" />
                     </div>
                     <div ref={scrollingContainer} onScroll={(e) => setScrollY(e.target.scrollTop)} className='flex flex-col text-blue-950 h-[30rem] overflow-y-scroll'>
                         {Boolean(data?.length) &&
@@ -107,6 +108,7 @@ function Salereportproducts({ formData, setFormData, setProductsFromDB, products
                         }
                         {nextPageUrl && <Button processing={processing} onClick={() => handleLoadMore()} otherClasses=" text-sm mt-5 capitalize" text='More Products' />}
                     </div>
+
                     {!Boolean(data?.length) && <div className='absolute inset-0 flex items-center justify-center'>
                         <div>Empty Data</div>
                     </div>}

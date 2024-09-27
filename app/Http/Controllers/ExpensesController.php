@@ -26,17 +26,20 @@ class ExpensesController extends Controller
         !($request->has('filter')) && $request['filter'] = "all submissions";
 
         return [
-            'expenses' => Expenses::with('author:id,name')->filter($request->only(['filter', 'status']))
+            'expenses' => Expenses::with('author:id,name')
+            ->where('store_id',$request->user()->storePreference->store_id)
+            ->filter($request->only(['filter', 'status']))
                 ->latest()->paginate(10)
                 ->withQueryString(),
             'filters' => $request->only(['status','filter']),
             'full_url' => trim(request()->fullUrlWithQuery(request()->only(['status','filter'])))
         ];
-
     }
 
     public function getPendingExpenseCount(){
-        return Expenses::whereCount('status', 0)->get();
+        return Expenses::whereCount('status', 0)
+        ->where('store_id','=',\Illuminate\Support\Facades\Auth::user()->storePreference->store_id)
+        ->get();
     }
 
     public function takeAction(Request $request,Expenses $expenses){
@@ -73,12 +76,15 @@ class ExpensesController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
+            
             $newexpense = Expenses::create([
                 'description' => $request->description,
                 'total_amount' => $request->total_amount,
                 'user_id' => $request->user()->id,
-                'status' => 0
+                'status' => 0,
+                'store_id' => $request->user()->storePreference->store_id
             ]);
+
             $item_collection = collect($request->expenseitems);
             $item_collection->each(function ($expense, $key) use ($newexpense) {
                 Expenseitems::create([

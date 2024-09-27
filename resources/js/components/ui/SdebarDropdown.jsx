@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 import classNames from "classnames";
 import Sidebarpopup from './Sidebarpopup';
 import { useSidebar } from '../../providers/Sidebarserviceprovider';
-import { AccessByPermission } from './Sidebar';
+import { AccessByPermission } from '../../pages/authorization/AccessControl';
 import { useLocation, Link } from 'react-router-dom';
 
 export default function Sidebardropdown(props) {

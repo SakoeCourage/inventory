@@ -40,7 +40,7 @@ class SaleController extends Controller
     public function tosearch(Sale $sale, Request $request)
     {
         return [
-            'sales' => $sale->deepfilter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
+            'sales' => $sale->where('store_id','=',$request->user()->storePreference->store_id)->deepfilter(request()->only('search', 'day'))->with('salerepresentative:id,name')->withCount('refunds')->latest()->paginate(10),
             'filters' => request()->only('search', 'day'),
             'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
         ];
@@ -119,7 +119,7 @@ class SaleController extends Controller
                 Rule::when(fn() => $request->sale_type == "lease" | $request->sale_type == "un_collected", ['required', 'string', 'min:10', 'max:10']),
                 'nullable',
             ],
-            'payment_method' => ['nullable', Rule::when(fn() => $request->amount_paid != null || $request->sale_type == "regular", ['required'])],
+            'payment_method' => ['nullable', Rule::when(fn() => $request->amount_paid != null || $request->sale_type == "regular" || $request->sale_type == "un_collected", ['required'])],
             'sub_total' => ['required'],
             'balance' => ['nullable'],
             'amount_paid' => ['nullable', Rule::when(fn() => $request->sale_type == 'regular' && $request->amount_paid < $request->total, ['min:' . $request->total])],
@@ -130,12 +130,12 @@ class SaleController extends Controller
             'items.*.productsmodel_id' => ['required', 'distinct'],
             'items.*.quantity' => ['required', 'min:0', 'not_in:0'],
             'items.*.in_collection' => ['required', 'boolean'],
-            'sale_type' => ['required', 'string', 'in:regular,lease']
+            'sale_type' => ['required', 'string', 'in:regular,lease,un_collected']
         ]);
 
         DB::transaction(function () use ($request, $productStockService, &$newdata) {
             $sale_invoice = IdGenerator::generate(['table' => 'sales', 'field' => 'sale_invoice', 'length' => 14, 'prefix' => 'SALE-' . date('ymd')]);
-
+            
             $newSale = Sale::create([
                 'customer_contact' => $request->customer_contact,
                 'customer_name' => $request->customer_fullname,
@@ -171,15 +171,21 @@ class SaleController extends Controller
                 $productStockService->decreasestock((Object) $value);
             }
 
-            if ($request->sale_type == 'regular') {
+            if ($request->sale_type == \App\Enums\SaleEnum::Regular->value || $request->sale_type == \App\Enums\SaleEnum::UnCollected->value) {
                 PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
-            } else {
+            }
+
+            if ($request->sale_type == "lease") {
                 $newLeaseHistory = LeasePaymentHistory::create([
                     'sale_id' => $newSale->id,
                     'amount' => $newSale->amount_paid ?? 0,
                     'balance' => ($request->amount_paid ?? 0) - $newSale->total_amount,
                     'paymentmethod_id' => $request->payment_method ?? null
                 ]);
+            }
+
+            if ($request->sale_type == "un_collected") {
+
             }
 
             $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $newSale->id)->firstOrFail();
@@ -198,7 +204,7 @@ class SaleController extends Controller
         return [
             'sale' => $sale,
             'sale_representative' => $sale->salerepresentative->name,
-            'payment_method' => $sale->paymentmethod->method,
+            'payment_method' => $sale?->paymentmethod?->method,
 
             'sale_items' => $sale->saleitems->map(function ($value, $key) {
                 return [

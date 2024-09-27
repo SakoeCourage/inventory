@@ -59,7 +59,7 @@ function Sidebarserviceprovider({ children }) {
         } else {
             setSidebarStateOpen({
                 full: false,
-                mini: localStorage.getItem(miniSidebarLocalStorageKey) ? true : false,
+                mini: Boolean(localStorage.getItem(miniSidebarLocalStorageKey)) ? true : false,
             });
         }
     };
@@ -68,7 +68,7 @@ function Sidebarserviceprovider({ children }) {
      * Toggles the mini sidebar state and updates local storage accordingly.
      */
     const toggleMiniSidebar = () => {
-        const isLocalStorageSet = localStorage.getItem(miniSidebarLocalStorageKey);
+        const isLocalStorageSet = Boolean(localStorage.getItem(miniSidebarLocalStorageKey));
         if (!isLocalStorageSet) {
             localStorage.setItem(miniSidebarLocalStorageKey, "true");
             setSidebarStateOpen((cv) => cv = { full: cv.full, mini: true });
@@ -85,9 +85,10 @@ function Sidebarserviceprovider({ children }) {
 
     useLayoutEffect(() => {
         setSidebarStateOpen({
-            mini: localStorage.getItem(miniSidebarLocalStorageKey) ? true : false,
+            mini: Boolean(localStorage.getItem(miniSidebarLocalStorageKey)) ? true : false,
             full: false
         });
+   
     }, []);
 
     const values = {

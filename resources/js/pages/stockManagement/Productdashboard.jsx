@@ -18,6 +18,7 @@ import Newproductmodel from '../appllicationStep/productformpartials/Newproductm
 import { motion, AnimatePresence } from 'framer-motion'
 import { SlideUpAndDownAnimation } from '../../api/Util'
 import { enqueueSnackbar } from 'notistack'
+import { AccessByPermission } from '../authorization/AccessControl'
 
 
 /**
@@ -135,7 +136,7 @@ function Productsdashboard() {
 
         if (data?.id == null) return;
         enqueueSnackbar("Updating Product Data Please Wait", { variant: "default" })
-        
+
         Api.post('/product-model/update/' + data?.id, data)
             .then(res => {
                 enqueueSnackbar("Product Data Updated Succesfully", { variant: "success" })
@@ -238,11 +239,13 @@ function Productsdashboard() {
                     <Productpricingcard
                         stockData={stockData}
                     />
-                    <Productactioncard
-                        setShowStockingModal={setShowStockingModal}
-                        stockData={stockData}
-                        onEditProductData={handleOnEditProductData}
-                    />
+                    <AccessByPermission abilities={['manage stock data']}>
+                        <Productactioncard
+                            setShowStockingModal={setShowStockingModal}
+                            stockData={stockData}
+                            onEditProductData={handleOnEditProductData}
+                        />
+                    </AccessByPermission>
                 </div>
                 <div className=' mt-12 text-sm w-full'>
                     <Productstockhistory

@@ -7,7 +7,7 @@ function Productreportdailysales(props) {
     return <div className=''>
         <nav className='text-center py-2 border-b-2 border-black'>
             <nav>
-                <span className='text-gray-500'> Daily sale amount to date on all products</span>
+                <span className='text-gray-500'> Daily sale amount to date on current products</span>
             </nav>
             <nav className='text-gray-500'>
                 <span>

@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 class ProductSaleReportController extends ReportController
 {
 
-    static function generateEmptyDataPerProductDefinition(Collection $col, string $key)
+     function generateEmptyDataPerProductDefinition(Collection $col, string $key)
     {
 
         return ($col)->mapWithKeys(function ($collection, $index) use ($key) {
@@ -32,11 +32,11 @@ class ProductSaleReportController extends ReportController
         });
     }
 
-    static function generateProductQuery($start, $end, $product_id)
+     function generateProductQuery($start, $end, $product_id)
     {
-        return parent::getPayedSaleBetweenDates($start, $end, $product_id)
+        return $this->getPayedSaleBetweenDates($start, $end, $product_id)
             ->selectRaw(
-                '   sales.id,
+                'sales.id,
                     saleitems.quantity,
                     productsmodels.model_name as model_name,
                     Date(sales.updated_at ) as paid_at,
@@ -47,9 +47,9 @@ class ProductSaleReportController extends ReportController
             )->distinct('sales.id');
     }
 
-    static function generateInvoiceQuery($start, $end, array $product_id)
+     function generateInvoiceQuery($start, $end, array $product_id)
     {
-        return parent::getPayedInvoicesDates($start, $end,$product_id)
+        return $this->getPayedInvoicesDates($start, $end,$product_id)
             ->selectRaw('
                     sales.id,
                     Date(sales.created_at ) as paid_at,
@@ -62,7 +62,7 @@ class ProductSaleReportController extends ReportController
         ;
     }
 
-    static function generateEmptyDateRanges($start, $end)
+     function generateEmptyDateRanges($start, $end)
     {
         $days = [];
         for ($date = $start; $date->lte(Carbon::parse($end)); $date->addDay()) {
@@ -72,15 +72,15 @@ class ProductSaleReportController extends ReportController
         return $days;
     }
 
-    static function generatesummarizedSaleData(Collection $products, $start, $end)
+     function generatesummarizedSaleData(Collection $products, $start, $end)
     {
         $today = Carbon::parse(Carbon::now())->format('Y-m-d H:i:s');
         $start = Carbon::parse($start);
         $end = Carbon::parse($end ?? $start);
         $start_to_front_end = Carbon::parse($start);
 
-        $totalRevenue = parent::getRevenueBetweenDate($start->format('Y-m-d'), $end->format('Y-m-d'));
-        $paidInvoicesQuery = self::generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray())->get();
+        $totalRevenue = $this->getRevenueBetweenDate($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray());
+        $paidInvoicesQuery = $this->generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray())->get();
         $in_paymentmethod = $paidInvoicesQuery->groupBy('method');
         $in_paymentmethod = $in_paymentmethod->map(function ($coll, $key) {
             return $coll->sum('amount_paid');
@@ -98,7 +98,7 @@ class ProductSaleReportController extends ReportController
         ];
 
         $productSalesData = $products->map(function ($product, $key) use ($start, $end) {
-            return self::generateSummarizedProductSaleQuanities($product, $start, $end);
+            return $this->generateSummarizedProductSaleQuanities($product, $start, $end);
         })->toArray();
 
         return [
@@ -113,12 +113,12 @@ class ProductSaleReportController extends ReportController
         ];
     }
 
-    static function generateSummarizedProductSaleQuanities($productID, $start, $end)
+     function generateSummarizedProductSaleQuanities($productID, $start, $end)
     {
         $product = Product::with(['basicQuantity', 'models' => ['collectionType']])->where('id', $productID)->firstOrFail();
-        $emptyData = self::generateEmptyDataPerProductDefinition($product->models, "model_name");
+        $emptyData = $this->generateEmptyDataPerProductDefinition($product->models, "model_name");
 
-        $productQuery = self::generateProductQuery($start->format('Y-m-d'), $end->format('Y-m-d'), [$productID])->get();
+        $productQuery = $this->generateProductQuery($start->format('Y-m-d'), $end->format('Y-m-d'), [$productID])->get();
         $total_sale_quantity = $productQuery->sum('quantity');
         $quantity_per_defintion = $productQuery->groupBy('model_name')->mapWithKeys(function ($collection, $model_name) {
             return [
@@ -142,14 +142,14 @@ class ProductSaleReportController extends ReportController
 
 
 
-    static function generateLongReport($products, $start, $end)
+     function generateLongReport($products, $start, $end)
     {
         $today = Carbon::parse(Carbon::now())->format('Y-m-d H:i:s');
         $start_to_front_end = Carbon::parse($start);
         $start = Carbon::parse($start);
         $end = Carbon::parse($end ?? Carbon::today());
 
-        $dailyBasis = self::generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray())->get();
+        $dailyBasis = $this->generateInvoiceQuery($start->format('Y-m-d'), $end->format('Y-m-d'),$products->toArray())->get();
 
         $netSaleData = $dailyBasis->groupBy(['paid_at'])->map(function ($collection, $paid_at) {
             return [
@@ -163,7 +163,7 @@ class ProductSaleReportController extends ReportController
         $grand_discounted_amount = $netSaleData->sum('DISCOUNTED AMOUNT');
         $grand_net_sale = $netSaleData->sum('SUB TOTAL');
         
-        $range = self::generateEmptyDateRanges(Carbon::parse($start), Carbon::parse($end));
+        $range = $this->generateEmptyDateRanges(Carbon::parse($start), Carbon::parse($end));
         foreach ($range as $key => $value) {
             $range[$key]=[
                 'DATE' => $key,
@@ -174,7 +174,7 @@ class ProductSaleReportController extends ReportController
         }
         $netSaleData = array_replace_recursive($range,$netSaleData->toArray());
         $productSalesData = $products->map(function ($product, $key) use ($start, $end) {
-            return self::generateLongReportProductSale($product, $start, $end);
+            return $this->generateLongReportProductSale($product, $start, $end);
         })->toArray();
 
 
@@ -195,14 +195,14 @@ class ProductSaleReportController extends ReportController
 
   
 
-    static function generateLongReportProductSale($productID, $start, $end)
+     function generateLongReportProductSale($productID, $start, $end)
     {
         $start = Carbon::parse($start);
         $end = Carbon::parse($end ?? Carbon::today());
         $product = Product::with(['basicQuantity', 'models' => ['collectionType']])->where('id', $productID)->firstOrFail();
 
-        $emptyData = self::generateEmptyDataPerProductDefinition($product->models, "model_name")->toArray();
-        $productQuery = self::generateProductQuery($start->format('Y-m-d'), $end->format('Y-m-d'), [$productID])->get();
+        $emptyData = $this->generateEmptyDataPerProductDefinition($product->models, "model_name")->toArray();
+        $productQuery = $this->generateProductQuery($start->format('Y-m-d'), $end->format('Y-m-d'), [$productID])->get();
         // Making Product Sales
         $productSales = $productQuery->groupBy(['paid_at', 'product_name', 'model_name']);
         $productSales = $productSales->map(function ($date_collection, $date) {
@@ -221,7 +221,7 @@ class ProductSaleReportController extends ReportController
                 ];
             });
         });
-        $SaleWithDateRanges = self::generateEmptyDateRanges($start, $end);
+        $SaleWithDateRanges = $this->generateEmptyDateRanges($start, $end);
         foreach ($SaleWithDateRanges as $key => $value) {
             $SaleWithDateRanges[$key] = array_merge($emptyData,['DATE'=> $key]);
         }

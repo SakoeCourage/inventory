@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StockActionEnum;
+use App\Models\Expenses;
 use App\Models\Product;
 use App\Models\Productsmodels;
 use App\Models\Productstockhistory;
@@ -112,7 +113,7 @@ class DashboardController extends Controller
             }
             return $value;
         });
-        
+
         return [
             'products' => $products,
             'models' => $store_products->count(),
@@ -129,13 +130,8 @@ class DashboardController extends Controller
             'products_cycle' => $this->getProductCycle(),
             'products_value' => $this->getCurrentProductsAndValue(),
             'line_chart' => $this->generateLineChart(),
-            'smart_recommendations' => [
-                ...[
-                    "total_stock" => "150"
-                ],
-                ...$outofstock->main()->groupBy('stock_level')
-            ],
-            'unattended_products' => $this->getUnattendedProducts()
+            'unattended_products' => $this->getUnattendedProducts(),
+            'expenses' => $this->generateExpenseSummary()
         ];
     }
 
@@ -143,6 +139,34 @@ class DashboardController extends Controller
     {
 
     }
+
+    public function generateExpenseSummary()
+    {
+        $store_id = Auth::user()->storePreference->store_id;
+    
+        $baseQuery = Expenses::with('author')->where('store_id', $store_id)
+        ;
+    
+        $todaysExpense = (clone $baseQuery)->whereDate('updated_at', '=', Carbon::now())
+            ->where('status', '=', 1)
+            ->get()->sum('total_amount');
+    
+        $pendingExpense = (clone $baseQuery)->where('status', '=', 0)->count();
+    
+        $mySubmission = (clone $baseQuery)->where('user_id', '=', Auth::user()->id)
+            ->whereDate('created_at', '=', Carbon::now())
+            ->count();
+    
+        $recentExpense = (clone $baseQuery)->orderBy("created_at",'desc')->limit(5)->get();
+    
+        return [
+            'todays' => $todaysExpense,
+            'pending_count' => $pendingExpense,
+            'my_submission_count' => $mySubmission,
+            'recent' => $recentExpense,
+        ];
+    }
+    
 
     public function generateLineChart()
     {

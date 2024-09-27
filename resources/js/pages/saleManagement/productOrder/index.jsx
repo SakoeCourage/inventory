@@ -12,12 +12,15 @@ const Proformalist = lazy(() => import("./partials/Proformalist"))
 import Invoicepreview from "./partials/Invoicepreview"
 import { useReactToPrint } from 'react-to-print'
 import { dateReformat } from "../../../api/Util"
+import UncollectedSale from "./partials/UncollectedSale"
+
 const components = {
   newsale: Newsale,
   salehistory: Salehistory,
   Paymenthistory: Paymenthistory,
   Proformalist: Proformalist,
-  LeaseSaleHistory: LeaseSaleHistory
+  LeaseSaleHistory: LeaseSaleHistory,
+  UnCollectedSale: UncollectedSale
 }
 export function Pilltab({ title, Pillicon, onClick, active }) {
   return <button onClick={() => onClick()} className={`p-2 border-white text-white  flex items-center gap-2 w-max md:min-w-[12rem] text-center px-3 hover:transform hover:translate-x-1 hover:-translate-y-1 add-border-below relative  transition-all ${active && 'text-white border rounded-lg current'}`}>
@@ -103,7 +106,7 @@ const Index = () => {
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M208 80h264v32H208zM40 96a64 64 0 1 0 64-64a64.072 64.072 0 0 0-64 64Zm64-32a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Zm104 176h264v32H208zm-104 80a64 64 0 1 0-64-64a64.072 64.072 0 0 0 64 64Zm0-96a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Zm104 176h264v32H208zm-104 80a64 64 0 1 0-64-64a64.072 64.072 0 0 0 64 64Zm0-96a32 32 0 1 1-32 32a32.036 32.036 0 0 1 32-32Z" /></svg>
         } title='Proforma Invoices' />
         <Pilltab active={currentComponent == 'Paymenthistory'} onClick={() => setCurrentComponent('Paymenthistory')} Pillicon={<Icon fontSize={20} icon="dashicons:money-alt" />} title='Payment History' />
-        <Pilltab active={currentComponent == 'salehistory'} onClick={() => setCurrentComponent("salehistory")} Pillicon={<Icon fontSize={20} icon="dashicons:money-alt" />} title='UnCollected Sales' />
+        <Pilltab active={currentComponent == "UnCollectedSale"} onClick={() => setCurrentComponent("UnCollectedSale")} Pillicon={<Icon fontSize={20} icon="dashicons:money-alt" />} title='UnCollected Sales' />
       </header>
     </nav>
 

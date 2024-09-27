@@ -80,9 +80,14 @@ route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::group(['prefix' => 'store-products'],function(){
+        //Get Product Model Data
         Route::get('/all', [App\Http\Controllers\StoreProductController::class, 'index']);
+
         Route::post('/import', [App\Http\Controllers\StoreProductController::class, "import"]);
-        Route::get('/unavailable', [App\Http\Controllers\StoreProductController::class, "NotInStoreProducts"]);
+        Route::get('/unavailable', [App\Http\Controllers\StoreProductController::class, "NotInStoreProductsModels"]);
+
+        //Get Product Data
+        Route::get('/product/all', [App\Http\Controllers\StoreProductController::class, "InStoreProducts"]);
     });
 
     Route::group(['prefix' => 'supplier'], function () {
@@ -110,6 +115,7 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/get/{sale}', [App\Http\Controllers\SaleController::class, 'show']);
         Route::get('/get/sale-from-invoice/{sale:sale_invoice}', [App\Http\Controllers\SaleController::class, 'getSaleFromInvoice']);
         Route::get('/view-invoice/{invoiceID}', [App\Http\Controllers\SaleController::class, 'showinvoice']);
+        Route::post('/mark-as-collected', [App\Http\Controllers\SaleCollectedHistoryController::class,"markSaleAsCollected" ]);
     });
 
     Route::group(['prefix' => 'lease'], function () {

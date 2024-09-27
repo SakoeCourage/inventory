@@ -56,14 +56,21 @@ function Newproductmodel(props) {
 
     useEffect(() => {
         if (props.editIndex !== null) {
-            console.log(props?.models[props.editIndex])
             setModelData(props.models[props.editIndex])
         }
     }, [props?.editIndex])
 
 
     let schema = object({
-        model_name: string().required('This field is required').notOneOf(choosenmodels, 'Model name already exist'),
+        model_name: string()
+            .required('This field is required')
+            .test('not-one-of', 'Model name already exists', function (value) {
+                const { path, createError } = this;
+                if (choosenmodels.some(model => model.toLowerCase() === value.toLowerCase())) {
+                    return createError({ path, message: 'Model name already exists' });
+                }
+                return true;
+            }),
         unit_price: number().required('This field is required').typeError('This field is required'),
         cost_per_unit: number()
             .required('This field is required')
@@ -124,16 +131,15 @@ function Newproductmodel(props) {
     }
 
     useEffect(() => {
-      console.log(modelData)
+        console.log(modelData)
     }, [modelData])
-    
+
 
     return <nav className="flex flex-col gap-2 border bg-gray-100/60 border-gray-400 rounded-md p-2 min-w-full">
 
         <Fieldset>
             <nav>
                 <nav className='text-sm text-blue-950  flex items-center justify-between uppercase bg-white/25 py-2 border-b'><span>Product Pricing Model </span>
-
                 </nav>
                 <nav className='grid grid-cols-1 gap-4 my-4 mt-8'>
                     <FormInputText value={modelData.model_name} error={errors?.model_name} onChange={(e) => setModelData(cv => cv = { ...cv, model_name: e.target.value })} className="w-full" type="text" label='Model name'

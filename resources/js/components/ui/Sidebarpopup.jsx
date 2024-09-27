@@ -2,7 +2,7 @@ import React from 'react'
 import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 import { useSidebar } from '../../providers/Sidebarserviceprovider'
-import { AccessByPermission } from './Sidebar'
+import { AccessByPermission } from '../../pages/authorization/AccessControl'
 
 const Sidebarpopup = ({ links, title:pathname }) => {
     const { setPopupVisible} = useSidebar()

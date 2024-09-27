@@ -33,7 +33,8 @@ class RolesController extends Controller
                 throw new \Exception('Unable to make changes to ' . $roleName);
             }
         }
-        Role::updateOrCreate(['id' => $request->id ?? null], ['guard_name' => 'web', 'name' => $request->name]);
+        $role = Role::updateOrCreate(['id' => $request->id ?? null], ['guard_name' => 'web', 'name' => $request->name]);
+        $role->givePermissionTo(["view dashboard"]);
     }
 
     public function create(Request $request)
@@ -41,7 +42,8 @@ class RolesController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name']
         ]);
-        Role::create([...$data,...['guard_name' => 'web']]);
+         Role::create([...$data,...['guard_name' => 'web']]);
+      
     }
 
     public function permissionToSelect()
@@ -63,6 +65,9 @@ class RolesController extends Controller
     {
         if ((String) $request->roleName === 'Super Admin') {
             throw new \Exception("Unable to make changes to " . $request->roleName);
+        }
+        if(!in_array("view dashboard",$request->permissions)){
+            $request->permissions= [...$request->permissions,"view dashboard"];
         }
         return Role::where('name', $request->roleName)->firstOrFail()->syncPermissions($request->permissions);
     }

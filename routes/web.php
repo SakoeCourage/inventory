@@ -2,7 +2,9 @@
 
 
 use App\Http\Controllers\PrintController;
+use App\Models\Product;
 use App\Models\Productsmodels;
+use App\Models\StoreProduct;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
@@ -120,19 +122,7 @@ Route::get('/test/print-receipt', [PrintController::class, 'handleNewTestPrint']
 Route::get("/all-quantity-to-stock-template", function (Request $request) {
     return Excel::download(new ProductCategoryExport(null), 'products_by_category.xlsx');
 });
-
-
-Route::get('/test-not-in-store',function(){
-    $excludedStoreId = 3;
-    $productModels = Productsmodels::with('stores')
-        ->whereDoesntHave('stores', function ($query) use ($excludedStoreId) {
-            $query->where('store_id', $excludedStoreId);
-        })
-        ->get();
-
-    return $productModels;
-}); 
-
+;
 
 
 Route::get('/{any}', function () {

@@ -72,9 +72,37 @@ class StoreProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function InStoreProducts(Request $request)
     {
-        //
+        $storeId = \Illuminate\Support\Facades\Auth::user()->storePreference->store_id;
+
+        $availableProducts = \App\Models\Product::filter(request()->only(['search', 'category']))
+            ->whereHas('models.storeProducts', function ($query) use ($storeId) {
+                $query->where('store_id', $storeId);
+            })->with([
+                        'models' => function ($query) use ($storeId) {
+                            $query->whereHas('storeProducts', function ($subQuery) use ($storeId) {
+                                $subQuery->where('store_id', $storeId);
+                            });
+                        }
+                    ])
+            ->latest()->paginate(10)->withQueryString()
+            ->through(fn($currentproduct) =>
+                [
+                    'id' => $currentproduct->id,
+                    'updated_at' => $currentproduct->updated_at,
+                    'product_name' => $currentproduct->product_name,
+                    'quantity_in_stock' => $currentproduct->quantity_in_stock,
+                    'basic_quantity' => $currentproduct->basicQuantity->symbol,
+                    'category_name' => $currentproduct->category->category
+                ]);
+
+        return [
+            'products' => $availableProducts,
+            'filters' => $request->only(['search', 'category']),
+            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'category')))
+        ]
+        ;
     }
 
     /**
@@ -85,7 +113,7 @@ class StoreProductController extends Controller
         //
     }
 
-    public function NotInStoreProducts(Request $request)
+    public function NotInStoreProductsModels(Request $request)
     {
         $excludedStoreId = $request->user()?->storePreference?->store_id;
 

@@ -3,11 +3,43 @@ import Sidebardropdown from "./SdebarDropdown";
 import SimpleBar from "simplebar-react";
 import { useSidebar } from "../../providers/Sidebarserviceprovider";
 import { motion, AnimatePresence } from "framer-motion"
-// import { AccessByPermission, getAllRequiredAbilitiesPerRoute, getAllSidebarSectionAbilities } from "../accescontrol/accesscontrol";
+import { AccessByPermission } from "../../pages/authorization/AccessControl";
 import { useSelector, useDispatch } from "react-redux"
 import { getUnreadCount, getPendingCount } from "../../store/unreadCountSlice"
 import Logo from "./Logo";
 import SidebarSingleItem from "./SidebarSingleItem";
+
+
+/**
+ * @typedef {"view dashboard" | "create expense" | "authorize expense" | "manage stock data" | "generate product order" | "generate report" | "manage users" | "define system data"} AvailablePermission
+ * This type represents one of the available permissions.
+ */
+
+
+
+/**
+ * @typedef {Object} UnreadCount
+ * @property {number} total - Total number of unread items.
+ * @property {number} [critical] - Optional critical unread count.
+ */
+
+/**
+ * @typedef {Object} Route
+ * @property {string} title - The title of the route.
+ * @property {string} icon - The icon class or reference for the route.
+ * @property {string} link - The URL or link associated with the route.
+ * @property {AvailablePermission[]} permissions - Array of permissions required to access this route.
+ * @property {string} miniTitle - The abbreviation or short title for display.
+ * @property {UnreadCount} [unreadcount] - Optional object representing unread counts.
+ */
+
+/**
+ * @typedef {Object} RoutesSection
+ * @property {string} sectionName - The name of the section.
+ * @property {Route[]} routes - Array of route objects in this section.
+ */
+
+
 
 /**
  * Checks if the sidebar item is a single item without links.
@@ -30,15 +62,12 @@ export const isSbWithLinksGuard = function (ssbi) {
 };
 
 
-export const AccessByPermission = ({ children }) => {
-    return children
-}
 
 
 
 
 export default function Sidebar() {
-    const { toggleSideBar, sidebarStateOpen,setSidebarStateOpen, isPopupVisible, currentPopupElement, handleLeave, setPopupVisible, visibilityTimeout, sidebarItemLocation } = useSidebar()
+    const { toggleSideBar, sidebarStateOpen, setSidebarStateOpen, isPopupVisible, currentPopupElement, handleLeave, setPopupVisible, visibilityTimeout, sidebarItemLocation } = useSidebar()
 
     const unreadCount = useSelector(getPendingCount);
     const dispatch = useDispatch();
@@ -48,6 +77,9 @@ export default function Sidebar() {
     }, [dispatch]);
 
 
+    /**
+    * @type {RoutesSection[]}
+    */
     const Routes = useMemo(() =>
         [
             {
@@ -57,14 +89,14 @@ export default function Sidebar() {
                         title: 'Dashboard',
                         icon: "bi:grid-3x3-gap",
                         link: '/dashboard',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['view dashboard'],
                         miniTitle: "Dashboard"
                     },
                     {
                         title: 'Expense',
                         icon: "solar:money-bag-outline",
                         link: '/expenses',
-                        permissions: ['View_Dashboard'],
+                        permissions: ["create expense", "authorize expense"],
                         miniTitle: "Dashboard",
                         unreadcount: {
                             count: unreadCount?.unreadCount?.expenses,
@@ -75,12 +107,12 @@ export default function Sidebar() {
                         title: 'Report',
                         icon: "carbon:report",
                         link: '/report',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['generate report'],
                         miniTitle: "Dashboard",
                     }
                 ]
             },
-   
+
             {
                 sectionName: "Sales Management",
                 routes: [
@@ -88,14 +120,14 @@ export default function Sidebar() {
                         title: 'Product Orders',
                         icon: "mdi:cart-sale",
                         link: '/salemanagement/newsale',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['generate product order'],
                         miniTitle: "New Stock"
                     },
                     {
                         title: 'Product Refund',
                         icon: "heroicons:receipt-refund",
                         link: '/salemanagement/refund',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['generate product order'],
                         miniTitle: "Dashboard",
                         unreadcount: {
                             count: unreadCount?.unreadCount?.expenses,
@@ -111,7 +143,7 @@ export default function Sidebar() {
                         title: 'New Stock',
                         icon: "simple-line-icons:basket-loaded",
                         link: '/stockmanagement/newstock',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['manage stock data'],
                         miniTitle: "New Stock"
                     }
                 ]
@@ -124,21 +156,21 @@ export default function Sidebar() {
                         title: 'Users Setup',
                         icon: "ph:users",
                         link: '/usermanagement/all',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['manage users'],
                         miniTitle: "New Stock"
                     },
                     {
                         title: 'User Roles & Permission',
                         icon: "majesticons:scan-user-line",
                         link: '/usermanagement/rolesandpermissions',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['manage users'],
                         miniTitle: "New Stock"
                     },
                     {
                         title: 'app setup',
                         icon: "bi:gear",
                         link: '/app-setup',
-                        permissions: ['View_Dashboard'],
+                        permissions: ['define system data'],
                         miniTitle: "New Stock"
                     },
                 ]
@@ -146,6 +178,23 @@ export default function Sidebar() {
 
         ], [unreadCount]
     )
+
+    /**
+     * 
+     * @param {Route[]} route 
+     */
+    const getAllSidebarSectionAbilities = (route) => {
+        const permissionsSet = new Set();
+
+        console.log(route)
+        route.forEach(rt => {
+            rt.permissions.map(p => permissionsSet.add(p))
+        });
+
+        // Convert the Set to an array and return it
+        console.log(Array.from(permissionsSet))
+        return Array.from(permissionsSet);
+    }
 
     return (
         <div className={`h-screen  overflow-hidden   fixed  inset-0 z-50 md:z-auto md:relative md:block  !bg-white  transition-all duration-500 add-sidebar-bezier  ${sidebarStateOpen.mini ? 'w-[var(--sidebar-mini-width)]' : 'w-[var(--sidebar-width)]'}  ${sidebarStateOpen.full ? 'sidebaropened' : 'sidebarclosed'}`}>
@@ -175,7 +224,7 @@ export default function Sidebar() {
             </AnimatePresence>
 
             <div
-        
+
                 className={'h-full w-full' + sidebarStateOpen.mini ? ' !bg-info-900' : '!bg-info-900/80'}>
                 <nav className="   h-[var(--header-height)] z-50 flex items-center justify-between  w-full   text-white py-1 ">
                     <nav className="px-5 flex items-center z-50 h-3/4  object-contain">
@@ -184,13 +233,13 @@ export default function Sidebar() {
                 </nav>
                 <SimpleBar className="w-full overflow-x-hidden   z-50 basis-auto flex flex-col gap-5  list-none py-1 h-[calc(100dvh-var(--header-height))]">
                     {Routes?.map((section, i) => <AccessByPermission key={i}
-                    // abilities={getAllSidebarSectionAbilities(section.routes)}
+                        abilities={getAllSidebarSectionAbilities(section.routes)}
                     >
                         <nav key={i} className="w-full flex flex-col gap-3 text-sm tracking-tight capitalize whitespace-nowrap"  >
                             <nav className={` flex items-center transition-all  px-4 pt-6 py-2 truncate w-full uppercase tracking-wide text-gray-300/60 text-xs font-medium ${sidebarStateOpen.mini && '  w-full !text-[0.6rem]'}`}>{sidebarStateOpen.mini ? "------------" : section.sectionName}</nav>
                             <ul className=" w-full basis-auto px-3  flex flex-col gap-1 h-full min-h-max list-none">
                                 {section.routes.map((route, i) => <AccessByPermission key={i}
-                                // abilities={getAllRequiredAbilitiesPerRoute(route)}
+                                    abilities={route.permissions}
                                 >
                                     <li className="w-full text-sm tracking-tight capitalize whitespace-nowrap"  >
                                         {isSingleSbItemGuard(route) ?

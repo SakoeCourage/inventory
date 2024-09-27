@@ -39,7 +39,8 @@ function NewExpense({ expenseItems }) {
 
 
     return (
-        <div className=' flex flex-col gap-7 md:py-6 md:px-6 my-5 '>
+        <div className=' flex flex-col gap-7 md:py-6 md:px-6 my-5 bg-white border border-gray-300 rounded-md max-w-5xl mx-auto'>
+              <h3 className=' text-gray-600 py-3 px-1 mb-3 border-b'>New Expense</h3>
             {processing && <Loadingwheel />}
             <nav className=' p-5 rounded-md bg-white w-full'>
                 <FormInputText value={data?.description} placeholder="Add small description" className="!w-full" onChange={(e) => setData('description', e.target.value)} error={errors?.description} multiline={true} rows={2} label='Description' />
@@ -56,7 +57,7 @@ function NewExpense({ expenseItems }) {
 
 
             <nav className=' p-1 w-full'>
-            <Button className="w-full" text="Submit" onClick={() => handlesubmit()} />
+                <Button className="w-full" text="Submit" onClick={() => handlesubmit()} />
             </nav>
         </div>
     )

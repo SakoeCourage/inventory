@@ -24,6 +24,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
   const [showNewModelForm, setShowNewModelForm] = useState(false);
   const { id } = useParams();
 
+
   const [tranferData, setTransferData] = useState({
     modelName: null,
     currentProductId: id,
@@ -37,6 +38,10 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
     product_models: []
   });
 
+  const filteredModels = modelSearchKey
+    ? formValues.product_models.filter(model => new RegExp(modelSearchKey, 'i').test(model?.model_name))
+    : formValues.product_models;
+
   const [showStoreAvailabilityForm, setShowStoreAvailabilityForm] = useState({
     open: false,
     current_stores: null,
@@ -44,8 +49,8 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
   });
 
 
-  const removeItematIndex = (i) => {
-    let model = formValues.product_models.filter((_, index) => i !== index);
+  const removeItematIndex = (model_name) => {
+    let model = formValues.product_models.filter((_, index) => _.model_name !== model_name);
     setFormValues(cv => ({ ...cv, product_models: model }));
   };
 
@@ -136,15 +141,15 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
     data['product_models'] = model
     setFormValues(cv => ({ ...cv, product_models: model }));
     setShowNewModelForm(false);
-
     saveCurrentConfig(data)
   };
 
   const handleModelEdit = (i, value) => {
-    console.log(value)
+    const currentModel = filteredModels[i]
     let data = formValues;
     let model = formValues.product_models;
-    model[i] = value;
+    const modelIndexInForm = model.findIndex(entry => entry.model_name == currentModel.model_name);
+    model[modelIndexInForm] = value;
     data['product_models'] = model
     setFormValues(cv => ({ ...cv, product_models: model }));
     setEditIndex(null);
@@ -156,9 +161,6 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
     findCurrentProduct()
   }, [edit]);
 
-  const filteredModels = modelSearchKey
-    ? formValues.product_models.filter(model => new RegExp(modelSearchKey, 'i').test(model?.model_name))
-    : formValues.product_models;
 
   var isModalIndex = useMemo(() => {
     return showNewModelForm || showStoreAvailabilityForm?.open == true || editIndex == null
@@ -302,7 +304,7 @@ const ProductForm = ({ selectItems, handleOnSucess, edit, setOpenModal }) => {
                 isNewProduct={edit?.data ? false : true}
                 basic_selling_quantity={formValues.basic_selling_quantity}
                 model={model}
-                removeItematIndex={removeItematIndex}
+                removeItematIndex={() => removeItematIndex(model.model_name)}
                 setIndexToEdit={(index) => setEditIndex(index)}
                 key={i} index={i}
                 removable={Boolean(!edit?.data)}

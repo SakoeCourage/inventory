@@ -74,7 +74,8 @@ function index({ setCurrentComponent: setParentComponent }) {
 
 
   return (
-    <>
+    <div className='bg-white border p-2 border-gray-300 rounded-md max-w-6xl mx-auto'>
+        <h3 className=' text-gray-600 py-3 px-1 mb-3 border-b'>Income Report</h3>
       {isLoading && <Loadingwheel />}
       <AnimatePresence>
         {reportData && collationMethod && <motion.div
@@ -105,7 +106,7 @@ function index({ setCurrentComponent: setParentComponent }) {
           setCollationMethod={setCollationMethod}
           formData={formData}
           setFormData={handleOnValueChange} />
-        <Salereportproducts
+        {/* <Salereportproducts
           setProductsFromDB={setProductsFromDB}
           productsFromDB={productsFromDB}
           scrollY={scrollY}
@@ -118,10 +119,10 @@ function index({ setCurrentComponent: setParentComponent }) {
           setCurrentComponent={() => void (0)}
           formData={formData}
           setFormData={handleOnValueChange}
-        />
+        /> */}
         <Button onClick={() => handleReportGeneration()} neutral text="Generate Report" className="w-full mt-10" />
       </Addmotion>
-    </>
+    </div>
   )
 }
 

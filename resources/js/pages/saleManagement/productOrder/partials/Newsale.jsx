@@ -108,6 +108,16 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
         });
     }
 
+
+    const handleUnCollectedSale = () => {
+        setFormData(cv => {
+            const updatedFormData = { ...cv, sale_type: "un_collected" };
+            setProcessing(true);
+            checkOut(updatedFormData);
+            return updatedFormData;
+        });
+    }
+    
     const handleProforma = () => {
         setProcessingProforma(true)
         Api.post('/proforma/new', formData).then(res => {
@@ -304,7 +314,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                         <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
                     </nav>
                 </button>
-                <button disabled={processing} processing={processingLeaseSale} onClick={() => void (0)}
+                <button disabled={processing} processing={processingLeaseSale} onClick={() => handleUnCollectedSale()}
                     className="bg-red-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-red-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
                 >
                     <nav>Uncollected Sale</nav>

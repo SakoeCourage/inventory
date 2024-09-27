@@ -1,9 +1,14 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { formatcurrency } from '../../../../api/Util';
 function Dailyreporttable({ reportData }) {
     const { dailyexpenses, dailysaleincome, title } = reportData;
-    const { accountReceivable, paidSaleInvoicesByDayWithProducts, dailyCumulatedTotal: saleCumulatedTotal, totalSale, totalRecievable, dateRange } = dailysaleincome
+    const { accountReceivable, paidSaleInvoicesByDayWithProducts, dailyCumulatedTotal: saleCumulatedTotal, totalSale, totalRecievable, dateRange,leaseSale,leaseTotal } = dailysaleincome
     const { allApprovedExpenses, dailyCumulatedTotal: expenseCumulatedTotal, totalExpenses } = dailyexpenses
+   
+    useEffect(() => {
+        console.log(reportData)
+       }, [reportData])
+       
     return (
         <div className=' w-full'>
             <table className=' report-table min-w-full'>
@@ -38,12 +43,23 @@ function Dailyreporttable({ reportData }) {
 
                     }
                     <tr className='    !py-4 border-y border-black'>
-                        <td>TOTAL INCOME</td>
+                        <td>TOTAL SALE</td>
                         {dateRange.map((date, i) => {
                             return (<td>{formatcurrency(saleCumulatedTotal[`${date}`] ?? 0)}</td>)
                         })}
                     </tr>
 
+                    <tr className=' bg-gray-200 !py-4'>
+                        <td colSpan={8}>LIABILITY</td>
+                    </tr>
+                
+                
+                    <tr className='    !py-4 border-y border-black'>
+                        <td>CREDIT SALE</td>
+                        {dateRange.map((date, i) => {
+                            return (<td>{formatcurrency(leaseSale[`${date}`] ?? 0)}</td>)
+                        })}
+                    </tr>
                     <tr className=' bg-gray-200 !py-4'>
                         <td colSpan={8}>EXPENSES</td>
                     </tr>
@@ -98,10 +114,10 @@ function Dailyreporttable({ reportData }) {
                     </nav>
                     <nav className=' flex gap-5 justify-between px-2 border-b '>
                         <span>
-                            INCOME
+                            LIABILITY
                         </span>
                         <span>
-                            {formatcurrency(totalSale ?? 0)}
+                            {formatcurrency(leaseTotal ?? 0)}
                         </span>
                     </nav>
                 </div>

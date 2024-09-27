@@ -6,13 +6,17 @@ import { Icon } from '@iconify/react'
 import Api from '../../api/Api'
 import Loadingwheel from '../../components/Loaders/Loadingwheel'
 import { AccessByPermission } from '../authorization/AccessControl'
+import { useSearchParams, useNavigate } from 'react-router-dom';
 const components = {
   expenseHistory: ExpenseHistory,
   newExpense: NewExpense,
 }
 
 function index() {
-  const [currentComponent, setCurrentComponent] = useState('expenseHistory')
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const currentViewQueryParam = searchParams.get('view');
+  const [currentComponent, setCurrentComponent] = useState(currentViewQueryParam ?? 'expenseHistory')
   const [expenseItems, setexpenseItems] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const Component = components[currentComponent]
@@ -32,7 +36,7 @@ function index() {
       })
   }
 
-  const getExpensesFromDB = (url =fullUrl ) => {
+  const getExpensesFromDB = (url = fullUrl) => {
     setIsLoading(true)
     Api.get(url ?? '/expense/submits/all')
       .then(res => {
@@ -55,14 +59,21 @@ function index() {
     getExpenseItems()
   }, [])
 
+  useEffect(() => {
+    if (currentViewQueryParam) {
+      setCurrentComponent(currentViewQueryParam)
+    }
+  }, [currentViewQueryParam])
+
+
   return (
     <div>
       {isLoading && <Loadingwheel />}
       <nav className=" w-full  z-30   bg-info-900/60 p-2 pt-3">
         <header className="flex items-center gap-4 max-w-6xl mx-auto ">
-          <Pilltab active={currentComponent == 'expenseHistory'} onClick={() => setCurrentComponent('expenseHistory')} Pillicon={<Icon fontSize={20} icon="material-symbols:history" />} title='History' />
+          <Pilltab active={currentComponent == 'expenseHistory'} onClick={() => navigate('/expenses?view=expenseHistory')} Pillicon={<Icon fontSize={20} icon="material-symbols:history" />} title='History' />
           <AccessByPermission abilities={['create expense']}>
-          <Pilltab active={currentComponent == 'newExpense'} onClick={() => setCurrentComponent('newExpense')} Pillicon={<Icon fontSize={20} icon="bi:plus-circle" />} title='New epenses' />
+            <Pilltab active={currentComponent == 'newExpense'} onClick={() => navigate('/expenses?view=newExpense')} Pillicon={<Icon fontSize={20} icon="bi:plus-circle" />} title='New epenses' />
           </AccessByPermission>
         </header>
       </nav>

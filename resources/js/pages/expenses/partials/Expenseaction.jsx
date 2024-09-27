@@ -98,7 +98,7 @@ function Expenseaction({ id, handleClose }) {
         <nav className='  text-gray-500 font-semibold'>{formatcurrency(data?.total_amount) ?? <nav className=' text-gray-400'>Loading... &nbsp;</nav>}</nav>
       </nav>
 
-      <AccessByPermission abilities={['authorize expense']}>
+      <AccessByPermission abilities={["authorize expense"]}>
         {
           Boolean(data?.expenseitems.length) && Number(data?.status) == 0 && <div className='flex items-center gap-2 mt-auto w-full'>
             <Button onClick={() => handleExpenseAction('approve')} className="w-1/2" processing={false} type="submit" text="Approved" success />

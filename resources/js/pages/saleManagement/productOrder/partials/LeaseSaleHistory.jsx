@@ -203,7 +203,7 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
                   <td className="px-6 py-2 !text-xs whitespace-nowrap">
                     <div className="flex items-center">
                       <h6 className="mb-0  ">
-                        {formatcurrency(Math.abs(x.lease_payment_history[x.lease_payment_history?.length-1]?.balance))}
+                        {formatcurrency(Math.abs(x.lease_payment_history[x.lease_payment_history?.length - 1]?.balance))}
                       </h6>
                     </div>
                   </td>
@@ -233,7 +233,14 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
                         <Icon className=' text-orange-700' icon="solar:money-bag-line-duotone" fontSize={20} />
                       </span>
                     </Tooltip>
-          
+                    <Tooltip title="Refund Sale" arrow TransitionComponent={Zoom}>
+                      <NavLink to={`/salemanagement/refund?sale=` + x.sale_invoice}
+                        className=" p-1 hover:cursor-pointer"
+                      >
+                        <Icon className=' text-red-700' fontSize={20} icon="heroicons:receipt-refund" />
+                      </NavLink>
+                    </Tooltip>
+
 
                   </td>
                 </tr>

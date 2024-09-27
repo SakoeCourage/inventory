@@ -14,8 +14,7 @@ class IncomestatementweeklyController extends Controller
     {
         $request->validate([
             'startDate' => ['required'],
-            'endDate' => ['required'],
-            'product_ids' =>['required','array','min:1']
+            'endDate' => ['required']
         ]);
 
         // $request = (object) [
@@ -24,10 +23,11 @@ class IncomestatementweeklyController extends Controller
         //     'product_ids' => [71, 70, 69]
         // ];
       
+        $store_id = $request->user()->storePreference->store_id;
         return [
             'title' => $request->startDate . " to " . $request->endDate,
-            'dailysaleincome' => $this->generateDailySaleItemsOfProducts($request->startDate, $request->endDate, $request->product_ids),
-            'dailyexpenses' => $this->generateDailyExpenses($request->startDate, $request->endDate)
+            'dailysaleincome' => $this->generateDailySaleItemsOfProducts($request->startDate, $request->endDate, $request->product_ids,$store_id),
+            'dailyexpenses' => $this->generateDailyExpenses($request->startDate, $request->endDate,$store_id)
         ];
     }
 
@@ -40,7 +40,7 @@ class IncomestatementweeklyController extends Controller
         });
     }
 
-    public function generateDailySaleItemsOfProducts(string $start, string $end, array $productIDS)
+    public function generateDailySaleItemsOfProducts(string $start, string $end, array $productIDS,int $store_id)
     {
         $startDate = $start;
         $endDate = $end;
@@ -55,20 +55,18 @@ class IncomestatementweeklyController extends Controller
             $dateRange[] = $date->format('Y-m-d');
         }
 
-        $productsQery = DB::table('products')
-            ->whereIn('products.id', $productIDS)
-        ;
+        $productsQery = DB::table('products');
 
         $emptyDataListQuery = clone $productsQery;
-
 
         $productsales = $productsQery
             ->join('productsmodels', 'productsmodels.product_id', '=', 'products.id')
             ->join('saleitems', 'saleitems.productsmodel_id', '=', 'productsmodels.id')
             ->join('sales', 'sales.id', '=', 'saleitems.sale_id')
+            ->where('sales.store_id', '=', $store_id)
             ->whereDate('saleitems.created_at', '<=', $endDate)
             ->whereDate('saleitems.created_at', '>=', $startDate)
-            ->selectRaw('products.product_name as name,DATE(saleitems.created_at) as day ,saleitems.amount as total_amount')
+            ->selectRaw('products.product_name as name,DATE(saleitems.created_at) as day ,saleitems.amount as total_amount,sales.sale_type as sale_type')
             ->get();
 
         $paidSaleInvoicesDB = $productsales;
@@ -83,8 +81,7 @@ class IncomestatementweeklyController extends Controller
 
         $emptydatalist = self::generateEmptyDataPerProductDefinition($emptyDataListQuery->get(), $days);
 
-        $paidSaleInvoicesByDayWithProducts = array_replace_recursive($emptydatalist->toArray(), $paidSaleInvoicesByDayWithProducts->toArray());
-
+        $paidSaleInvoicesByDayWithProducts = $paidSaleInvoicesByDayWithProducts->toArray();
 
         $dailyCumulatedTotal = $paidSaleInvoicesDB->groupBy(['day'])->mapWithKeys(function ($value, $day) {
             return [
@@ -101,7 +98,20 @@ class IncomestatementweeklyController extends Controller
             ];
 
         });
+        
         $accountReceivable = array_replace_recursive($days, $accountReceivable->toArray());
+
+        $leaseSale = $productsales->where('sale_type', '=', 'lease')->groupBy('day')
+        ->mapWithKeys(function ($sale_content, int|string $weeknumber) {
+            return [
+                $weeknumber => $sale_content->sum('total_amount') / 100
+            ];
+        });
+    ;
+
+    $leaseTotal = $productsales->where('sale_type', '=', 'lease')->sum('total_amount');
+    $dailyLeaseSale = array_replace_recursive($days, $leaseSale->toArray());
+
 
         return ([
             'paidSaleInvoicesByDayWithProducts' => $paidSaleInvoicesByDayWithProducts,
@@ -109,13 +119,15 @@ class IncomestatementweeklyController extends Controller
             'accountReceivable' => $accountReceivable,
             'totalSale' => $paidSaleInvoicesDB->sum('total_amount') / 100,
             'totalRecievable' => $productsales->sum('total_amount') / 100,
-            'dateRange' => $dateRange
+            'dateRange' => $dateRange,
+            'leaseSale' => $dailyLeaseSale,
+            'leaseTotal' => $leaseTotal / 100
         ]);
 
     }
 
 
-    public function generateDailyExpenses(string $start, string $end)
+    public function generateDailyExpenses(string $start, string $end,$store_id)
     {
         $startDate = $start;
         $endDate = $end;
@@ -131,6 +143,7 @@ class IncomestatementweeklyController extends Controller
         $allApprovedExpensesFromDB = DB::table('expenseitems')
             ->join('expenses', 'expenses.id', '=', 'expenseitems.expense_id')
             ->join('expensedefinitions', 'expenseitems.expensedefinition_id', '=', 'expensedefinitions.id')
+            ->where('expenses.store_id','=',$store_id)
             ->where('expenses.status', 1)
             ->whereDate('expenses.updated_at', '<=', $endDate)
             ->whereDate('expenses.updated_at', '>=', $startDate)

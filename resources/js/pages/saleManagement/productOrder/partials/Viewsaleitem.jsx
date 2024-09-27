@@ -90,7 +90,6 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
     Api.get('/sale/get/' + saleId)
       .then(res => {
         setSalData(res.data)
-        console.log(res.data)
         setIsLoading(false)
       })
       .catch()
@@ -149,7 +148,7 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
             Payment Method
           </nav>
           <nav className=' w-full'>
-            {saleData?.payment_method}
+            {saleData?.payment_method ?? "N/A"}
           </nav>
         </nav>
         <nav className='flex items-center gap-2 p-2 bg-gray-100/70 '>

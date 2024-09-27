@@ -7,6 +7,7 @@ import SmartRecommendations from './dashboardcomponents/SmartRecommendations'
 import Loadingwheel from '../components/Loaders/Loadingwheel'
 import Dasboardloader from '../components/Loaders/Dasboardloader'
 import StockAvailability from './dashboardcomponents/StockAvailability'
+import ExpenseCard from './dashboardcomponents/ExpenseCard'
 
 const Dashboard = () => {
   const [dashboardData, setDashBoardData] = useState(null)
@@ -41,7 +42,7 @@ const Dashboard = () => {
       {dashboardData && <div>  <Statsview dashboardData={dashboardData} />
         <div className=' container flex flex-col lg:flex-row gap-2  mx-auto mt-4 '>
           <LineChart dashboardData={dashboardData} />
-          <StockAvailability />
+          <ExpenseCard dashboardData={dashboardData} />
           {/* <SmartRecommendations unattended_products={dashboardData.unattended_products} smart_recommendations={dashboardData.smart_recommendations} /> */}
         </div>
       </div>}

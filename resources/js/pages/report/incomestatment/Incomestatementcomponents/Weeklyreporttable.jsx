@@ -2,8 +2,9 @@ import React, { useEffect } from 'react'
 import { formatcurrency } from '../../../../api/Util';
 
 function Weeklyreporttable({ reportData }) {
+  
     const { weeklyexpenses, weeklysaleincome,title } = reportData;
-    const { accountReceivable, allPaidInvoicesByWeek,  weeklyCulmulatedTotal: saleCumulatedTotal, totalSale, totalRecievable } = weeklysaleincome
+    const { accountReceivable, allPaidInvoicesByWeek,  weeklyCulmulatedTotal: saleCumulatedTotal, totalSale, totalRecievable,leaseSale,leaseTotal } = weeklysaleincome
     const { allApprovedExpenses, weeklyCulmulatedTotal: expenseCumulatedTotal, totalExpenses } = weeklyexpenses
 
     return (
@@ -49,11 +50,23 @@ function Weeklyreporttable({ reportData }) {
 
 
                     <tr className='    !py-4 border-y border-black'>
-                        <td>TOTAL INCOME</td>
+                        <td>TOTAL SALE</td>
                         <td>{formatcurrency(saleCumulatedTotal[1] ?? 0)}</td>
                         <td>{formatcurrency(saleCumulatedTotal[2] ?? 0)}</td>
                         <td>{formatcurrency(saleCumulatedTotal[3] ?? 0)}</td>
                         <td>{formatcurrency(saleCumulatedTotal[4] ?? 0)}</td>
+                    </tr>
+
+                    <tr className=' bg-gray-200 !py-4'>
+                        <td colSpan={5}>LIABILITY</td>
+                    </tr>
+             
+                    <tr className='    !py-4 border-y border-black'>
+                        <td>CREDIT SALE</td>
+                        <td>{formatcurrency(leaseSale[1] ?? 0)}</td>
+                        <td>{formatcurrency(leaseSale[2] ?? 0)}</td>
+                        <td>{formatcurrency(leaseSale[3] ?? 0)}</td>
+                        <td>{formatcurrency(leaseSale[4] ?? 0)}</td>
                     </tr>
 
                     <tr className=' bg-gray-200 !py-4'>
@@ -113,10 +126,10 @@ function Weeklyreporttable({ reportData }) {
                     </nav>
                     <nav className=' flex gap-5 justify-between px-2 border-b '>
                         <span>
-                            INCOME
+                            LIABIITY
                         </span>
                         <span>
-                            {formatcurrency(totalSale ?? 0)}
+                            {formatcurrency(leaseTotal ?? 0)}
                         </span>
                     </nav>
                 </div>

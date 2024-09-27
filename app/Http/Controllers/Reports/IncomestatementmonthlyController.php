@@ -15,18 +15,17 @@ class IncomestatementmonthlyController extends Controller
     public function generatemonthlyincomestatement(Request $request)
     {
         $request->validate([
-            'month' => ['required'],
-            'product_ids' =>['required','array','min:1']
+            'month' => ['required']
         ]);
-    
-        Datehelper::getForMaxMonth($request->month);
 
+        Datehelper::getForMaxMonth($request->month);
+        $store_id = $request->user()->storePreference->store_id;
         $date = Carbon::createFromFormat('Y-n', $request->month);
         $formattedDate = $date->format('F Y');
         return [
             'title' => $formattedDate,
-            'weeklysaleincome' => $this->generateWeeklySaleItemsOfProducts($request->month, $request->product_ids),
-            'weeklyexpenses' => $this->generateWeeklyExpenses($request->month)
+            'weeklysaleincome' => $this->generateWeeklySaleItemsOfProducts($request->month, $request->product_ids, $store_id),
+            'weeklyexpenses' => $this->generateWeeklyExpenses($request->month, $store_id)
         ];
     }
 
@@ -44,18 +43,19 @@ class IncomestatementmonthlyController extends Controller
         });
     }
 
-    public function generateWeeklySaleItemsOfProducts(string $month, array $productIDS)
+    public function generateWeeklySaleItemsOfProducts(string $month, array $productIDS, $store_id)
     {
 
         $selectedmonth = $month;
         $monthInstance = Carbon::createFromFormat('Y-m', $selectedmonth)->startOfMonth();
+
 
         $firstDate = $monthInstance->format('Y-m-d');
         $lastDate = $monthInstance->endOfMonth()->format('Y-m-d');
 
 
         $productsQery = DB::table('products')
-            ->whereIn('products.id', $productIDS)
+            // ->whereIn('products.id', $productIDS)
         ;
 
         $emptyDataListQuery = clone $productsQery;
@@ -64,7 +64,8 @@ class IncomestatementmonthlyController extends Controller
             ->join('productsmodels', 'productsmodels.product_id', '=', 'products.id')
             ->join('saleitems', 'saleitems.productsmodel_id', '=', 'productsmodels.id')
             ->join('sales', 'sales.id', '=', 'saleitems.sale_id')
-            ->join('refunds', 'sales.id', '=', 'refunds.sale_id')
+            ->leftjoin('refunds', 'sales.id', '=', 'refunds.sale_id')
+            ->where('sales.store_id', '=', $store_id)
             ->whereDate('saleitems.created_at', '<=', $lastDate)
             ->whereDate('saleitems.created_at', '>=', $firstDate)
             ->selectRaw("products.product_name as name,
@@ -79,12 +80,13 @@ class IncomestatementmonthlyController extends Controller
            ,saleitems.amount as total_amount
            ,saleitems.profit as profit
            ,saleitems.is_refunded as refunded,
-           refunds.previous_sale_data as refunded_products
+           refunds.previous_sale_data as refunded_products,
+           sales.sale_type as sale_type
            ")
             ->get();
 
         $paidSaleInvoicesDB = $productsales;
-        $emptydatalist = self::generateEmptyDataPerProductDefinition($emptyDataListQuery->get());
+        $emptydatalist = $this->generateEmptyDataPerProductDefinition($emptyDataListQuery->get());
 
         $paidSaleInvoicesByWeek = $paidSaleInvoicesDB->groupBy(['name', 'week'])->map(function ($value, $product_name) {
             return $value->mapWithKeys(function ($sale_content, $weeknumber) {
@@ -94,7 +96,7 @@ class IncomestatementmonthlyController extends Controller
             });
         });
 
-        $allPaidInvoicesByWeek = array_replace_recursive($emptydatalist->toArray(), $paidSaleInvoicesByWeek->toArray());
+        $allPaidInvoicesByWeek = $paidSaleInvoicesByWeek->toArray();
 
         $weeklyCumulatedTotal = $paidSaleInvoicesDB->groupBy(['week'])->mapWithKeys(function ($value, $weeknumber) {
             return [
@@ -111,19 +113,34 @@ class IncomestatementmonthlyController extends Controller
         });
         $accountReceivable = array_replace_recursive([1 => 0, 2 => 0, 3 => 0, 4 => 0], $accountReceivable->toArray());
 
+        $leaseSale = $productsales->where('sale_type', '=', 'lease')->groupBy('week')
+            ->mapWithKeys(function ($sale_content, $weeknumber) {
+                return [
+                    $weeknumber => $sale_content->sum('total_amount') / 100
+                ];
+            });
+        ;
+
+        $leaseTotal = $productsales->where('sale_type', '=', 'lease')->sum('total_amount');
+
+        $weeklyLeaseSale = array_replace_recursive([1 => 0, 2 => 0, 3 => 0, 4 => 0], $leaseSale->toArray());
+
+
         return ([
             'allPaidInvoicesByWeek' => $allPaidInvoicesByWeek,
             'weeklyCulmulatedTotal' => $weeklyCumulatedTotal->toArray(),
             'accountReceivable' => $accountReceivable,
             'totalSale' => $paidSaleInvoicesDB->sum('total_amount') / 100,
-            'totalRecievable' => $productsales->sum('total_amount') / 100
+            'totalRecievable' => $productsales->sum('total_amount') / 100,
+            'leaseSale' => $weeklyLeaseSale,
+            'leaseTotal' => $leaseTotal / 100
         ]);
     }
 
 
 
 
-    public function generateWeeklyExpenses(string $month)
+    public function generateWeeklyExpenses(string $month, $store_id)
     {
 
         $selectedmonth = $month;
@@ -136,6 +153,7 @@ class IncomestatementmonthlyController extends Controller
             ->join('expenses', 'expenses.id', '=', 'expenseitems.expense_id')
             ->join('expensedefinitions', 'expenseitems.expensedefinition_id', '=', 'expensedefinitions.id')
             ->where('expenses.status', 1)
+            ->where('expenses.store_id', $store_id)
             ->whereDate('expenses.updated_at', '<=', $lastDate)
             ->whereDate('expenses.updated_at', '>=', $firstDate)
             ->selectRaw('expensedefinitions.name as item,
@@ -166,7 +184,7 @@ class IncomestatementmonthlyController extends Controller
                 })
             ];
         });
-        
+
 
         $weeklyCumulatedTotal = $allApprovedExpensesFromDB->groupBy(['week'])->mapWithKeys(function ($value, $weeknumber) {
             return [
