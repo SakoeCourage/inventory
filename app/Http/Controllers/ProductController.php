@@ -139,7 +139,7 @@ class ProductController extends Controller
             'product_name' => ['required', 'string', 'unique:products,product_name'],
             'basic_selling_quantity' => ['required'],
             'category' => ['required'],
-            'product_models' => ['required', 'array', 'min:1']
+            'product_models' => ['nullable','array']
         ]);
 
         DB::transaction(function () use ($request) {
@@ -150,18 +150,20 @@ class ProductController extends Controller
                 'has_models' => true
             ]);
 
-            foreach ($request->product_models as $model) {
-                Productsmodels::create([
-                    'model_name' => $model['model_name'],
-                    'unit_price' => $model['unit_price'],
-                    'cost_per_unit' => $model['cost_per_unit'],
-                    'in_collection' => $model['in_collection'],
-                    'price_per_collection' => $model['price_per_collection'] ?? null,
-                    'cost_per_collection' => $model['cost_per_collection'] ?? null,
-                    'quantity_per_collection' => $model['quantity_per_collection'] ?? null,
-                    'collection_method' => $model['in_collection'] ? CollectionType::where('type', $model['collection_method'])->firstOrFail()->id : null,
-                    'product_id' => $newproduct->id
-                ]);
+            if (!empty($request->product_models)) {
+                foreach ($request->product_models as $model) {
+                    Productsmodels::create([
+                        'model_name' => $model['model_name'],
+                        'unit_price' => $model['unit_price'],
+                        'cost_per_unit' => $model['cost_per_unit'],
+                        'in_collection' => $model['in_collection'],
+                        'price_per_collection' => $model['price_per_collection'] ?? null,
+                        'cost_per_collection' => $model['cost_per_collection'] ?? null,
+                        'quantity_per_collection' => $model['quantity_per_collection'] ?? null,
+                        'collection_method' => $model['in_collection'] ? CollectionType::where('type', $model['collection_method'])->firstOrFail()->id : null,
+                        'product_id' => $newproduct->id
+                    ]);
+                }
             }
 
             return response('ok', 200);
@@ -227,9 +229,9 @@ class ProductController extends Controller
     {
         // return $product;
         $request->validate([
-            'product_name' => ['required', 'string', 'unique:products,product_name,'.$product->id],
+            'product_name' => ['required', 'string', 'unique:products,product_name,' . $product->id],
             'basic_selling_quantity' => ['required', 'string'],
-            'product_models' => ['required', 'array', 'min:1'],
+            'product_models' =>["nullable","array"],
             'category' => ['required'],
         ]);
 
@@ -240,23 +242,26 @@ class ProductController extends Controller
                 'basic_selling_quantity_id' => BasicSellingQuantity::where('name', $request->basic_selling_quantity)->firstOrFail()->id,
             ]);
 
-            foreach ($request->product_models as $model) {
-                $product->models()->updateOrCreate(
-                    [
-                        'id' => $model['id'] ?? null
-                    ],
-                    [
-                        'model_name' => $model['model_name'],
-                        'unit_price' => $model['unit_price'],
-                        'cost_per_unit' => $model['cost_per_unit'],
-                        'in_collection' => $model['in_collection'],
-                        'price_per_collection' => $model['price_per_collection'] ?? null,
-                        'cost_per_collection' => $model['cost_per_collection'] ?? null,
-                        'quantity_per_collection' => $model['quantity_per_collection'] ?? null,
-                        'collection_method' => $model['in_collection'] ? CollectionType::where('type', $model['collection_method'])->firstOrFail()->id : null,
-                        'product_id' => $product->id
-                    ]
-                );
+            if (!empty($request->product_models)) {
+                foreach ($request->product_models as $model) {
+                    $product->models()->updateOrCreate(
+                        [
+                            'id' => $model['id'] ?? null
+                        ],
+                        [
+                            'model_name' => $model['model_name'],
+                            'unit_price' => $model['unit_price'],
+                            'cost_per_unit' => $model['cost_per_unit'],
+                            'in_collection' => $model['in_collection'],
+                            'price_per_collection' => $model['price_per_collection'] ?? null,
+                            'cost_per_collection' => $model['cost_per_collection'] ?? null,
+                            'quantity_per_collection' => $model['quantity_per_collection'] ?? null,
+                            'collection_method' => $model['in_collection'] ? CollectionType::where('type', $model['collection_method'])->firstOrFail()->id : null,
+                            'product_id' => $product->id
+                        ]
+                    );
+                }
+
             }
 
             return response('ok', 200);
