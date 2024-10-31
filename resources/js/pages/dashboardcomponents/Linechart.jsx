@@ -72,8 +72,6 @@ function LineChart({ dashboardData }) {
                 },
             },
         };
-
-
     }, [dashboardData])
 
     return (

@@ -22,6 +22,7 @@ const Dashboard = () => {
     Api.get('/dashboard/data')
       .then(res => {
         setDashBoardData(res.data)
+        console.log(res.data)
         setIsLoading(false)
       }).catch(err => {
         console.log(err)

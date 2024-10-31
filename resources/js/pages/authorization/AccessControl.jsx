@@ -6,7 +6,7 @@ import { Navigate } from 'react-router-dom'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 
 /**
- * @typedef {"view dashboard" | "create expense" | "authorize expense" | "manage stock data" | "generate product order" | "generate report" | "manage users" | "define system data"} AvailablePermission
+ * @typedef {"view dashboard" | "create expense" | "authorize expense" | "manage stock data" | "generate product order" | "generate report" | "manage users" | "define system data","view revenue"} AvailablePermission
  * This type represents one of the available permissions.
  */
 

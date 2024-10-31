@@ -70,12 +70,11 @@ function Rolehaspermissionlist(props) {
 
 
     return (
-        <div className=' min-h-max w-full overflow-y-scroll pb-4'>
+        <div className=' !h-max w-full !overflow-y-scroll pb-4 flex flex-col gap-0'>
             <div className="grid grid-cols-2 sticky z-30 top-0 p-4 text-sm font-medium text-gray-900 bg-gray-100 border-t border-b border-gray-200 gap-x-16 ">
                 <div className="flex items-center justify-center">Permissions</div>
                 <div className='text-center'>Status</div>
             </div>
-
             {!isLoading && allPermissions && allPermissions.map((permission, i) => {
                 return (
                     <React.Fragment key={i}>

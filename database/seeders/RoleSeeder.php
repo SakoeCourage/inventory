@@ -38,7 +38,7 @@ class RoleSeeder extends Seeder
         // usermgmt
         Permission::create(['name' => 'manage users']);
       
-
+        Permission::create(['name'=>'view revenue']);
         //Sytem definition
         Permission::create(['name' => 'define system data']);
          // Super Admin

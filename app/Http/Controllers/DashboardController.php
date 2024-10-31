@@ -215,10 +215,11 @@ class DashboardController extends Controller
                 'type' => 'area',
                 'data' => $sales->flatten()
             ],
-            [
+            auth()->user()->can('view revenue') ? [
                 'name' => 'Revenue',
                 'type' => 'area',
                 'data' => $revenue->flatten()
+            ] : [      
             ]
         ];
     }
