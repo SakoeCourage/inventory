@@ -273,5 +273,16 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $models = $product->models()->count();
+        if($models > 0){
+            return response("Failed To Remove Product ",422);
+        }
+        
+        $res = $product->delete();
+        if($res){
+            return response("Product Deleted Sucessfully",200);
+        }else{
+            return response("Failed To Remove Product ",422);
+        }
     }
 }

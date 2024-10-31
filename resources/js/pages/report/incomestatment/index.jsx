@@ -11,6 +11,7 @@ import { useSnackbar } from 'notistack'
 import { AnimatePresence,motion } from 'framer-motion'
 import Incomestatemenreportview from './Incomestatementcomponents/Incomestatemenreportview'
 import Loadingwheel from '../../../components/Loaders/Loadingwheel'
+
 const matchRoute = {
   "Week": "/report/income-week-report",
   "Month": "/report/income-month-report"
@@ -61,7 +62,9 @@ function index({ setCurrentComponent: setParentComponent }) {
       Api.post(matchRoute[collationMethod], formData)
         .then(res => {
           setReportData(res.data)
+          console.log(res?.data)
           setIsLoading(false)
+          console.log(res.data)
         })
         .catch(err => {
           if (err.response.status === 422) {
@@ -71,7 +74,6 @@ function index({ setCurrentComponent: setParentComponent }) {
         })
     }
   }
-
 
   return (
     <div className='bg-white border p-2 border-gray-300 rounded-md max-w-6xl mx-auto'>

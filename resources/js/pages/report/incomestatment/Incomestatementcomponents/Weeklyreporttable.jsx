@@ -2,9 +2,9 @@ import React, { useEffect } from 'react'
 import { formatcurrency } from '../../../../api/Util';
 
 function Weeklyreporttable({ reportData }) {
-  
-    const { weeklyexpenses, weeklysaleincome,title } = reportData;
-    const { accountReceivable, allPaidInvoicesByWeek,  weeklyCulmulatedTotal: saleCumulatedTotal, totalSale, totalRecievable,leaseSale,leaseTotal } = weeklysaleincome
+
+    const { weeklyexpenses, weeklysaleincome, title } = reportData;
+    const { accountReceivable, allPaidInvoicesByWeek, weeklyCulmulatedTotal: saleCumulatedTotal, totalSale, totalRecievable, leaseSale, leaseTotal, payment_methods, payment_methods_summary } = weeklysaleincome
     const { allApprovedExpenses, weeklyCulmulatedTotal: expenseCumulatedTotal, totalExpenses } = weeklyexpenses
 
     return (
@@ -37,7 +37,7 @@ function Weeklyreporttable({ reportData }) {
                     {
                         Object.entries(allPaidInvoicesByWeek).map((entry, i) => {
                             return (<tr key={i} className=' !py-4'>
-                                <td>{`SALE OF ${entry[0]}`}</td>
+                                <td className=' capitalize'>{`Sale Of ${entry[0]}`}</td>
                                 <td>{formatcurrency(entry[1][1] ?? 0)}</td>
                                 <td>{formatcurrency(entry[1][2] ?? 0)}</td>
                                 <td>{formatcurrency(entry[1][3] ?? 0)}</td>
@@ -46,8 +46,6 @@ function Weeklyreporttable({ reportData }) {
                         })
 
                     }
-
-
 
                     <tr className='    !py-4 border-y border-black'>
                         <td>TOTAL SALE</td>
@@ -60,7 +58,7 @@ function Weeklyreporttable({ reportData }) {
                     <tr className=' bg-gray-200 !py-4'>
                         <td colSpan={5}>LIABILITY</td>
                     </tr>
-             
+
                     <tr className='    !py-4 border-y border-black'>
                         <td>CREDIT SALE</td>
                         <td>{formatcurrency(leaseSale[1] ?? 0)}</td>
@@ -95,6 +93,16 @@ function Weeklyreporttable({ reportData }) {
                     <tr className=' bg-gray-200  !py-4'>
                         <td colSpan={5}>ASSETS</td>
                     </tr>
+                    
+                    {Boolean(Object.entries(payment_methods)?.length) && Object.entries(payment_methods).map(([method, sales]) => {
+                        return <tr className='    !py-4 border-y border-black'>
+                            <td className=' uppercase'> {method}</td>
+                            <td>{formatcurrency(sales[1] ?? 0)}</td>
+                            <td>{formatcurrency(sales[2] ?? 0)}</td>
+                            <td>{formatcurrency(sales[3] ?? 0)}</td>
+                            <td>{formatcurrency(sales[4] ?? 0)}</td>
+                        </tr>
+                    })}
                     <tr className='    !py-4 border-b border-black'>
                         <td>ACCOUNT RECEIVABLE</td>
                         <td>{formatcurrency(accountReceivable[1] ?? 0)}</td>
@@ -108,6 +116,19 @@ function Weeklyreporttable({ reportData }) {
             <div className=' flex items-center justify-end my-5 font-mono text-gray-600 text-sm '>
                 <div className="rounded-md grid grid-cols-1 border border-black p-2">
                     <nav className=' px-2 bg-gray-200 font-semibold '>MONTH SUMMARY</nav>
+                    {Boolean(Object.keys(payment_methods_summary).length) && Object.entries(payment_methods_summary).map(([Pmenthod, amount]) => {
+                        return <>
+                            <nav className=' flex gap-5 justify-between px-2 border-b border-black'>
+                                <span className=' uppercase'>
+                                    {Pmenthod}
+                                </span>
+                                <span>
+                                    {formatcurrency(amount ?? 0)}
+                                </span>
+                            </nav>
+                        </>
+                    })
+                    }
                     <nav className=' flex gap-5 justify-between px-2 border-b border-black'>
                         <span>
                             ACCOUNT RECEIVABLE

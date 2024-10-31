@@ -64,6 +64,7 @@ class IncomestatementmonthlyController extends Controller
             ->join('productsmodels', 'productsmodels.product_id', '=', 'products.id')
             ->join('saleitems', 'saleitems.productsmodel_id', '=', 'productsmodels.id')
             ->join('sales', 'sales.id', '=', 'saleitems.sale_id')
+            ->join('paymentmethods', 'sales.paymentmethod_id', '=', 'paymentmethods.id')
             ->leftjoin('refunds', 'sales.id', '=', 'refunds.sale_id')
             ->where('sales.store_id', '=', $store_id)
             ->whereDate('saleitems.created_at', '<=', $lastDate)
@@ -81,7 +82,8 @@ class IncomestatementmonthlyController extends Controller
            ,saleitems.profit as profit
            ,saleitems.is_refunded as refunded,
            refunds.previous_sale_data as refunded_products,
-           sales.sale_type as sale_type
+           sales.sale_type as sale_type,
+           paymentmethods.method as payment_method
            ")
             ->get();
 
@@ -125,6 +127,21 @@ class IncomestatementmonthlyController extends Controller
 
         $weeklyLeaseSale = array_replace_recursive([1 => 0, 2 => 0, 3 => 0, 4 => 0], $leaseSale->toArray());
 
+        
+        $withWeeklyPaymentMethodGroup = $productsales->groupBy(["payment_method", "week"])
+            ->mapWithKeys(function ($weekGroup, $paymentMethod) {
+                return [
+                    $paymentMethod => $weekGroup->map(function ($entry) {
+                        return $entry->sum("total_amount") / 100;
+                    })
+                ];
+            });
+
+        $paymentMethodSummary = $productsales->groupBy("payment_method")
+            ->map(function ($entry) {
+                return $entry->sum("total_amount") / 100;
+            });
+
 
         return ([
             'allPaidInvoicesByWeek' => $allPaidInvoicesByWeek,
@@ -133,7 +150,9 @@ class IncomestatementmonthlyController extends Controller
             'totalSale' => $paidSaleInvoicesDB->sum('total_amount') / 100,
             'totalRecievable' => $productsales->sum('total_amount') / 100,
             'leaseSale' => $weeklyLeaseSale,
-            'leaseTotal' => $leaseTotal / 100
+            'leaseTotal' => $leaseTotal / 100,
+            'payment_methods' => $withWeeklyPaymentMethodGroup,
+            'payment_methods_summary' => $paymentMethodSummary
         ]);
     }
 
@@ -194,6 +213,7 @@ class IncomestatementmonthlyController extends Controller
 
         $allApprovedExpenses = array_replace_recursive($avaliableEmptyExpense->toArray(), $allApprovedExpenses->toArray());
 
+        
 
         return (
             [

@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { getUnreadCount, getPendingCount } from "../../store/unreadCountSlice"
 import Logo from "./Logo";
 import SidebarSingleItem from "./SidebarSingleItem";
-
+import { useSwipeable } from 'react-swipeable';
 
 /**
  * @typedef {"view dashboard" | "create expense" | "authorize expense" | "manage stock data" | "generate product order" | "generate report" | "manage users" | "define system data"} AvailablePermission
@@ -196,8 +196,24 @@ export default function Sidebar() {
         return Array.from(permissionsSet);
     }
 
+    const handlers = useSwipeable({
+        onSwipedLeft: (eventData) => {
+            if (eventData.initial[0] < 80) {
+                setSidebarStateOpen({
+                    full: true,
+                    mini: sidebarStateOpen.mini
+                });
+            }
+        },
+        preventDefaultTouchmoveEvent: true, // Prevent default swipe behavior
+        trackTouch: true, // Track touch events
+    });
+
     return (
-        <div className={`h-screen  overflow-hidden   fixed  inset-0 z-50 md:z-auto md:relative md:block  !bg-white  transition-all duration-500 add-sidebar-bezier  ${sidebarStateOpen.mini ? 'w-[var(--sidebar-mini-width)]' : 'w-[var(--sidebar-width)]'}  ${sidebarStateOpen.full ? 'sidebaropened' : 'sidebarclosed'}`}>
+        <div
+            {...handlers}
+            className={`h-screen  overflow-hidden   fixed  inset-0 z-50 md:z-auto md:relative md:block  !bg-white  transition-all duration-500 add-sidebar-bezier  ${sidebarStateOpen.mini ? 'w-[var(--sidebar-mini-width)]' : 'w-[var(--sidebar-width)]'}  ${sidebarStateOpen.full ? 'sidebaropened' : 'sidebarclosed'}`}
+        >
             <AnimatePresence>
                 {sidebarStateOpen.mini
                     && isPopupVisible

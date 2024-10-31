@@ -5,6 +5,7 @@ import Api from '../../api/Api';
 import { NavLink } from 'react-router-dom';
 import { dateReformat, formatnumber } from '../../api/Util';
 import Loadingwheel from '../../components/Loaders/Loadingwheel';
+import { enqueueSnackbar } from 'notistack';
 
 const ProductsTable = ({
   data,
@@ -16,9 +17,9 @@ const ProductsTable = ({
   selectedProducts,
   setSelectedProducts
 }) => {
-  
-  const toggleSelectedByIDProduct = (id) => {
+  const [currentUrl,setCurrentUrl] = useState(null)
 
+  const toggleSelectedByIDProduct = (id) => {
     setSelectedProducts((prevSelected) => {
       if (prevSelected.includes(id)) {
         // If the ID is already selected, remove it
@@ -33,13 +34,15 @@ const ProductsTable = ({
   const fetchPaginatedData = (url) => {
     setIsLoading(true)
     Api.get(url).then(res => {
-      const { products, filters } = res.data
+      const { products, filters,full_url } = res.data
+      console.log(full_url)
+      setCurrentUrl(full_url)
       setData(products)
       setFilters(filters)
       setIsLoading(false)
     })
       .catch(err => {
-        console.log(err.response)
+        console.log(err)
       })
   }
 
@@ -58,7 +61,20 @@ const ProductsTable = ({
   const handleOnAddToStore = () => {
 
   }
-  
+
+  const handleOndeleteProduct = (id) => {
+    if (id == null) return;
+    enqueueSnackbar({message: "Removing product please wait...",variant:"default"});
+    Api.delete("/product/delete/"+id)
+    .then(res=>{
+      enqueueSnackbar({message: "Product removed successfully",variant:"success"});
+      fetchPaginatedData(currentUrl ?? "/product/all")
+    })
+    .catch(err=>{
+      enqueueSnackbar({message: "Failed to delete product",variant:"error"});
+    })
+  }
+
   return (
     <div className="flex flex-col w-full min-h-[36rem] h-max relative ">
       <div className="flex flex-col  overflow-hidden w-full">
@@ -133,7 +149,7 @@ const ProductsTable = ({
                       <td className="px-6 py-2 !text-xs flex items-center gap-2 whitespace-nowrap">
                         <Tooltip title="Edit product details" arrow TransitionComponent={Zoom}>
                           <NavLink
-                            to={"update/"+x.id}
+                            to={"update/" + x.id}
                             className=" p-1 rounded-full border border-gray-400/70 active:border-gray-400/40 text-red-900   text-sm font-semibold leading-5  hover:cursor-pointer"
                           >
                             <Icon className='' icon="mdi:database-edit-outline" fontSize={20} />
@@ -146,6 +162,13 @@ const ProductsTable = ({
                             <Icon className='' icon="material-symbols:list-alt-outline" fontSize={20} />
                           </NavLink>
                         </Tooltip>
+                        {x?.models_count == 0 && <Tooltip title="Delete Product" arrow TransitionComponent={Zoom}>
+                          <button onClick={()=>handleOndeleteProduct(x.id)}
+                            className=" p-1 rounded-full border border-red-400/70 active:red-gray-400/40  text-red-600 text-sm font-semibold leading-5  hover:cursor-pointer"
+                          >
+                            <Icon className='' icon="mi:delete" fontSize={20} />
+                          </button>
+                        </Tooltip>}
                       </td>
                     </tr>
                   )

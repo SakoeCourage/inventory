@@ -12,6 +12,7 @@ import Button from '../../../components/inputs/Button'
 import { useSnackbar } from 'notistack'
 import IconifyIcon from '../../../components/ui/IconifyIcon'
 import Productsearch from './Productsearch'
+import { AccessByPermission } from '../../authorization/AccessControl'
 
 
 const emptyListRecord = {
@@ -371,7 +372,7 @@ function NewstockcurrentItem() {
                     value={quantity.collection}
                     onChange={(e) => setQuantity(cq => cq = { ...cq, collection: e.target.value })}
                     className='w-full cost-input-coll' label={`Number of ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
-               
+
                 {basicUnit && <FormInputText
                     inputMode='numeric'
                     value={quantity.units}
@@ -381,18 +382,20 @@ function NewstockcurrentItem() {
                 }
             </nav>
 
-            <nav className='flex flex-col lg:flex-row w-full gap-2'>
-                {Incollection && <FormInputText
-                    inputMode='numeric'
-                    error={errors[`new_stock_products.${index}.cost_per_collection`]}
-                    onChange={(e) => handleChangeAtIndex('cost_per_collection', e.target.value)}
-                    className='w-full ' label={`New Cost per ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
-                {basicUnit && <FormInputText
-                    inputMode='numeric'
-                    error={errors[`new_stock_products.${index}.cost_per_unit`]}
-                    onChange={(e) => handleChangeAtIndex('cost_per_unit', e.target.value)}
-                    className='w-full' label={`New Cost per ${basicUnit ?? 'Units'}`} />}
-            </nav>
+            <AccessByPermission abilities={['define system data']}>
+                <nav className='flex flex-col lg:flex-row w-full gap-2'>
+                    {Incollection && <FormInputText
+                        inputMode='numeric'
+                        error={errors[`new_stock_products.${index}.cost_per_collection`]}
+                        onChange={(e) => handleChangeAtIndex('cost_per_collection', e.target.value)}
+                        className='w-full ' label={`New Cost per ${getCurrentModel()?.collection_type ?? 'Crate'}`} />}
+                    {basicUnit && <FormInputText
+                        inputMode='numeric'
+                        error={errors[`new_stock_products.${index}.cost_per_unit`]}
+                        onChange={(e) => handleChangeAtIndex('cost_per_unit', e.target.value)}
+                        className='w-full' label={`New Cost per ${basicUnit ?? 'Units'}`} />}
+                </nav>
+            </AccessByPermission>
         </nav >
         <nav className="grid grid-cols-2 mt-auto gap-5">
             <Button className="" onClick={() => addCurrentSelection()} {...(true ? { success: true } : { neutral: true })} text="Add To List" />

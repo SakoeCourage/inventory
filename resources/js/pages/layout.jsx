@@ -43,17 +43,6 @@ const Layout = (props) => {
               <Outlet />
             </section>
           </main>
-          {/* <div className='flex h-full'>
-            <div className=''>
-              <SideBar fullSideBar={fullSideBar} setFullSideBar={setFullSideBar} />
-            </div>
-            <div className='w-full min-h-screen overflow-hidden'>
-            
-              <div ref={outlet} id='outlet' className='w-full min-h-max h-full overflow-y-scroll pb-20  '>
-                <Outlet />
-              </div>
-            </div>
-          </div> */}
         </div>
         :
         <Navigate to='/' />

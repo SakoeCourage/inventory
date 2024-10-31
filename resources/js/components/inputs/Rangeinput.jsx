@@ -57,6 +57,7 @@ function Rangeinput(props) {
         setHasError(false)
         rangeCheck(value, node)
     }
+    
     const handleIncrease = (e) => {
         var value = Number(inputRef.current?.value ?? 0) + 1
         hanleOnChange(value, inputRef.current)
