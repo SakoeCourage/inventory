@@ -19,6 +19,14 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    private $date = null;
+
+    public function __construct(){
+
+        $this->date = Request()?->date ?? Carbon::today();
+
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -32,14 +40,15 @@ class DashboardController extends Controller
         $todays_sale_total = Sale::where([
             'store_id' => request()->user()->storePreference->store_id,
             'sale_type' => 'regular'
-        ])->whereDate('created_at', Carbon::today())->get()->sum('total_amount');
+        ])->whereDate('created_at', $this->date)->get()->sum('total_amount');
 
         $yesterdays_sale_total = Sale::where([
             'store_id' => request()->user()->storePreference->store_id,
             'sale_type' => 'regular'
-        ])->whereDate('created_at', Carbon::yesterday())->get()->sum('total_amount');
+        ])->whereDate('created_at', $yesterday = Carbon::parse($this->date)->subDay())->get()->sum('total_amount');
 
         $relative_percentage_difference = $yesterdays_sale_total ? (($todays_sale_total - $yesterdays_sale_total) / $yesterdays_sale_total) * 100 : 0;
+        
         return [
             'daily_sale' => $todays_sale_total,
             'relative_percentage' => ($relative_percentage_difference > 0 && $relative_percentage_difference <= 100) ? floor($relative_percentage_difference) : null
@@ -56,7 +65,7 @@ class DashboardController extends Controller
                 'sale_type' => 'regular'
             ]);
         })
-            ->whereDate('created_at', Carbon::today())
+            ->whereDate('created_at', $this->date)
             ->get()->sum('profit');
 
         return $sales_profits;
@@ -65,14 +74,14 @@ class DashboardController extends Controller
 
     public function getProductCycle()
     {
-        $product_in = Stockhistory::whereDate('created_at', Carbon::today())
+        $product_in = Stockhistory::whereDate('created_at', $this->date)
             ->get()
             ->map(function ($record) {
                 return collect($record->stock_products)->sum('quantity');
             })
             ->sum();
 
-        $stock_out = Productstockhistory::whereDate('created_at', Carbon::today())->where('description', '!=', 'for sale')
+        $stock_out = Productstockhistory::whereDate('created_at', $this->date)->where('description', '!=', 'for sale')
             ->where('store_id', Auth::user()->storePreference->store_id)
             ->where('action_type', StockActionEnum::Depreciate)->sum('quantity');
 
@@ -82,7 +91,7 @@ class DashboardController extends Controller
                     'store_id' => request()->user()->storePreference->store_id,
                     'sale_type' => 'regular'
                 ]);
-            })->whereDate('created_at', Carbon::today())
+            })->whereDate('created_at', $this->date)
             ->sum('quantity');
 
         return [
@@ -131,7 +140,8 @@ class DashboardController extends Controller
             'products_value' => $this->getCurrentProductsAndValue(),
             'line_chart' => $this->generateLineChart(),
             'unattended_products' => $this->getUnattendedProducts(),
-            'expenses' => $this->generateExpenseSummary()
+            'expenses' => $this->generateExpenseSummary(),
+            'date' => $this->date
         ];
     }
 
@@ -147,7 +157,7 @@ class DashboardController extends Controller
         $baseQuery = Expenses::with('author')->where('store_id', $store_id)
         ;
     
-        $todaysExpense = (clone $baseQuery)->whereDate('updated_at', '=', Carbon::now())
+        $todaysExpense = (clone $baseQuery)->whereDate('updated_at', '=', $this->date)
             ->where('status', '=', 1)
             ->get()->sum('total_amount');
     

@@ -5,6 +5,7 @@ import { Tooltip } from '@mui/material'
 import TableInitials from '../../components/ui/TableInitials'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 function ExpenseCard({ dashboardData }) {
     const navigate = useNavigate();
@@ -15,11 +16,27 @@ function ExpenseCard({ dashboardData }) {
         console.log(recent)
     }, [recent])
 
+    const today = dayjs().format('YYYY-MM-DD');
+    const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+
+    const getRelativeDay = () => {
+        if (dayjs(dashboardData?.date).format("YYYY-MM-DD") == today) {
+            return "Today's"
+        }
+
+        if (dayjs(dashboardData?.date).format("YYYY-MM-DD") == yesterday) {
+            return "Yesterday's"
+        }
+
+        return diffForHumans(dashboardData?.date)
+
+    }
+
     return (
         <div className='grow relative min-w-[30%] card h-max px-2 bg-indigo-50  border-gray-400/40  overflow-hidden rounded-md'>
             <nav className='p-5 flex flex-col gap-2 items-center'>
                 <h2 className='text-sm text-gray-500 font-semibold'>
-                    Today&apos;s Store Expense
+                    {getRelativeDay()} Store Expense
                 </h2>
                 <h6 className='text-2xl text-indigo-950/75 font-semibold'>
                     {formatcurrency(todays)}
