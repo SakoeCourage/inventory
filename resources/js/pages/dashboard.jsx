@@ -60,10 +60,12 @@ const Dashboard = () => {
 
   const fetchDashboardDataByDate = (date) => {
     if (date == null) return;
+    setIsLoading(true)
     Api.get('/dashboard/data?date=' + date)
       .then(res => {
         setDashBoardData(res.data)
         console.log(res.data)
+        setIsLoading(false)
       }).catch(err => {
         console.log(err)
       })
