@@ -84,7 +84,7 @@ const Dashboard = () => {
   return (
     <div className='h-max  relative  '>
       <nav className='bg-gray-100 p-2'>
-        <nav className='flex items-center gap-2 px-5 container mx-auto'>
+        <nav className=' hidden md:flex items-center gap-2 px-5 container mx-auto '>
           <DateButtons active={dayjs(dashboardData?.date).format("YYYY-MM-DD") == today} onClick={() => fetchDashboardDataByDate(today)} >
             Today
           </DateButtons>
