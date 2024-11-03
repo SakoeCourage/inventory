@@ -39,7 +39,7 @@ const Layout = (props) => {
           <main className={`flex flex-col w-full grow transition-none ${mini ? 'md:w-[calc(100vw-var(--sidebar-mini-width))]' : 'md:w-[calc(100vw-var(--sidebar-width))]'}`}>
             {/* Main  section header */}
             <Navbar setFullSideBar={setFullSideBar} fullSideBar={fullSideBar} />
-            <section id='outlet' className='h-[calc(100dvh-var(--header-height))] bg-lime-50/30 pb-4 overflow-y-scroll overflow-x-hidden '>
+            <section id='outlet' className='h-[calc(100dvh-var(--header-height))] bg-lime-50/30 dark:!bg-lime-50/30 pb-4 overflow-y-scroll overflow-x-hidden '>
               <Outlet />
             </section>
           </main>
