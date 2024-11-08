@@ -36,7 +36,7 @@ function Roleform({ onClose, fetchRolesData, showRoleForm }) {
   }
 
   return (
-    <div className='h-full flex flex-col w-full'>
+    <div className='h-full flex flex-col w-full '>
       <nav className="flex flex-col my-auto max-w-lg w-full mx-auto gap-5">
         <FormInputText error={errors?.name} helperText={errors?.name} value={formData.name} onChange={(e) => setFormData(cv => cv = { ...cv, name: e.target.value })} label='Role Name' />
       </nav>

@@ -34,7 +34,6 @@ const SideModal = (props) => {
                     <h5 className=''>{title}</h5>
                   }
                 </div>
-
                 {showClose &&
                   <div className="flex  justify-end p-1">
                     <IconButton onClick={onClose}>
@@ -46,7 +45,7 @@ const SideModal = (props) => {
               {showDivider &&
                 <Divider className='text-black' />
               }
-              <div className="flex-grow flex overflow-y-hidden">
+              <div className="flex-grow flex h-max overflow-y-scroll">
                 {props.children}
               </div>
             </div>
