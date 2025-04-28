@@ -8,6 +8,7 @@ use App\Models\Expenseitems;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExpenseActionEnum;
+use App\Jobs\SendNewExpenseEmail;
 
 class ExpensesController extends Controller
 {
@@ -27,36 +28,38 @@ class ExpensesController extends Controller
 
         return [
             'expenses' => Expenses::with('author:id,name')
-            ->where('store_id',$request->user()->storePreference->store_id)
-            ->filter($request->only(['filter', 'status']))
+                ->where('store_id', $request->user()->storePreference->store_id)
+                ->filter($request->only(['filter', 'status']))
                 ->latest()->paginate(10)
                 ->withQueryString(),
-            'filters' => $request->only(['status','filter']),
-            'full_url' => trim(request()->fullUrlWithQuery(request()->only(['status','filter'])))
+            'filters' => $request->only(['status', 'filter']),
+            'full_url' => trim(request()->fullUrlWithQuery(request()->only(['status', 'filter'])))
         ];
     }
 
-    public function getPendingExpenseCount(){
+    public function getPendingExpenseCount()
+    {
         return Expenses::whereCount('status', 0)
-        ->where('store_id','=',\Illuminate\Support\Facades\Auth::user()->storePreference->store_id)
-        ->get();
+            ->where('store_id', '=', \Illuminate\Support\Facades\Auth::user()->storePreference->store_id)
+            ->get();
     }
 
-    public function takeAction(Request $request,Expenses $expenses){
+    public function takeAction(Request $request, Expenses $expenses)
+    {
         $actionType = $request->action;
 
-        if($actionType){
-            if($actionType == 'approve'){
+        if ($actionType) {
+            if ($actionType == 'approve') {
                 $expenses->update([
                     'status' => 1
-                ]); 
-            }else if($actionType == 'decline'){
+                ]);
+            } else if ($actionType == 'decline') {
                 $expenses->update([
                     'status' => 2
                 ]);
             }
-           
-        }else{
+
+        } else {
             throw new \Exception('Error action type');
         }
 
@@ -76,7 +79,7 @@ class ExpensesController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
-            
+
             $newexpense = Expenses::create([
                 'description' => $request->description,
                 'total_amount' => $request->total_amount,
@@ -93,8 +96,12 @@ class ExpensesController extends Controller
                     'amount' => $expense['amount']
                 ]);
             });
-
+            $expense = Expenses::with(['author', 'store', 'expenseitems' => ['expensedefinition']])->where('id', $newexpense->id)->firstOrFail();
+            
+            dispatch(new SendNewExpenseEmail($expense));
         });
+
+        return response('new store expense submitted', 200);
     }
 
     /**
@@ -110,7 +117,7 @@ class ExpensesController extends Controller
      */
     public function show(Expenses $expenses)
     {
-        return Expenses::where('id', $expenses->id)->with(['expenseitems' => ['expensedefinition'],'author'])->firstOrFail();
+        return Expenses::where('id', $expenses->id)->with(['expenseitems' => ['expensedefinition'], 'author'])->firstOrFail();
     }
 
     /**
@@ -118,7 +125,7 @@ class ExpensesController extends Controller
      */
     public function edit(Expenses $expenses)
     {
-       
+
     }
 
     /**

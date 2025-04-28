@@ -51,7 +51,7 @@ function Paymenthistory({ paymentMethods }) {
         <div className=' max-w-6xl mx-auto bg-white min-h-[12rem] p-2 border border-gray-400/70 rounded-md'>
             <div className='flex items-center flex-col md:flex-row gap-4 justify-end my-2'>
                 {(filters?.paymentmethod || filters?.day) &&
-                    <Button onClick={() => { fetchPaymentHistory(); setFilters([]) }} text='reset filters' />
+                    <Button className='!grow md:!grow-0 w-full md:w-auto' onClick={() => { fetchPaymentHistory(); setFilters([]) }} text='reset filters' />
                 }
                  <FormInputSelect
                     label='Filter payment method'

@@ -20,6 +20,9 @@ class Expenses extends Model
     public function author(){
         return $this->belongsTo(User::class, 'user_id');
     }
+    public function store(){   
+        return $this->belongsTo(Store::class);
+    } 
     public function expenseitems(){
         return $this->hasMany(Expenseitems::class,'expense_id','id');
     }

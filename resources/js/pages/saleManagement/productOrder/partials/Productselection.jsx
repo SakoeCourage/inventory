@@ -7,11 +7,14 @@ import { formatcurrency } from '../../../../api/Util'
 import Button from '../../../../components/inputs/Button'
 import Productsearch from '../../../stockManagement/newstockpartials/Productsearch'
 import IconifyIcon from '../../../../components/ui/IconifyIcon'
+import NextProductsList from './NextProductsList'
+
 const EmptyProductData = { product_id: '', productsmodel_id: '', units: '', unit_price: '', amount: '', price_per_collection: '', collections: '' }
 
 function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowProductSearchModal, showProductSearchModal, items, checkForImproperPricing, requiredAttention }) {
     const [currentList, setCurrentList] = useState({ ...EmptyProductData })
     const [showModelError, setShowModelError] = useState(false)
+    const [selectedProductsList, setSelectedProductsList] = useState([])
 
     let getProductsModelsfromProductId = (id) => {
         return modelsFromDB.filter((data) => data?.product_id == id)
@@ -34,7 +37,16 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
         }
     }, [currentList['product_id'], currentList['productsmodel_id'], productsFromDB, modelsFromDB])
 
-
+    const handleMultiProductSelection = (data) => {
+        if (Array.isArray(data) == false) return;
+        const [first, ...rest] = data
+        setCurrentList(first)
+        if (rest?.length > 0) {
+            setSelectedProductsList(rest)
+        } else {
+            setSelectedProductsList([])
+        }
+    }
     let GetmodelfromId = (id) => {
         return modelsFromDB.find(model => model.id == id)
     }
@@ -77,7 +89,6 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     }, [currentList['price_per_collection'], currentList['collections'], currentList['units'], currentList['unit_price'], currentList['productsmodel_id']])
 
 
-
     let handleProductChange = (data) => {
         let newitems = { ...currentList };
         newitems['product_id'] = data
@@ -116,7 +127,11 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     const addToCart = () => {
         if (CartListConditions()) {
             addNewItem(currentList)
-            setCurrentList({ ...EmptyProductData })
+            if (selectedProductsList?.length > 0) {
+                handleMultiProductSelection(selectedProductsList)
+            } else {
+                setCurrentList({ ...EmptyProductData })
+            }
             setTimeout(() => {
                 scrollToLast()
             }, 200);
@@ -147,6 +162,7 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
 
     const handleOnUpdateProductSelectionFromSearch = (data) => {
         setCurrentList(data)
+        setSelectedProductsList([])
         const quantityInputs = document.querySelectorAll('.product-quantity-input')
 
         if (Boolean(quantityInputs.length)) {
@@ -155,6 +171,11 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
                 input?.focus();
             });
         }
+    }
+
+    const handleOnReset = () =>{
+        setCurrentList({ ...EmptyProductData })
+        setSelectedProductsList([])
     }
 
     useEffect(() => {
@@ -202,10 +223,13 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
     }, [currentList])
 
 
+
     return <div className='flex  max-w-4xl mx-auto gap-4 w-full p-2 pt-2 '>
         {showProductSearchModal && <div className=' fixed inset-0 bg-black/60 z-[70] isolate flex flex-col'>
             <div className=" max-w-3xl mx-auto w-full">
                 <Productsearch
+                    getMultiSelectedItems={handleMultiProductSelection}
+                    multiSelect={true}
                     setShowProductSearchModal={setShowProductSearchModal}
                     AddEmptyRecordToList={addNewItem}
                     newStockList={[currentList]}
@@ -215,51 +239,32 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
             </div>
         </div>}
         <div className='item flex w-full flex-col'>
-            <div onClick={() => setShowProductSearchModal(true)}   class="flex rounded-full cursor-pointer bg-gray-300 overflow-hidden px-2 w-full max-w-[600px] my-2 focus:ring-1 focus-within:ring-1 ring-info-800">
+            <div onClick={() => setShowProductSearchModal(true)} class="flex rounded-full cursor-pointer bg-orange-100 overflow-hidden px-2 w-full max-w-[600px] my-2 focus:ring-1 focus-within:ring-1 ring-info-800">
                 <button class="self-center flex text-white p-1 cursor-pointer ">
-                    <kbd class="pointer-events-none bg-info-900/50 text-white rounded-full  select-none items-center gap-1 whitespace-nowrap py-2 px-3 border border-gray-300 bg-muted  font-mono text-[10px] font-medium opacity-100 sm:flex">
+                    <kbd class="pointer-events-none bg-orange-900/50 text-white rounded-full  select-none items-center gap-1 whitespace-nowrap py-2 px-3 border border-orange-300 bg-muted  font-mono text-[10px] font-medium opacity-100 sm:flex">
                         <span class="text-xs">⌘</span>Ctrl + F
                     </kbd>
                 </button>
                 <nav className='w-full my-auto bg-gray-300 flex bg-transparent pl-2 text-gray-600 outline-0'>
                     Click to search product
                 </nav>
-                <button type="submit" class="relative p-2 bg-gray-300 rounded-full">
+                <button type="submit" class="relative p-2 bg-transparent rounded-full">
                     <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-
                         <g id="SVGRepo_bgCarrier" stroke-width="0" />
 
                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
 
                         <g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /> </g>
-
                     </svg>
                 </button>
             </div>
-      
-            <nav className=' bg-gray-100 px-2 rounded-md shadow-md border'>
-                <nav className='flex items-start flex-col gap-2  py-5'>
-                    <nav className=' text-base text-gray-500 font-bold flex pb-2 border-b min-w-full border-gray-300'>
-                        <p className=' text-lg'>Current Product</p>
-                        <nav className='flex ml-auto items-center justify-end text-xs text-blue-950/65  bg-red-50/20 py-2'>
-                            <nav className='flex items-center gap-3'>
-                                <span>Amount :</span>
-                                <span>{formatcurrency(calculateAmount)}</span>
-                            </nav>
-                        </nav>
-                    </nav>
-                    <nav className=' text-lg text-gray-600  '>{getCurrentProductInformation?.product ?
-                        <nav className='flex '>
-                            <span className=' font-bold pr-2'> {getCurrentProductInformation?.product}  </span>
-                            <span className='font-medium pl-2'>
-                                {getCurrentProductInformation?.model}
-                            </span>
-                        </nav>
-                        : 'N/A'}</nav>
-                </nav>
-                <nav />
-            </nav>
-            <nav className='flex flex-col lg:flex-row gap-4 mt-4'>
+            <NextProductsList
+                productsList={selectedProductsList}
+                cProduct={getCurrentProductInformation?.product}
+                cProductModel={getCurrentProductInformation?.model}
+                cProductTotalAmount={calculateAmount}
+            />
+            <nav className={`flex flex-col lg:flex-row gap-4 mt-4 ${getCurrentProductInformation?.product ? 'opacity-100' : 'opacity-0'}`}>
                 {currentList['productsmodel_id'] && checkIfInCollection(currentList['productsmodel_id']) &&
                     <FormInputText autocomplete="off"
                         value={Boolean(currentList['collections']) && currentList['collections']}
@@ -284,9 +289,9 @@ function Productselection({ modelsFromDB, productsFromDB, addNewItem, setShowPro
                     }} className="w-full product-quantity-input qty-input-unit" label={currentList['product_id'] ? `Number of ${getBasicQuantity(currentList['product_id'])}` : 'Number of Units'} />
             </nav>
 
-            <nav className="grid grid-cols-2 mt-2 gap-5">
+            <nav className={`grid grid-cols-2 mt-2 gap-5 ${getCurrentProductInformation?.product ? 'opacity-100' : 'opacity-0'}`}>
                 <Button className="" onClick={() => addToCart()} {...((CartListConditions()) ? { success: true } : { neutral: true })} text="Add to Cart" />
-                <Button alert className="" onClick={() => setCurrentList({ ...EmptyProductData })} text="Reset" />
+                <Button alert className="" onClick={handleOnReset} text="Reset" />
             </nav>
         </div>
     </div>

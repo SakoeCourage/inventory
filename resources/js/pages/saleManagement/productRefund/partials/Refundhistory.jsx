@@ -51,7 +51,7 @@ function Refundhistory() {
       {isLoading && <Loadingwheel />}
       <div className='flex items-center gap-4 justify-end my-2'>
         {(filters?.date) &&
-          <Button onClick={() => { fetchStoreHistory(); setFilters([]) }} text='reset filters' />
+          <Button className='!grow md:!grow-0 w-full md:w-auto' onClick={() => { fetchStoreHistory(); setFilters([]) }} text='reset filters' />
         }
 
         <FormInputDate

@@ -61,11 +61,7 @@ function Changecredentials({ userData, setComponent }) {
     return (
         <div className=''>
             {isLoading && <Loadingwheel />}
-            <Tooltip title="Back to profile">
-                <button onClick={() => setComponent('Profile')} className=' shadow border-b border-dotted border-gray-300 flex items-center gap-1 bg-info-100/50 text-info-900 p-2 rounded-md border w-max text-sm '>
-                    <Icon className=' text-gray-500' fontSize={20} icon="typcn:arrow-back-outline" />Return back to profile
-                </button>
-            </Tooltip>
+    
             <div className='bg-gray-50/40 border border-gray-400/70  rounded-md w-full mt-2   grid grid-cols-1 md:grid-cols-2'>
                 <nav className=' hidden md:flex items-center justify-center border-r bg-gray-200/40 '>
                     <nav className='  '>

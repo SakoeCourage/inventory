@@ -102,7 +102,7 @@ function Proformalist({ invoices, setInvoices, setCurrentComponent }) {
 
       <div className='flex items-center flex-col md:flex-row gap-4 justify-end my-2'>
         {(filters?.day || filters?.search) &&
-          <Button onClick={() => { fetchProformaData(); setFilters([]) }} text='reset filters' />
+          <Button className='!grow md:!grow-0 w-full md:w-auto' onClick={() => { fetchProformaData(); setFilters([]) }} text='reset filters' />
         }
         <FormInputsearch
           processing={processing}

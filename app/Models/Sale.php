@@ -86,4 +86,8 @@ class Sale extends Model
         return $this->hasMany(LeasePaymentHistory::class);
     }
 
+    public function store(){   
+        return $this->belongsTo(Store::class);
+    } 
+
 }

@@ -92,7 +92,7 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
       </SideModal>}
       <div className='flex flex-col md:flex-row items-center gap-4 justify-end my-2'>
         {(filters?.day || filters?.search) &&
-          <Button onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
+          <Button className='!grow md:!grow-0 w-full md:w-auto' onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
         }
         <FormInputsearch
           processing={processing}
@@ -154,14 +154,14 @@ function Salehistory({ sales, setSales, filters, setFilters }) {
                   <td className="px-6 py-2 !text-xs whitespace-nowrap">
                     <div className="flex items-center">
                       <h6 className="mb-0  ">
-                        {x.customer_name}
+                        {x.customer_name ?? "N/A"}
                       </h6>
                     </div>
                   </td>
                   <td className="px-6 py-2 !text-xs whitespace-nowrap">
                     <div className="flex items-center">
                       <h6 className="mb-0  ">
-                        {x.customer_contact}
+                        {x.customer_contact ?? "N/A"}
                       </h6>
                     </div>
                   </td>

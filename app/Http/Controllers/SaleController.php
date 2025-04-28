@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SaleEnum;
+use App\Jobs\SendInvoiceEmailJob;
 use App\Models\LeasePaymentHistory;
 use App\Models\Sale;
 use App\Models\Saleitem;
@@ -32,7 +33,7 @@ class SaleController extends Controller
                 ->latest()
                 ->paginate(10),
             'filters' => request()->only('search', 'day'),
-            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day')))
+            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'day','sale_type')))
         ];
     }
 
@@ -52,14 +53,13 @@ class SaleController extends Controller
      */
     public function showinvoice($invoiceID)
     {
-        $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $invoiceID)->firstOrFail();
-        $currentStore = Auth()->user()?->storePreference;
+        $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod','store'=>['branch']])->where('id', $invoiceID)->firstOrFail();
         return response([
             ...$newdata->toArray(),
             'business_profile' => Businessprofile::get()->first(),
             'store' => [
-                'name' => $currentStore?->store->store_name,
-                'branch' => $currentStore?->store?->branch?->branch_name
+                'name' => $newdata->store->store_name,
+                'branch' => $newdata?->store?->branch?->branch_name
             ],
         ], 200);
     }
@@ -171,10 +171,7 @@ class SaleController extends Controller
                 $productStockService->decreasestock((Object) $value);
             }
 
-            if ($request->sale_type == \App\Enums\SaleEnum::Regular->value || $request->sale_type == \App\Enums\SaleEnum::UnCollected->value) {
-                PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
-            }
-
+            
             if ($request->sale_type == "lease") {
                 $newLeaseHistory = LeasePaymentHistory::create([
                     'sale_id' => $newSale->id,
@@ -183,16 +180,27 @@ class SaleController extends Controller
                     'paymentmethod_id' => $request->payment_method ?? null
                 ]);
             }
-
+            
             if ($request->sale_type == "un_collected") {
-
+                
             }
 
-            $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity'], 'collectionType']], 'salerepresentative', 'paymentmethod'])->where('id', $newSale->id)->firstOrFail();
+            if ($request->sale_type == \App\Enums\SaleEnum::Regular->value || $request->sale_type == \App\Enums\SaleEnum::UnCollected->value) {
+                PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
+                
+                $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity','category'], 'collectionType']], 'salerepresentative', 'paymentmethod','store'=>['branch']])->where('id', $newSale->id)->firstOrFail();
+                dispatch(new SendInvoiceEmailJob($newdata));
+            }
+           
         });
         return [
             ...$productController->productAndModelsJoin($request),
-            'newsale' => [...$newdata->toArray(), 'business_profile' => Businessprofile::get()->first()]
+            'newsale' => [...$newdata?->toArray(), 'business_profile' => Businessprofile::get()->first(),
+            'store' => [
+                'name' => $newdata?->store->store_name,
+                'branch' => $newdata?->store?->branch?->branch_name
+            ],
+            ]
         ];
     }
 
@@ -215,7 +223,6 @@ class SaleController extends Controller
                     'basic_selling_quantity' => Productsmodels::find($value->productsmodel_id)->basicQuantity()->symbol,
                     'quantity' => $value->quantity,
                     'is_refunded' => $value->is_refunded
-
                 ];
             })
         ];

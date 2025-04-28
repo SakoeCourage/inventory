@@ -126,7 +126,7 @@ function UncollectedSale({ sales, setSales, filters, setFilters }) {
             </SideModal>}
             <div className='flex flex-col md:flex-row items-center gap-4 justify-end my-2'>
                 {(filters?.day || filters?.search) &&
-                    <Button onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
+                    <Button className='!grow md:!grow-0 w-full md:w-auto' onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
                 }
                 <FormInputsearch
                     processing={processing}

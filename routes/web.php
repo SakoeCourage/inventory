@@ -9,7 +9,13 @@ use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Exports\ProductCategoryExport;
-
+use App\Jobs\SendInvoiceEmailJob;
+use App\Mail\NewInvoiceEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Concurrency;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
+use function Illuminate\Support\defer;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,99 +29,21 @@ use App\Exports\ProductCategoryExport;
 
 
 
-use Illuminate\Support\Facades\DB;
 
-// function getProducts($storeId = 3, $search = null, $category = null, $minCurrentBasicQuantity = 0, $minCurrentCollectionQuantity = 0, $maxCurrentBasicQuantity = 400, $maxCurrentCollectionQuantity = 400, $perPage = 20)
-// {
-//     $searchQuery = $search ? '%' . $search . '%' : '%';
-//     $categoryQuery = $category ? '%' . $category . '%' : '%';
+Route::get("/view-template", function () {
+    return view('email-templates.new-sale-invoice');
+});
+Route::get("/view-template/new-invoice/{saleid}", function (Request $request) {
+    $newdata = \App\Models\Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity','category'], 'collectionType']], 'salerepresentative', 'paymentmethod','store'=>['branch']])->where('id', $request->saleid)->firstOrFail();
+    return view('email-templates.new-sale-invoice', with(['sale' => $newdata]));
+});
+Route::get("/view-template/new-expense/{expenseid}", function (Request $request) {
+    $newdata = \App\Models\Expenses::with(['author','store','expenseitems' => ['expensedefinition']])->where('id', $request->expenseid)->firstOrFail();
 
-//     $query="
-//         SELECT 
-//             sp.id,
-//             sp.updated_at,
-//             p.product_name,
-//             sp.quantity_in_stock,
-//             sp.productsmodel_id,
-//             pm.model_name,
-//             bsq.symbol AS basic_quantity,
-//             c.category AS category_name,
-//             pm.in_collection,
-//             ct.type AS collection_type,
-//             pm.quantity_per_collection AS units_per_collection,
-//             sp.quantity_in_stock AS quantity,
-//             CASE 
-//                 WHEN pm.in_collection THEN FLOOR(sp.quantity_in_stock / pm.quantity_per_collection)
-//                 ELSE NULL
-//             END AS current_collection_quantity,
-//             CASE 
-//                 WHEN pm.in_collection THEN sp.quantity_in_stock % pm.quantity_per_collection
-//                 ELSE sp.quantity_in_stock
-//             END AS current_basic_quantity
-//         FROM 
-//             store_products sp
-//         JOIN 
-//             productsmodels pm ON sp.productsmodel_id = pm.id
-//         JOIN 
-//             products p ON pm.product_id = p.id
-//         LEFT JOIN 
-//             basic_selling_quantities bsq ON p.basic_selling_quantity_id = bsq.id
-//         LEFT JOIN 
-//             categories c ON p.category_id = c.id
-//         LEFT JOIN 
-//             collection_types ct ON pm.collection_method = ct.id
-//         WHERE 
-//             sp.store_id = :storeId
-//         AND (
-//             p.product_name LIKE :searchQuery OR 
-//             c.category LIKE :categoryQuery
-//         )
-//     ";
-
-//     $bindings = [
-//         'storeId' => $storeId,
-//         'searchQuery' => $searchQuery,
-//         'categoryQuery' => $categoryQuery
-//     ];
-
-//     if ($minCurrentBasicQuantity !== null) {
-//         $query .= " AND ((pm.in_collection = 0 AND sp.quantity_in_stock >= :minCurrentBasicQuantity) OR (pm.in_collection = 1 AND (sp.quantity_in_stock % pm.quantity_per_collection) >= :minCurrentBasicQuantityCol))";
-//         $bindings['minCurrentBasicQuantity'] = $minCurrentBasicQuantity;
-//         $bindings['minCurrentBasicQuantityCol'] = $minCurrentBasicQuantity;
-//     }
-//     if ($minCurrentCollectionQuantity !== null) {
-//         $query .= " AND (pm.in_collection = 0 OR (FLOOR(sp.quantity_in_stock / pm.quantity_per_collection) >= :minCurrentCollectionQuantity))";
-//         $bindings['minCurrentCollectionQuantity'] = $minCurrentCollectionQuantity;
-//     }
-//     if ($maxCurrentBasicQuantity !== null) {
-//         $query .= " AND ((pm.in_collection = 0 AND sp.quantity_in_stock <= :maxCurrentBasicQuantity) OR (pm.in_collection = 1 AND (sp.quantity_in_stock % pm.quantity_per_collection) <= :maxCurrentBasicQuantityCol))";
-//         $bindings['maxCurrentBasicQuantity'] = $maxCurrentBasicQuantity;
-//         $bindings['maxCurrentBasicQuantityCol'] = $maxCurrentBasicQuantity;
-//     }
-//     if ($maxCurrentCollectionQuantity !== null) {
-//         $query .= " AND (pm.in_collection = 0 OR (FLOOR(sp.quantity_in_stock / pm.quantity_per_collection) <= :maxCurrentCollectionQuantity))";
-//         $bindings['maxCurrentCollectionQuantity'] = $maxCurrentCollectionQuantity;
-//     }
-
-//     $currentPage = LengthAwarePaginator::resolveCurrentPage();
-
-//     $results = DB::select($query, $bindings);
-
-//     $paginator = new LengthAwarePaginator(
-//         array_slice($results, ($currentPage - 1) * $perPage, $perPage),
-//         count($results),
-//         $perPage,
-//         $currentPage,
-//         ['path' => LengthAwarePaginator::resolveCurrentPath()]
-//     );
-
-//     return $paginator;
-// }
-
-Route::get("/test-lsp", function () {
-    dd(getProducts());
+    return view('email-templates.new-expense', with(['expense' => $newdata]));
 });
 
+Route::get('/view-original  ', fn()=> view('components.original'));
 
 Route::get('/test/print-receipt', [PrintController::class, 'handleNewTestPrint']);
 
@@ -125,6 +53,22 @@ Route::get("/all-quantity-to-stock-template", function (Request $request) {
 ;
 
 
+Route::get('/test-email', function () {
+   
+
+    Mail::raw('This is the plain text body.', function ($message) {
+        $message->to('sTJpX@example.com')
+                ->subject('Plain Text Subject');
+    });
+    
+    
+    ;
+    return "sent";
+});
+
+
 Route::get('/{any}', function () {
     return view('index');
 })->where("any", ".*");
+
+

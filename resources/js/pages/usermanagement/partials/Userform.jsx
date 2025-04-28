@@ -102,7 +102,7 @@ function Userform({ showUserForm, onClose, roles, fetchUsersData }) {
 
 
     return (
-        <div className='h-full flex flex-col  w-full overflow-y-scroll relative '>
+        <div className='h-full flex flex-col p-2 md:p-0  w-full overflow-y-scroll relative '>
             {isLoading || isLoadingStores ? <div className=' bg-white absolute inset-0 flex items-center justify-center'>
                 <Loadingspinner />
             </div> : <>
@@ -138,7 +138,7 @@ function Userform({ showUserForm, onClose, roles, fetchUsersData }) {
 
                         className="w-full" options={roles ? [...roles.map((role) => { return { name: role.name, value: role.name } })] : []} error={errors?.role} helperText={errors?.role} value={formData.role} onChange={(e) => setFormData(cv => cv = { ...cv, role: e.target.value })} label='User Role' />
                 </nav>
-                <nav className='flex items-center mt-auto w-full p-2'>
+                <nav className='flex items-center gap-1 mt-auto w-full p-2'>
                     <Button onClick={() => onClose()} otherClasses="grow" text="cancel" neutral />
                     <Button onClick={() => handleSubmit()} otherClasses="grow" text="save" info />
                 </nav>

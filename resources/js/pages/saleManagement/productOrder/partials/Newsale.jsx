@@ -15,6 +15,7 @@ import Itemscheckout from './Itemscheckout'
 import Wrapable from '../../../../components/layout/Wrappable'
 import Payoutsection from './Payoutsection'
 import { PrintPrevewContext } from '..'
+import IconifyIcon from '../../../../components/ui/IconifyIcon'
 
 function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsAndModels, setProductsFromDB, setModelsFromDB }) {
     const initial_sale = { ...ini_sale }
@@ -40,6 +41,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
     }
 
     const handleOnsucess = (data, message = "New sale recorded") => {
+        console.log(data)
         if (data) {
             const { products, models, newsale } = data
             setInvoiceData({
@@ -117,7 +119,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
             return updatedFormData;
         });
     }
-    
+
     const handleProforma = () => {
         setProcessingProforma(true)
         Api.post('/proforma/new', formData).then(res => {
@@ -227,7 +229,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
 
 
     return (
-        <div className=' max-w-7xl  mx-auto'>
+        <div className=' max-w-7xl h-full p-1 md:p-0  mx-auto'>
 
             {/* popup on out of stock */}
             {Boolean(outOfStockProducts.length) && <nav className=' bg-black/30 fixed inset-0 z-50 flex items-end'>
@@ -242,8 +244,8 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                 </AnimatePresence>
             </nav>}
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-full'>
-                <div className='flex flex-col gap-2 h-full w-full'>
+            <div className='flex flex-col md:grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-full h-full'>
+                <div className='flex flex-col gap-2 order-2 md:order-none h-full w-full'>
                     <Customerinformation errors={errors} formData={formData} setFormData={setFormData} />
                     <Productsection
                         setShowProductSearchModal={setShowProductSearchModal}
@@ -255,10 +257,59 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                         items={items}
                         errors={errors}
                         setItems={setItems}
+
                     />
+                    <nav>
+                        <Payoutsection
+                            formData={formData}
+                            saleDiscount={saleDiscount}
+                            errors={errors}
+                            setFormData={setFormData}
+                            paymentMethods={paymentMethods}
+                            getBalance={getBalance}
+                        />
+                    </nav>
+                    <nav className=' bg-white/50 shadow border border-gray-300 rounded-md my p-2 px-5 grid grid-cols-2  w-full md:flex items-center md:gap-10'>
+                        <button disabled={processing} onClick={() => handleOnRegularCheckOut()} info className='group  p-2 flex flex-col gap-1 items-center justify-center'>
+                            <nav
+                                className="border rounded-full text-indigo-500 bg-indigo-100  group-hover:bg-indigo-500 group-hover:text-white border-indigo-500 h-max w-max p-5  aspect-square disabled:cursor-not-allowed font-bold hover:border-indigo-400   duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center "
+                            >
+                                <IconifyIcon fontSize='2.5rem' className='!h-8 !w-8 md:!h-12 md:!w-12 !p-0' icon='ic:outline-shopping-cart-checkout' />
+                            </nav>
+                            <h7 className='text-xs text-indigo-400 whitespace-nowrap'>Check Out</h7>
+                        </button>
+
+                        <button disabled={processingProforma} onClick={() => handleProforma()} info className='group  p-2 flex flex-col gap-1 items-center justify-center'>
+                            <nav
+                                className="border rounded-full text-purple-500 h-max bg-purple-100 group-hover:bg-purple-500 group-hover:text-white border-purple-500  w-max p-5 aspect-square disabled:cursor-not-allowed font-bold hover:border-purple-400   duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center "
+                            >
+                                <IconifyIcon fontSize='2.5rem' className='!h-8 !w-8 md:!h-12 md:!w-12 !p-0' icon='mdi:file-document-check-outline' />
+                            </nav>
+                            <h7 className='text-xs text-purple-400 whitespace-nowrap'>Create Proforma</h7>
+                        </button>
+
+                        <button disabled={processing} onClick={() => handleOnLeaseCheckOut()} info className='group  p-2 flex flex-col gap-1 items-center justify-center'>
+                            <nav
+                                className="border rounded-full text-rose-500 h-max bg-rose-100  group-hover:bg-rose-500 group-hover:text-white border-rose-500  w-max p-5  aspect-square disabled:cursor-not-allowed font-bold hover:border-rose-400   duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center "
+                            >
+                                <IconifyIcon fontSize='2.5rem' className='!h-8 !w-8 md:!h-12 md:!w-12 !p-0' icon='tabler:shopping-cart-minus' />
+                            </nav>
+                            <h7 className='text-xs text-rose-400 whitespace-nowrap'>Credit Sale</h7>
+                        </button>
+
+                        <button disabled={processing} processing={processingLeaseSale} onClick={() => handleUnCollectedSale()} info className='group  p-2 flex flex-col gap-1 items-center justify-center'>
+                            <nav
+                                className="border rounded-full text-red-500 h-max bg-red-100  group-hover:bg-red-500 group-hover:text-white border-red-500  w-max p-5  aspect-square disabled:cursor-not-allowed font-bold hover:border-red-400   duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center "
+                            >
+                                <IconifyIcon fontSize='2.5rem' className='!h-8 !w-8 md:!h-12 md:!w-12 !p-0' icon='tabler:shopping-cart-pause' />
+                            </nav>
+                            <h7 className='text-xs text-red-400 whitespace-nowrap'>Uncollected Sale</h7>
+                        </button>
+
+                    </nav>
                 </div>
-                <Wrapable title={"Customer Cart " + Boolean(items.length) && ` Cart Items (${items.length}) `} asmodal={true} className={'w-full'}>
-                    <div className='  w-full bg-white border border-gray-400/70 rounded-md pb-5 '>
+                <Wrapable title={"Customer Cart " + Boolean(items.length) && ` Cart Items (${items.length}) `} asmodal={true} className={'w-full h-full order-1 sm:order-2'}>
+                    <div className='h-full bg-white  w-full border border-gray-400/70 rounded-md pb-5 '>
                         <Itemscheckout
                             productsFromDB={productsFromDB}
                             modelsFromDB={modelsFromDB}
@@ -276,55 +327,9 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                     </div>
                 </Wrapable>
             </div>
-            <nav>
-                <Payoutsection
-                    formData={formData}
-                    saleDiscount={saleDiscount}
-                    errors={errors}
-                    setFormData={setFormData}
-                    paymentMethods={paymentMethods}
-                    getBalance={getBalance}
-                />
-            </nav>
-
-            <nav className='
-           bg-gray-50 shadow border border-gray-300 rounded-md my p-2  w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5'>
-                <button disabled={processing} onClick={() => handleOnRegularCheckOut()} info
-                    className="bg-indigo-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-indigo-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
-                >
-                    <nav>Check Out</nav>
-                    <nav>
-                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                    </nav>
-                </button>
-
-                <button disabled={processingProforma} onClick={() => handleProforma()}
-                    className="bg-purple-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-purple-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
-                >
-                    <nav>  Create Proforma</nav>
-                    <nav>
-                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                    </nav>
-                </button>
-                <button disabled={processing} onClick={() => handleOnLeaseCheckOut()}
-                    className="bg-rose-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-rose-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
-                >
-                    <nav>     Credit Sale</nav>
-                    <nav>
-                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                    </nav>
-                </button>
-                <button disabled={processing} processing={processingLeaseSale} onClick={() => handleUnCollectedSale()}
-                    className="bg-red-500 h-max w-full rounded-lg disabled:cursor-not-allowed text-white font-bold hover:bg-red-400 p-3  duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center gap-3 "
-                >
-                    <nav>Uncollected Sale</nav>
-                    <nav>
-                        <kbd class="pointer-events-none w-max inline-block  mx-auto h-5 select-none items-center gap-1 rounded border border-gray-300 bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"><span class="text-xs">⌘</span>Ctrl + S</kbd>
-                    </nav>
-                </button>
 
 
-            </nav>
+
         </div >
     )
 }

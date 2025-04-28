@@ -18,9 +18,28 @@ class StockhistoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Stockhistory $sale, Request $request)
     {
-        //
+        return [
+            'stock_history' => $sale->with('supplier')->where([
+                'store_id' => $request->user()->storePreference->store_id,
+            ])->filter(request()->only('search', 'record_date', 'supplier'))
+                ->whereHas('supplier')
+                ->orderBy('record_date', 'desc')
+                ->paginate(10)
+                ->through(function ($stockhistory) {
+                    return [
+                        'id' => $stockhistory->id,
+                        'created_at' => $stockhistory->created_at,
+                        'record_date' => $stockhistory->record_date,
+                        'purchase_invoice_number' => $stockhistory->purchase_invoice_number,
+                        'supplier' => $stockhistory->supplier->supplier_name,
+                    ];
+                })
+            ,
+            'filters' => request()->only('search', 'record_date', 'supplier'),
+            'full_url' => trim($request->fullUrlWithQuery(request()->only('search', 'record_date', 'supplier')))
+        ];
     }
 
     /**
@@ -53,7 +72,7 @@ class StockhistoryController extends Controller
 
         DB::transaction(function () use ($request, $productStockService) {
             $currentSupplierName = Supplier::find($request->supplier)->supplier_name;
-            
+
             /**
              * increase the stock values using the productstockservice
              * foreach one of the products add to productsupplier table the suppplier id and the product model_id
@@ -67,6 +86,7 @@ class StockhistoryController extends Controller
                 'purchase_invoice_number' => $request->purchase_invoice_number,
                 'store_id' => $request->user()->storePreference->store_id
             ]);
+
             foreach ($request->new_stock_products as $newStock) {
                 //finding modelof product form currnet stock line item
                 $currentmodel = Productsmodels::find($newStock['model_id']);
@@ -107,12 +127,73 @@ class StockhistoryController extends Controller
         return $pc->productAndModelsJoin($request);
     }
 
+
+    /**
+     * @param array $data 
+     */
+    private function parseStockHistoryData($data)
+    {
+        if (empty($data)) {
+            return [];
+        }
+
+        $col = collect($data);
+        $model_ids = $col->pluck('model_id')->unique();
+        $products_model = Productsmodels::whereIn('id', $model_ids)->with(['product' => ['basicQuantity'], 'collectionType'])->get();
+
+        $parsed_products = $col->map(function ($item) use ($products_model) {
+            $qpc = $products_model->where('id', $item['model_id'])?->first()?->quantity_per_collection;
+            $total_amount = 0;
+
+            if ((bool) $item['in_collection']) {
+                $total_amount = (floor($item['quantity'] / $qpc) * $item['cost_per_collection']) + (($item['quantity'] % $qpc) * $item['cost_per_unit']);
+            } else {
+                $total_amount = $item['quantity'] * $item['cost_per_unit'];
+            }
+            $model = $products_model->where('id', $item['model_id'])->first();
+
+            return [
+                'product_id' => $item['product_id'],
+                'collection_method' => $model?->collectionType?->type,
+                'model_id' => $item['model_id'],
+                'model_name' => $model->model_name,
+                'product_details' => $model->product,
+                'quantity' => $item['quantity'],
+                'cost_per_unit' => $item['cost_per_unit'],
+                'cost_per_collection' => $item['cost_per_collection'],
+                'in_collection' => $item['in_collection'],
+                'quantity_per_collection' => $qpc,
+                'total_amount' => $total_amount
+            ];
+        });
+
+        return [
+            'model_details' => $parsed_products,
+            'total_invoice_amount' => $parsed_products->sum('total_amount')
+        ];
+    }
+
     /**
      * Display the specified resource.
      */
-    public function show(Stockhistory $stockhistory)
+    public function show($id)
     {
-        //
+
+        $stockHistory = Stockhistory::with('supplier')
+            ->where('id', $id)
+            ->where('store_id', auth()->user()->storePreference->store_id)
+            ->get()->first();
+
+        // return $stockHistory;
+        return response(
+            [
+                'record_date' => $stockHistory->record_date,
+                'supplier' => $stockHistory->supplier->supplier_name,
+                'purchase_invoice_number' => $stockHistory->purchase_invoice_number,
+                'stock_data' => $this->parseStockHistoryData($stockHistory->stock_products)
+            ],
+            200
+        );
     }
 
     /**

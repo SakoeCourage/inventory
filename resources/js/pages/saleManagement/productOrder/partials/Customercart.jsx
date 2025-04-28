@@ -43,7 +43,7 @@ function Customercart({ productsFromDB, modelsFromDB, formData, setFormData, ite
     return (
         <div className='h-[30rem] overflow-y-scroll hiddenscroll'>
             {Boolean(items.length) && <div id='lineitemsContainer' className=' w-full '>
-                <nav className='w-full text-gray-500 grid grid-cols-8 gap-1 sticky top-0 bg-white z-20  font-medium py-1 border-b'>
+                <nav className='w-full text-gray-500 grid grid-cols-8 gap-1 sticky top-0 bg-orange-50/50 z-20  font-medium py-1 border-b'>
                     <nav className=' flex items-center ml-3 justify-start col-span-2'>Product</nav>
                     <nav className=' flex items-center justify-center col-span-3'>Quantity</nav>
                     <nav className='flex items-center justify-center col-span-2'>Amount</nav>

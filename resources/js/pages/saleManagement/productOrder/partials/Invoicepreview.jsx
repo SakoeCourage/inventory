@@ -91,6 +91,12 @@ const Invoicepreview = forwardRef(({ invoiceData }, ref) => {
                         <span>{formatcurrency(amount_paid)}</span>
                     </nav>
                 </nav>}
+               <nav className='flex items-center justify-start text-gray-700 font-semibold'>
+                    <nav className='flex items-center gap-2'>
+                        <span className='text-sm capitalize'>Balance:</span>
+                        <span>{formatcurrency(balance)}</span>
+                    </nav>
+                </nav>
                 {invoiceData?.type != "PROFORMA INVOICE" && <nav className=' text-center text-xs py-2 border-dashed border-t border-gray-800'>
                     Thank You for your purchase!
                 </nav>}

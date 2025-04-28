@@ -9,6 +9,7 @@ import { getUser, getAuth } from '../../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Loadingwheel from '../Loaders/Loadingwheel';
 import Cookies from 'js-cookie';
+import { useLocation } from 'react-router-dom';
 
 
 const getTime = () => {
@@ -29,6 +30,7 @@ export function LoginFormInput(props) {
   const [type, ChangeType] = useState(props?.type ?? '')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(null)
+
 
   useEffect(() => {
     showPassword ? ChangeType('text') : ChangeType(props?.type)
@@ -70,6 +72,8 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -77,7 +81,7 @@ const LoginForm = () => {
     User.login(formValues)
       .then(res => {
         Cookies.set('BearerToken', res.data?.token)
-        dispatch(getUser())
+        window.location.href = queryParams.get('callbackUrl') ?? '/dashboard'
       })
       .catch(err => {
         console.log(err)

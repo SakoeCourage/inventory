@@ -33,6 +33,7 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
   const [makeLeasePayment, setMakeLeasePayment] = useState(null)
 
   const fetchSalesData = (url) => {
+    console.log(url)
     setIsLoading(true)
     Api.get(url ?? '/sale/all?sale_type=lease').then(res => {
       const { sales, filters, full_url } = res.data
@@ -58,6 +59,7 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
   };
+
   useEffect(() => {
     fetchSalesData()
   }, [])
@@ -93,30 +95,26 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
   const handleOnMakeLeasePayment = (item) => {
     if (item == null) return;
     setMakeLeasePayment(item);
-    // enqueueSnackbar('Marking Lease As Settled', { variant: 'default', key: 'leaseSettledStatus' })
-    // Api.get(`lease/mark-as-settled/${saleId}`)
-    //   .then(res => {
-    //     closeSnackbar('leaseSettledStatus')
-    //     enqueueSnackbar('Sale Marked As Settled', { variant: "success" })
-    //     fetchSalesData();
-    //   })
-    //   .catch(err => {
-    //     enqueueSnackbar('Failed to Settle invoice', { variant: 'error' })
-    //   })
+
   }
 
 
   return (
     <div className=' max-w-6xl mx-auto bg-white min-h-[12rem] p-2 border border-gray-400/70 rounded-md'>
-      {showSaleById.id && showSaleById.title && <SideModal onClose={() => setShowSaleById({ id: null, title: null })} showClose title={showSaleById.title} showDivider={true} open={true} maxWidth='2xl'>
+      {showSaleById.id && showSaleById.title && <SideModal onClose={() => {
+        setShowSaleById({ id: null, title: null });
+
+      }} showClose title={showSaleById.title} showDivider={true} open={true} maxWidth='2xl'>
         <Viewsaleitem saleId={showSaleById?.id} setShowSaleById={setShowSaleById} />
       </SideModal>}
-      <Modal open={makeLeasePayment?.id != null} hideCloseIcon={false} hideDivider={true} onClose={() => setMakeLeasePayment(null)} label="Credit Sale Payment">
+      <Modal open={makeLeasePayment?.id != null} hideCloseIcon={false} hideDivider={true}
+        onClose={() => { setMakeLeasePayment(null); fetchSalesData(fullUriWithQuery); }}
+        label="Credit Sale Payment">
         <CreaditSalePayment sale={makeLeasePayment} />
       </Modal>
       <div className='flex flex-col md:flex-row items-center gap-4 justify-end my-2'>
         {(filters?.day || filters?.search) &&
-          <Button onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
+          <Button className='!grow md:!grow-0 w-full md:w-auto' onClick={() => { fetchSalesData(); setFilters([]) }} text='reset filters' />
         }
         <FormInputsearch
           processing={processing}
@@ -181,14 +179,14 @@ function LeaeSaleHistory({ sales, setSales, filters, setFilters }) {
                   <td className="px-6 py-2 !text-xs whitespace-nowrap">
                     <div className="flex items-center">
                       <h6 className="mb-0  ">
-                        {x.customer_name}
+                        {x.customer_name ?? 'N/A'}
                       </h6>
                     </div>
                   </td>
                   <td className="px-6 py-2 !text-xs whitespace-nowrap">
                     <div className="flex items-center">
                       <h6 className="mb-0  ">
-                        {x.customer_contact}
+                        {x.customer_contact ?? 'N/A'}
                       </h6>
                     </div>
                   </td>

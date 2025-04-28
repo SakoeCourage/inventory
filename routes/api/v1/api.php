@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\NewProductTemplateExport;
 use App\Exports\ProductCategoryExport;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,6 +18,9 @@ use App\Exports\ProductCategoryExport;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+
+
 
 Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'authenticate'])->middleware('guest');
 
@@ -103,6 +107,8 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/new', [App\Http\Controllers\StockhistoryController::class, 'store']);
         Route::get('/low-products', [App\Http\Controllers\LowStockController::class, 'getLowStockProducts']);
         Route::post('/low-products/export', [App\Http\Controllers\LowStockController::class, 'exportLowStockProduct']);
+        Route::get('/stock-history', [App\Http\Controllers\StockhistoryController::class, 'index']);
+        Route::get('/stock-history/{id}', [App\Http\Controllers\StockhistoryController::class, 'show']);
     });
     Route::group(['prefix' => 'category'], function () {
         Route::get('/all', [App\Http\Controllers\CategoryController::class, 'index']);
@@ -142,6 +148,7 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::put('/update/credentials', [\App\Http\Controllers\UserprofileController::class, 'update']);
         Route::put('/update/credentials/validate', [\App\Http\Controllers\UserprofileController::class, 'validationcheck']);
         Route::post('/store/change-preference', [\App\Http\Controllers\StoreController::class, 'toggleUserPreferredStore']);
+        Route::post('/settings/create-or-new', [\App\Http\Controllers\UserSettingController::class, 'store']);
 
     });
 

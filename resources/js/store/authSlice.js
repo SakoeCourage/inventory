@@ -15,11 +15,8 @@ function removePreloader(){
 export const getUser = createAsyncThunk('/user', async () => {
     try {
         const user = await User.auth()
-        console.log(user.data)
-
         return user
     } catch (error) {
-        console.log(error)
         return error.message
     }
 })
@@ -57,7 +54,6 @@ export const authSlice = createSlice({
             })
             .addCase(getUser.rejected, (state, action) => {
                 state.loadingState = 'failed'
-                console.log(action.error.message)
             })
         builder.addCase(Logout.fulfilled, (state, action) => {
             state.auth = null

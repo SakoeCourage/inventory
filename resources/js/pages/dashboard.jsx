@@ -23,7 +23,7 @@ const DateButtons = ({ children, onClick, active = false }) => {
     console.log(active)
   }, [active])
 
-  return <button onClick={onClick} className={`text-gray-700 flex items-center gap-2 rounded-md border border-gray-400 font-medium px-5 py-1 bg-lime-50/30 shadow-md ${active && ' !bg-info-900 text-white'}`}>
+  return <button onClick={onClick} className={`flex items-center gap-2 rounded-md border border-info-100 font-medium px-5 py-1 bg-info-50/10 text-info-900 shadow-md ${active && ' !bg-info-900 text-white'}`}>
     {active && <IconifyIcon className="!p-0 !h-6 !w-6" icon="material-symbols-light:check" />}
     {children}
   </button>
@@ -60,10 +60,12 @@ const Dashboard = () => {
 
   const fetchDashboardDataByDate = (date) => {
     if (date == null) return;
+    setIsLoading(true)
     Api.get('/dashboard/data?date=' + date)
       .then(res => {
         setDashBoardData(res.data)
         console.log(res.data)
+        setIsLoading(false)
       }).catch(err => {
         console.log(err)
       })
@@ -83,8 +85,8 @@ const Dashboard = () => {
 
   return (
     <div className='h-max  relative  '>
-      <nav className='bg-gray-100 p-2'>
-        <nav className='flex items-center gap-2 px-5 container mx-auto'>
+      <nav className='p-2'>
+        <nav className=' hidden md:flex items-center gap-2 px-5 container mx-auto md:py-3 border-b-info-200/50 border-b '>
           <DateButtons active={dayjs(dashboardData?.date).format("YYYY-MM-DD") == today} onClick={() => fetchDashboardDataByDate(today)} >
             Today
           </DateButtons>
@@ -92,7 +94,7 @@ const Dashboard = () => {
             Yesterday
           </DateButtons>
           <DateButtons onClick={handleClick}>
-            {dayjs(dashboardData?.date).format("YYYY-MM-DD")}
+            {[yesterday,today].includes(dayjs(dashboardData?.date).format("YYYY-MM-DD")) ? <>Filter Date</>: dayjs(dashboardData?.date).format("YYYY-MM-DD")}
             <IconifyIcon icon="stash:calendar-duotone" className="!p-0 !h-6 !w-6 " />
           </DateButtons>
         </nav>

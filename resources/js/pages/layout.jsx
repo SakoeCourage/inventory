@@ -4,7 +4,6 @@ import Navbar from '../components/layout/navbar'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 import { useNavigate, Navigate } from "react-router-dom";
-import Login from '../components/appLogin/login'
 import { useSelector } from 'react-redux'
 import { getAuth } from '../store/authSlice'
 import { useSidebar } from '../providers/Sidebarserviceprovider'
@@ -27,8 +26,17 @@ const Layout = (props) => {
     setFullSideBar(false)
 
   }, [window.location.href])
-
-
+  
+  function stripProtocolAndDomain(url) {
+    if(url == null || url == undefined) return null;
+    try {
+      const parsedUrl = new URL(url);
+      return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+    } catch (error) {
+      console.error("Invalid URL:", url);
+      return null;
+    }
+  }
   return (
     <SnackbarProvider maxSnack={1}>
       {auth.auth ?
@@ -39,13 +47,13 @@ const Layout = (props) => {
           <main className={`flex flex-col w-full grow transition-none ${mini ? 'md:w-[calc(100vw-var(--sidebar-mini-width))]' : 'md:w-[calc(100vw-var(--sidebar-width))]'}`}>
             {/* Main  section header */}
             <Navbar setFullSideBar={setFullSideBar} fullSideBar={fullSideBar} />
-            <section id='outlet' className='h-[calc(100dvh-var(--header-height))] bg-lime-50/30 pb-4 overflow-y-scroll overflow-x-hidden '>
+            <section id='outlet' className='h-[calc(100dvh-var(--header-height))] bg-lime-50/30  pb-4 overflow-y-scroll overflow-x-hidden '>
               <Outlet />
             </section>
           </main>
         </div>
         :
-        <Navigate to='/' />
+        <Navigate to={`/?callbackUrl=${stripProtocolAndDomain(window.location.href)}`} />
       }
     </SnackbarProvider>
 

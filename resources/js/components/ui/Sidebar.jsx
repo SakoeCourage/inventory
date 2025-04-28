@@ -145,6 +145,13 @@ export default function Sidebar() {
                         link: '/stockmanagement/newstock',
                         permissions: ['manage stock data'],
                         miniTitle: "New Stock"
+                    },
+                    {
+                        title: 'Stock History',
+                        icon: "solar:cart-check-broken",
+                        link: '/stockmanagement/stock-history',
+                        permissions: ['manage stock data'],
+                        miniTitle: "New Stock"
                     }
                 ]
             },
@@ -186,13 +193,10 @@ export default function Sidebar() {
     const getAllSidebarSectionAbilities = (route) => {
         const permissionsSet = new Set();
 
-        console.log(route)
         route.forEach(rt => {
             rt.permissions.map(p => permissionsSet.add(p))
         });
-
         // Convert the Set to an array and return it
-        console.log(Array.from(permissionsSet))
         return Array.from(permissionsSet);
     }
 

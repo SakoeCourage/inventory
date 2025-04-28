@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import FormInputText from '../../../components/inputs/FormInputText'
 import Expenseitemslist from './Expenseitemslist'
 import Formhook from '../../../components/formcomponents/formhook'
@@ -18,6 +18,11 @@ function NewExpense({ expenseItems }) {
         }],
         total_amount: ''
     })
+
+    useEffect(() => {
+      console.log(data)
+    }, [data])
+    
 
     let calculateTotalAmount = () => {
         let totalamout = 0;

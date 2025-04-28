@@ -55,7 +55,7 @@ export default function Wrapable({ children, className, title, autoColapse = fal
       </nav>
       <svg className={`cursor-pointer z-10 transition-transform ${scrollHeight === 0 ? ' ' : 'rotate-180'}`} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m17 10l-5 5l-5-5"/></svg>
     </nav>
-    <div onClick={() => {  if(autoColapse)handleResize() }} ref={content} className={`${isModal && scrollHeight !== 0 && 'fixed inset-x-0 top-[7vh]  w-full !max-h-[92vh] bottom-3  z-50 bg-white rounded-md p-1 '} overflow-y-scroll md:overflow-hidden  wrappable-content transition-all duration-300`}>
+    <div onClick={() => {  if(autoColapse)handleResize() }} ref={content} className={`${isModal && scrollHeight !== 0 && 'fixed inset-x-0 top-[7vh]  w-full !max-h-[92vh] bottom-3  z-50 bg-white rounded-md p-1 '} overflow-y-scroll md:h-full md:overflow-hidden  wrappable-content transition-all duration-300`}>
       {children}
     </div>
   </div>

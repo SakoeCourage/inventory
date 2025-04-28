@@ -13,6 +13,7 @@ import Logo from "./components/ui/Logo";
 function App() {
   const dispatch = useDispatch()
   const auth = useSelector(getAuth)
+  
   useEffect(() => {
     dispatch(getUser())
   }, [])

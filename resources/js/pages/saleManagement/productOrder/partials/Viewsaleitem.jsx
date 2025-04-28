@@ -5,11 +5,12 @@ import { dateReformat, formatcurrency } from '../../../../api/Util'
 import Productcollection from '../../../../components/Productcollection'
 import Loadingspinner from '../../../../components/Loaders/Loadingspinner'
 import Refundinfo from '../../../../components/inputs/Refundinfo'
+import QuestionAnswerSection from '../../../../components/ui/QuestionAnswerSection'
 
 function SaleTable({ saleData }) {
   const { sale, sale_items } = saleData
 
-  return <table className="addleftline md:w-[90%] mx-auto !overflow-x-auto w-full  h-max ">
+  return <table className=" mx-auto !overflow-x-auto w-full  h-max ">
     <thead className="bg-white border-secondary-400/50 border rounded-md ">
       <tr>
         <th className="px-6 py-3  text-left rtl:text-right   font-semibold ">
@@ -39,7 +40,7 @@ function SaleTable({ saleData }) {
             <td className="px-6 py-3 !text-xs ">
               <div className="flex items-center">
                 <h6 className="text-sm font-normal mb-0 !capitalize ">
-                  {i + 1} {item.is_refunded > 0 && <Refundinfo item/>}
+                  {i + 1} {item.is_refunded > 0 && <Refundinfo item />}
                 </h6>
               </div>
             </td>
@@ -99,66 +100,60 @@ function Viewsaleitem({ saleId, setShowSaleById }) {
   }, [])
 
   return (
-    <div className='min-h-max max-h-[90vh] flex-grow relative  w-full text-info-900 flex flex-col gap-8 overflow-y-scroll'>
+    <div className='min-h-max max-h-[90vh] flex-grow relative  w-full text-info-900 flex flex-col gap-2 overflow-y-scroll'>
       {isLoading && <nav className="flex items-center justify-center w-full absolute inset-0 z-30 bg-white h-full">
         <Loadingspinner />
       </nav>}
-      <nav className=' addleftline flex flex-col gap-10  md:px-5 mx-auto w-full   md:w-[90%] mt-16   items-center'>
-        <nav className=' grid grid-cols-2  w-full gap-2'>
-          <nav className='flex flex-col p-2 basis-[50%]  gap-5 text-lg bg-red-200/25 rounded-md'>
-            <nav>Cutomer Name</nav>
-            <nav className='font-semibold'>{saleData?.sale?.customer_name}</nav>
-          </nav>
-          <nav className='flex flex-col p-2 basis-[50%]  gap-5 text-lg bg-gray-200/25 rounded-md'>
-            <nav>Cutomer Contact</nav>
-            <nav className='font-semibold'>{saleData?.sale?.customer_contact}</nav>
-          </nav>
-        </nav>
-        <nav className=' grid grid-cols-2 gap-2 w-full'>
-          <nav className='flex flex-col p-2 basis-[50%]  gap-5 text-lg bg-orange-200/25 rounded-md'>
-            <nav>Sale Representative</nav>
-            <nav className='font-semibold'>{saleData?.sale_representative}</nav>
-          </nav>
-          <nav className='flex flex-col p-2 basis-[50%]  gap-5 text-lg bg-info-200/25 rounded-md'>
-            <nav> Sale Date </nav>
-            <nav className='font-semibold'>{dateReformat(saleData?.sale?.created_at)}</nav>
-          </nav>
-        </nav>
+      <nav className=' mx-auto w-full p-5 '>
+        <fieldset className='grid grid-cols-1 md:grid-cols-2 border p-5 bg-orange-50/50 rounded-md gap-5'>
+          <QuestionAnswerSection
+            question="Customer Name"
+            answer={saleData?.sale?.customer_name}
+          />
+          <QuestionAnswerSection
+            question="Customer Contact"
+            answer={saleData?.sale?.customer_contact}
+          />
+          <QuestionAnswerSection
+            question="Sale Representative"
+            answer={saleData?.sale_representative}
+          />
+          <QuestionAnswerSection
+            question="Sale Date"
+            answer={dateReformat(saleData?.sale?.created_at)}
+          />
+        </fieldset>
       </nav>
-      <SaleTable saleData={saleData} />
-      <nav className=' addleftline md:px-5 w-full  md:w-[90%] mx-auto  flex flex-col gap-4'>
-        <nav className='flex items-center gap-2 p-2 bg-gray-100/70'>
-          <nav className=' w-full'>
-            Sub total
-          </nav>
-          <nav className=' w-full'>
-            {formatcurrency(saleData?.sale?.sub_total)}
-          </nav>
-        </nav>
-        <nav className='flex items-center gap-2 p-2 '>
-          <nav className=' w-full'>
-            Sale Discount
-          </nav>
-          <nav className=' w-full'>
-            {saleData?.sale?.discount_rate}%
-          </nav>
-        </nav>
-        <nav className='flex items-center gap-2 p-2 '>
-          <nav className=' w-full'>
-            Payment Method
-          </nav>
-          <nav className=' w-full'>
-            {saleData?.payment_method ?? "N/A"}
-          </nav>
-        </nav>
-        <nav className='flex items-center gap-2 p-2 bg-gray-100/70 '>
-          <nav className=' w-full'>
-            Total
-          </nav>
-          <nav className=' w-full'>
-            {formatcurrency(saleData?.sale?.total_amount)}
-          </nav>
-        </nav>
+      <nav className="px-5">
+        <SaleTable saleData={saleData} />
+      </nav>
+      <nav className='p-5'>
+        <fieldset className='grid grid-cols-1 md:grid-cols-2 border p-5 bg-info-100/50 rounded-md gap-5'>
+          <QuestionAnswerSection
+            question="Sub total"
+            className='md:col-span-2'
+            variant="horizontal"
+            answer={formatcurrency(saleData?.sale?.sub_total)}
+          />
+          <QuestionAnswerSection
+            question="Sale Discount"
+            variant="horizontal"
+            className='md:col-span-2'
+            answer={saleData?.sale?.discount_rate + ' %'}
+          />
+          <QuestionAnswerSection
+            question="Payment Method"
+            variant="horizontal"
+            className='md:col-span-2'
+            answer={saleData?.payment_method ?? "N/A"}
+          />
+          <QuestionAnswerSection
+            variant="horizontal"
+            className='md:col-span-2'
+            question="Total"
+            answer={formatcurrency(saleData?.sale?.total_amount)}
+          />
+        </fieldset>
       </nav>
     </div>
   )

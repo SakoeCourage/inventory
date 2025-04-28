@@ -6,8 +6,11 @@ import { debounce, filter } from 'lodash-es';
 import Emptydata from '../../../components/formcomponents/Emptydata';
 import Button from '../../../components/inputs/Button';
 import ClickAwayListener from 'react-click-away-listener';
+import CustomCheckBox from '../../../components/ui/CustomCheckBox';
+import { enqueueSnackbar } from 'notistack';
+import { useRef } from 'react';
 
-function Searchresultitem({ product, handleSelected, isFocused }) {
+function Searchresultitem({ product, handleSelected, isFocused, isSelected = false, multiSelectMode = false }) {
 
   useEffect(() => {
     if (isFocused) {
@@ -16,7 +19,6 @@ function Searchresultitem({ product, handleSelected, isFocused }) {
           handleSelected({ product_id: product.product_id, model_id: product?.model_id })
         }
       };
-
       window.addEventListener('keypress', handleKeyEvent);
 
       return () => {
@@ -27,8 +29,11 @@ function Searchresultitem({ product, handleSelected, isFocused }) {
 
   return (
     <li
-      className={`flex items-center m-sr-item gap-2 my-1 hover:ring-2 hover:ring-green-600 hover:ring-offset-1 focus:ring-2 focus:ring-green-600 focus:ring-offset-1 focus:outline-none focus:border-none ${isFocused ? 'ring-2 ring-green-600 ring-offset-1' : ''}`}
-      onClick={() => handleSelected({ product_id: product.product_id, model_id: product?.model_id })}
+      className={`flex group relative select-none items-center m-sr-item gap-2 my-1 hover:ring-2 hover:ring-green-600 hover:ring-offset-1 focus:ring-2 focus:ring-green-600 focus:ring-offset-1 focus:outline-none focus:border-none ${isFocused ? 'ring-2 ring-green-600 ring-offset-1' : ''} ${isSelected && 'bg-green-600 text-white'}`}
+      onDoubleClick={() => {
+        handleSelected({ product_id: product.product_id, model_id: product?.model_id, multiSelectMode: true });
+      }}
+      onClick={() => handleSelected({ product_id: product.product_id, model_id: product?.model_id, multiSelectMode: false })}
       tabIndex={isFocused ? 0 : -1}
     >
       {product.key === 'in_product' ? (
@@ -53,20 +58,25 @@ function Searchresultitem({ product, handleSelected, isFocused }) {
           </span>
         )}
       </nav>
+    {multiSelectMode &&  <nav onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className={`absolute  group-hover:opacity-100 transition-all duration-500 right-2 inset-y-0 flex items-center justify-center ${isSelected ? 'opacity-100' : 'opacity-0'}`}>
+        <CustomCheckBox
+          onClick={() => { handleSelected({ product_id: product.product_id, model_id: product?.model_id, multiSelectMode: true }) }}
+          checked={isSelected} />
+      </nav>}
     </li>
   );
 }
 
-function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockList, AddEmptyRecordToList, emptyListRecord }) {
+function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockList, AddEmptyRecordToList, emptyListRecord, multiSelect = false, getMultiSelectedItems = () => { } }) {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({});
   const [filteredProducts, setfilteredProducts] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [mSelectedModels, setMSelectedModels] = useState([]);
 
   useEffect(() => {
     if (Boolean(products?.data?.length)) {
-      // console.log(products?.data);
       let currentEntry = [];
       const regex = new RegExp(filters?.search, 'i');
       products.data.forEach((product, i) => {
@@ -136,12 +146,45 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
     searchBar.focus();
   }, []);
 
-  const handleSelected = ({ product_id, model_id }) => {
-    let newLineProduct = emptyListRecord;
-    newLineProduct = { ...newLineProduct, product_id: product_id, model_id: model_id, productsmodel_id: model_id };
+  const handleSelected = ({ product_id, model_id, multiSelectMode = false }) => {
+    const newLineProduct = {
+      ...emptyListRecord,
+      product_id,
+      model_id,
+      productsmodel_id: model_id,
+    };
+
+    // Check if model_id is already selected
+    const isAlreadySelected = mSelectedModels?.some(
+      (item) => item.model_id === model_id
+    );
+
+    // Multi-select logic (toggle behavior)
+    if (mSelectedModels?.length > 0 || multiSelectMode) {
+      if (isAlreadySelected) {
+        // Remove it if already selected
+        const filtered = mSelectedModels.filter((item) => item.model_id !== model_id);
+        setMSelectedModels(filtered);
+      } else {
+        // Add it if not already selected
+        setMSelectedModels([...mSelectedModels, newLineProduct]);
+      }
+      return;
+    }
+
+    // Single-select mode
     addToNewStockList([...newStockList, newLineProduct]);
     setShowProductSearchModal(false);
   };
+
+  const moreProductselectedNoticeRef = useRef(false)
+
+  useEffect(() => {
+    if (mSelectedModels?.length <= 0) return
+    if (moreProductselectedNoticeRef.current) return
+    moreProductselectedNoticeRef.current = true
+    enqueueSnackbar("More products can be selected", { variant: "info" })
+  }, [mSelectedModels])
 
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
@@ -169,6 +212,12 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
     }
   }, [focusedIndex, filteredProducts]);
 
+
+  const handleOnGetMultiSelectedItems = () => {
+    getMultiSelectedItems(mSelectedModels)
+    setShowProductSearchModal(false);
+  }
+
   return (
     <ClickAwayListener onClickAway={() => setShowProductSearchModal(false)}>
       <div className='z-40 md:py-8 pb-14 flex flex-col'>
@@ -177,12 +226,30 @@ function Productsearch({ setShowProductSearchModal, addToNewStockList, newStockL
         </div>
         {Boolean(filteredProducts?.length) && (
           <div className='mt-2 text-gray-500 bg-white h-full max-h-[calc(min(44rem,70vh))] overflow-y-scroll px-5 pb-5 rounded-md shadow-md'>
-            <nav className="mb-2 py-3 border-b shadow-current bg-white">
-              search result
+            <nav className="mb-2 py-3 border-b sticky top-0 backdrop-blur-md z-40 shadow-current bg-white/90 flex items-center justify-between w-full">
+              <nav className='text-xs md:text-sm'>
+                Search Result
+              </nav>
+              {mSelectedModels?.length > 0 && <nav className='text-red-500 flex items-center gap-1 divide-x divide-gray-300'>
+                <span className='text-xs text-gray-400'>{mSelectedModels?.length} Item(s) </span>
+                <button onClick={() => setMSelectedModels([])} className='text-xs font-bold   px-2'>
+                  Cancel Selection
+                </button>
+                <button onClick={handleOnGetMultiSelectedItems} className='text-info-500 text-xs font-bold  px-2'>
+                  Proceed
+                </button>
+              </nav>}
             </nav>
             <ul className='product-search-result'>
               {filteredProducts?.map((product, i) => (
-                <Searchresultitem handleSelected={(values) => { AddEmptyRecordToList(); handleSelected(values); }} key={i} product={product} isFocused={i === focusedIndex} />
+                <Searchresultitem multiSelectMode={multiSelect} handleSelected={(values) => {
+                  AddEmptyRecordToList();
+                  handleSelected(values);
+                }}
+                  isSelected={mSelectedModels.some((item) => item.model_id === product.model_id)}
+                  key={i}
+                  product={product}
+                  isFocused={i === focusedIndex} />
               ))}
             </ul>
             {products.next_page_url && (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Api from '../../api/Api'
+import set from 'lodash/set';
 
 
 /**
@@ -100,13 +101,19 @@ const Formhook = (initialValues) => {
    */
   const setData = (keyorobj, value) => {
     if (typeof keyorobj === 'object') {
-      for (const [key, newValue] of Object.entries(keyorobj)) {
-        newData((prevData) => ({ ...prevData, [key]: newValue }));
-      }
-    }
-
-    if (typeof keyorobj === 'string') {
-      newData((prevData) => ({ ...prevData, [keyorobj]: value }));
+      newData((prevData) => {
+        const updatedData = { ...prevData };
+        for (const [key, newValue] of Object.entries(keyorobj)) {
+          set(updatedData, key, newValue); // using lodash `set`
+        }
+        return updatedData;
+      });
+    } else if (typeof keyorobj === 'string') {
+      newData((prevData) => {
+        const updatedData = { ...prevData };
+        set(updatedData, keyorobj, value); // again using lodash `set`
+        return updatedData;
+      });
     }
   };
 

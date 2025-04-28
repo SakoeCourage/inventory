@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Permission\Models\Permission;
 
 class User extends Authenticatable
 {
@@ -45,11 +46,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::created(function ($user) {
+            $user->settings()->create([
+                'settings' => \App\Models\UserSetting::defaultSettings()
+            ]);
+        });
+    }
+
     public function profile()
     {
         return $this->hasOne(Userprofile::class);
     }
-
 
     public function scopeSearch($query, array $filters)
     {
@@ -71,5 +80,22 @@ class User extends Authenticatable
     public function storePreference()
     {
         return $this->hasOne(UserCurrentStoreSelection::class);
+    }
+
+    static function getUsersWhoCan($permission)
+    {
+        $p = Permission::findByName($permission,'web');
+        $roles = $p->roles->pluck('name');
+        $roles[] = 'Super Admin';
+
+        $users = User::whereHas('roles', function ($query) use ($roles) {
+            $query->whereIn('name', $roles);
+        });
+        return $users;
+    }
+
+    public function settings()
+    {
+        return $this->hasOne(UserSetting::class);
     }
 }

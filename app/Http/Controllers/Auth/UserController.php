@@ -87,7 +87,7 @@ class UserController extends Controller
      */
     public function show($user)
     {
-        return User::with(['profile', 'roles:name', 'stores:id'])->where('id', $user)
+        return User::with(['profile', 'roles:name', 'stores:id','settings'])->where('id', $user)
             ->get()
             ->map(function ($user, $key) {
                 return [
@@ -100,6 +100,7 @@ class UserController extends Controller
                     'contact' => $user->profile ? $user->profile->contact : '',
                     'role' => $user->roles->first()->name,
                     'stores' => $user->stores->pluck('id')->toArray(),
+                    'settings' => $user->settings?->settings
                 ];
             })->first();
     }

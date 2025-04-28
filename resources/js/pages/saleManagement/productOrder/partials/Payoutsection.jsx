@@ -6,7 +6,7 @@ import QuestionAnswerSection from '../../../../components/ui/QuestionAnswerSecti
 
 function Payoutsection({ formData, saleDiscount, errors, setFormData, paymentMethods, getBalance }) {
     return (
-        <div className=' bg-gray-50 shadow border-2 border-gray-400 my-1 p-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 rounded-md border-inherit'>
+        <div className=' bg-white/50 shadow border-2 border-gray-400 my-1 p-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 rounded-md border-inherit'>
             <nav className="flex items-center justify-between w-full p-2 text-red-950 rounded-md">
                 <nav className='w-full'>
                     <FormInputSelect options={paymentMethods.length ? [...paymentMethods.map(method => { return ({ value: method.id, name: method.method }) })] : []} className=" w-full" error={errors?.payment_method} value={formData?.payment_method} onChange={(e) => setFormData(cv => cv = { ...cv, payment_method: e.target.value })} label='Payment Method' />
