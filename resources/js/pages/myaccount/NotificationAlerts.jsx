@@ -59,26 +59,32 @@ const NotificationAlerts = ({ userData, setComponent, fetchData }) => {
                             checked={data?.settings?.mail_setting?.new_expense_request}
                         />
                     </AccessByPermission>
-                    <AccessByPermission abilities={['manage stock data']}>
+                    <AccessByPermission abilities={['manage stock data', 'generate product order']}>
                         <NotificationGroupItem
                             title={'New Invoice'}
                             description={'Check if you want to be notified when new invoices are created'}
                             onCheckTogle={() => setData('settings.mail_setting.new_invoice', !data?.settings?.mail_setting?.new_invoice)}
                             checked={data?.settings?.mail_setting?.new_invoice}
                         />
+                    </AccessByPermission>
+                    <AccessByPermission abilities={['manage stock data']}>
                         <NotificationGroupItem
                             title={'Stock Reduction'}
                             description={'Check if you want to be notified when a product stock is reduced'}
                             onCheckTogle={() => setData('settings.mail_setting.stock_reduction', !data?.settings?.mail_setting?.stock_reduction)}
                             checked={data?.settings?.mail_setting?.stock_reduction}
                         />
+                    </AccessByPermission>
+                    <AccessByPermission abilities={['manage stock data']}>
                         <NotificationGroupItem
-                            title={'Low Stock'}
-                            description={'Check if you want to be notified when a product is low in stock'}
+                            title={'Stock Alerts'}
+                            description={'Check if you want to be notified about product stock levels'}
                             checked={data?.settings?.mail_setting?.out_of_stock}
                             onCheckTogle={() => setData('settings.mail_setting.out_of_stock', !data?.settings?.mail_setting?.out_of_stock)}
                         />
                     </AccessByPermission>
+
+
                     <Button disabled={processing} onClick={handleSubmit} info>
                         Save Change
                     </Button>

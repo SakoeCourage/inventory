@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\StockAdjustedJob;
 use App\Models\Product;
+use App\Models\Store;
 use App\Models\Productstockhistory;
 use App\Models\Productsmodels;
 use App\Models\Stockhistory;
@@ -104,6 +106,7 @@ class ProductstockhistoryController extends Controller
 
     public function decreaseStock($model_id, ProductStockService $productStockServie)
     {
+
         if (request()->quantity <= 0) {
             throw ValidationException::withMessages([
                 'quantity' => 'This field is requied'
@@ -122,7 +125,20 @@ class ProductstockhistoryController extends Controller
                 'quantity' => request()->quantity,
                 'productsmodel_id' => request()->productsmodel_id,
             ]);
+
+            $product_model = Productsmodels::where('id',request()->productsmodel_id)->with(['product' => ['basicQuantity','category'], 'collectionType'])->firstOrFail();
+            $store= Store::where('id',request()->user()->storePreference->store->id)->with('branch')->firstOrFail();
+           
+            dispatch(new StockAdjustedJob(
+                Auth::user(),
+                request()->quantity,
+                request()->description,
+                $store,
+                $product_model
+            ));
         });
+
+        return response('stock adjusted successfully',200);
     }
     /**
      * Store a newly created resource in storage.

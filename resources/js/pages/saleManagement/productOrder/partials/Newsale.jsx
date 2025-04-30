@@ -41,7 +41,6 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
     }
 
     const handleOnsucess = (data, message = "New sale recorded") => {
-        console.log(data)
         if (data) {
             const { products, models, newsale } = data
             setInvoiceData({
@@ -65,13 +64,17 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
      */
     const checkOut = (_formData) => {
         if (_formData == null) return;
+        closeSnackbar()
         handleOutOfStock(formData, modelsFromDB, getProductfromId).then(res => {
+            enqueueSnackbar('Checking out please wait...', { variant: 'default', preventDuplicate: true })
             Api.post('/sale/new', _formData).then(res => {
                 handleOnsucess(res.data)
                 setErrors({})
+
             }).catch(err => {
                 setProcessing(false)
                 setProcessingLeaseSale(false)
+                enqueueSnackbar('Failed', { variant: 'error', preventDuplicate: true, autoHideDuration:500})
                 if (err?.response?.status === 422) {
                     console.log(err?.response?.data?.errors)
                     setProcessing(false)
@@ -87,6 +90,8 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
             setProcessing(false)
             setProcessingLeaseSale(false)
             setOutOfStockProducts(err)
+            enqueueSnackbar('Failed', { variant: 'error', preventDuplicate: true, autoHideDuration:500 })
+        }).finally(() => {
 
         })
     }
@@ -269,7 +274,7 @@ function Newsale({ productsFromDB, modelsFromDB, paymentMethods, getAllProductsA
                             getBalance={getBalance}
                         />
                     </nav>
-                    <nav className=' bg-white/50 shadow border border-gray-300 rounded-md my p-2 px-5 grid grid-cols-2  w-full md:flex items-center md:gap-10'>
+                    <nav className={`' bg-white/50 shadow border border-gray-300 rounded-md my p-2 px-5 grid grid-cols-2  w-full md:flex items-center md:gap-10 transition-[opacity] duration-500 ${processing && '!opacity-50 !pointer-events-none'}'`}>
                         <button disabled={processing} onClick={() => handleOnRegularCheckOut()} info className='group  p-2 flex flex-col gap-1 items-center justify-center'>
                             <nav
                                 className="border rounded-full text-indigo-500 bg-indigo-100  group-hover:bg-indigo-500 group-hover:text-white border-indigo-500 h-max w-max p-5  aspect-square disabled:cursor-not-allowed font-bold hover:border-indigo-400   duration-[500ms,800ms] grow flex-nowrap !flex items-center justify-center "

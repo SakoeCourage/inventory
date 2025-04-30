@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SaleEnum;
 use App\Jobs\SendInvoiceEmailJob;
+use App\Jobs\StockAlertJob;
 use App\Models\LeasePaymentHistory;
 use App\Models\Sale;
 use App\Models\Saleitem;
@@ -14,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\ProductStockService;
+use Auth;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class SaleController extends Controller
@@ -109,7 +111,8 @@ class SaleController extends Controller
      */
     public function store(Request $request, ProductStockService $productStockService, ProductController $productController)
     {
-        $newdata = null;
+        $newdata = null ;
+
         $request->validate([
             'customer_fullname' => [
                 Rule::when(fn() => $request->sale_type == "lease" | $request->sale_type == "un_collected", ['required', 'string', 'max:255']),
@@ -134,8 +137,13 @@ class SaleController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $productStockService, &$newdata) {
-            $sale_invoice = IdGenerator::generate(['table' => 'sales', 'field' => 'sale_invoice', 'length' => 14, 'prefix' => 'SALE-' . date('ymd')]);
-            
+            $sale_invoice = IdGenerator::generate([
+                'table' => 'sales',
+                'field' => 'sale_invoice',
+                'length' => 14,
+                'prefix' => 'SALE-' . date('ymd'),
+                'reset_on_prefix_change' => true 
+            ]);     
             $newSale = Sale::create([
                 'customer_contact' => $request->customer_contact,
                 'customer_name' => $request->customer_fullname,
@@ -171,6 +179,7 @@ class SaleController extends Controller
                 $productStockService->decreasestock((Object) $value);
             }
 
+            $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity','category'], 'collectionType']], 'salerepresentative', 'paymentmethod','store'=>['branch']])->where('id', $newSale->id)->firstOrFail();
             
             if ($request->sale_type == "lease") {
                 $newLeaseHistory = LeasePaymentHistory::create([
@@ -184,15 +193,13 @@ class SaleController extends Controller
             if ($request->sale_type == "un_collected") {
                 
             }
-
+            
             if ($request->sale_type == \App\Enums\SaleEnum::Regular->value || $request->sale_type == \App\Enums\SaleEnum::UnCollected->value) {
                 PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
-                
-                $newdata = Sale::with(['saleitems' => ['productsmodels' => ['product' => ['basicQuantity','category'], 'collectionType']], 'salerepresentative', 'paymentmethod','store'=>['branch']])->where('id', $newSale->id)->firstOrFail();
-                dispatch(new SendInvoiceEmailJob($newdata));
+                dispatch(new SendInvoiceEmailJob($newdata,$request->user()));
             }
-           
         });
+        dispatch(new StockAlertJob($newdata));
         return [
             ...$productController->productAndModelsJoin($request),
             'newsale' => [...$newdata?->toArray(), 'business_profile' => Businessprofile::get()->first(),

@@ -38,7 +38,13 @@ const Layout = (props) => {
     }
   }
   return (
-    <SnackbarProvider maxSnack={1}>
+    <SnackbarProvider 
+    maxSnack={1}
+    anchorOrigin={{
+      vertical: 'bottom',  
+      horizontal: 'left', 
+    }}
+    >
       {auth.auth ?
         <div className='flex overflow-hidden'>
           {/* Sidebar starts here */}

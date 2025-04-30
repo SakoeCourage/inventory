@@ -1,0 +1,202 @@
+<x-wraper>
+    <table cellpadding="0" cellspacing="0" align="center" class="g" role="none"
+        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
+        <tr>
+            <td align="center" style="padding:0;Margin:0">
+                <table bgcolor="#ffffff" align="center" cellpadding="0" cellspacing="0" class="z" role="none"
+                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
+                    <tr>
+                        <td align="left"
+                            style="padding:0;Margin:0;padding-top:15px;padding-right:20px;padding-left:20px">
+                            <table cellpadding="0" cellspacing="0" width="100%" role="none"
+                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                <tr>
+                                    <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                                        <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                            <tr>
+                                                <td align="center" style="padding:0;Margin:0;padding-bottom:10px">
+                                                    <h1 class="u"
+                                                        style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:46px;color:#14532d;">
+                                                        <strong>Stock Reduction</strong>
+                                                    </h1>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table cellpadding="0" cellspacing="0" align="center" class="g" role="none"
+        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
+        <tr>
+            <td align="center" style="padding:0;Margin:0">
+                <table bgcolor="#ffffff" align="center" cellpadding="0" cellspacing="0" class="z" role="none"
+                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
+                    <tr style="">
+                        <td align="center" valign="top"
+                            style="padding:0;Margin:0;width:560px; padding-top: 10px; padding-bottom: 15px;">
+                            <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                <tr>
+                                    <td align="center" style="padding:0;Margin:0">
+                                        <h2 class="sm-small flex justify-center"
+                                            style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:12px;font-style:normal;font-weight:bold;line-height:13.2px;olor:#134e4a; opacity: 0.5;">
+                                            {{ $store->store_name . ' - ' . $store->branch->branch_name }}
+                                        </h2>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr
+                        style="border-spacing:0px;border-top:2px solid #efefef;border-bottom:2px solid #efefef; padding-top: 10px">
+                        <td align="left" style="padding:20px;Margin:0">
+                            <table cellpadding="0" cellspacing="0" width="100%" role="none"
+                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                <tr>
+                                    <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                                        <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                            <tr>
+                                                <td align="center" style="padding:0;Margin:0">
+                                                    <h2 class="sm-small  justify-center"
+                                                        style=" Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:normal;line-height:31.2px;color:#333333; text-align: center;">
+                                                        <strong
+                                                            style="white-space: nowrap;color:#134e4a; text-decoration: underline;">{{ $author->name }}</strong>
+                                                        adjusted a product by quantity
+
+                                                    </h2>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" class="esdev-adapt-off"
+                                        style="Margin:0;padding-bottom:10px;padding-right:20px;padding-left:20px;padding-top:10px">
+                                        <table cellpadding="0" cellspacing="0" class="esdev-mso-table" role="none"
+                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
+                                            <tr>
+                                                <td style="padding:0;Margin:0;width:20px"></td>
+                                                <td valign="top" class="esdev-mso-td" style="padding:0;Margin:0">
+                                                    <table cellpadding="0" cellspacing="0" align="left" class="k"
+                                                        role="none"
+                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
+                                                        <tr>
+                                                            <td align="center" style="padding:0;Margin:0;width:265px">
+                                                                <table cellpadding="0" cellspacing="0" width="100%"
+                                                                    role="presentation"
+                                                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                                                    <tr>
+                                                                        <td align="left" style="padding:0;Margin:0">
+                                                                            <p
+                                                                                style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
+                                                                                <strong>{{ $productmodel->model_name }}</strong>
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="left"
+                                                                            style="padding:0;Margin:0;padding-top:5px">
+                                                                            <p
+                                                                                style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
+                                                                                Product:
+                                                                                {{ $productmodel->product->product_name }}<br>Category:
+                                                                                {{ $productmodel->product?->category?->category }}
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td style="padding:0;Margin:0;width:20px"></td>
+                                                <td valign="top" class="esdev-mso-td" style="padding:0;Margin:0">
+                                                    <table cellpadding="0" cellspacing="0" align="left"
+                                                        class="k" role="none"
+                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
+                                                        <tr>
+                                                            <td align="left" style="padding:0;Margin:0;width:80px">
+                                                                <table cellpadding="0" cellspacing="0" width="100%"
+                                                                    role="presentation"
+                                                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px; ">
+                                                                    <tr>
+                                                                        <div class=""
+                                                                            style="white-space: nowrap; color: red; display: flex; ">
+                                                                            - <x-product-collection :in-collections="(bool) $productmodel->in_collection"
+                                                                                :collection-type="$productmodel
+                                                                                    ?->collection_type?->type" :quantity="$quantity"
+                                                                                :units-per-collection="$productmodel?->quantity_per_collection" :basic-quantity="$productmodel->product
+                                                                                    ?->basicQuantity?->symbol" />
+                                                                        </div>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="padding:0;Margin:0;width:20px"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                            <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                <tr>
+                                    <td align="center" style="padding:0;Margin:0">
+                                        <p class="sm-small  justify-center"
+                                            style=" Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:12px;font-style:normal;font-weight:normal;line-height:31.2px;color:#5e5d5d; text-align: center; padding: 5px; padding-left: 10px; padding-right: 10px; background-color: #f4faf9; ; border-radius: 5px; ">
+                                            {{ $description }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+    </td>
+    </tr>
+    <tr>
+        <td align="left" style="padding:0px;Margin:0">
+            <table cellpadding="0" cellspacing="0" width="100%" role="none"
+                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                <tr>
+                    <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                        <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                            <tr>
+                                <td align="center" style="padding:0;Margin:0;padding-top:25px;padding-bottom:15px">
+                                    <span class="r"
+                                        style="border-style:solid;border-color:#14532d;background:#14532d;border-width:2px;display:inline-block;border-radius:6px;width:auto"><a
+                                        href="{{ env('BASE_URL') }}/stockmanagement/product/{{ $productmodel->product->id }}/{{ urlencode($productmodel->product->product_name) }}/manage?model={{ $productmodel->id }}"
+                                            
+                                            target="_blank" class="n"
+                                            style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#14532d;border-radius:6px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid color:#14532d;border-left-width:30px;border-right-width:30px">VIEW
+                                            PRODUCT DASHBOARD</a></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    </table>
+</x-wraper>

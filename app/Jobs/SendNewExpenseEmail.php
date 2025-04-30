@@ -28,7 +28,7 @@ class SendNewExpenseEmail implements ShouldQueue
     {
         $expense_managers = User::getUsersWhoCan('authorize expense')
         ->with(['settings','stores'])
-        ->where('stores',function ($query) {
+        ->whereHas('stores',function ($query) {
             $query->where('stores.id', $this->expense->store_id);
         })
         ->whereHas('settings', function ($query) {

@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\Saleitem;
 use App\Models\Stockhistory;
-use App\Smartalgorithms\Outofstock;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -132,7 +131,6 @@ class DashboardController extends Controller
 
     public function generateDailyStats()
     {
-        $outofstock = new Outofstock();
         return [
             'daliy_sale_stats' => $this->getDailySale(),
             'daily_revenue' => $this->getDailyRevenue(),

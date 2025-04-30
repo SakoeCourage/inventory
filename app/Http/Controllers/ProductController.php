@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\PaginationHelper;
+use Auth;
 
 class ProductController extends Controller
 {
@@ -197,24 +198,25 @@ class ProductController extends Controller
     }
 
 
-    public function getUnattendedProductsWithCategoriesAndModels()
-    {
+    public function getUnattendedProductsWithCategoriesAndModels(Request $request)
+    {  
         $products = Product::deepSearch(request()->only('search', 'category'))
             ->join('productsmodels', 'products.id', '=', 'productsmodels.product_id')
             ->join('categories', 'products.category_id', 'categories.id')
-            ->where('productsmodels.quantity_in_stock', 0)
+            ->join('store_products','productsmodels.id','=','store_products.productsmodel_id')
+            ->where('store_products.store_id','=', request()->user()->storePreference->store_id)
+            ->where('store_products.quantity_in_stock', 0)
             ->selectRaw(
                 'categories.category,
                 products.product_name,
                 products.id as product_id,
                 productsmodels.id as model_id,
                 productsmodels.model_name ,
-                productsmodels.quantity_in_stock
+                store_products.quantity_in_stock
                 '
             )
             ->get()
             ->groupBy(['category', 'product_name']);
-
         return [
             'products' => PaginationHelper::paginate($products, 5),
             'filters' => request()->only('search', 'category'),

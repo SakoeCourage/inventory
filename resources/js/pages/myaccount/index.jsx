@@ -93,7 +93,7 @@ function Index() {
                 <span className=''> Update Login Credentials</span>
               </button>
             </Tooltip>
-            <AccessByPermission abilities={['manage stock data', 'authorize expense']}>
+            <AccessByPermission abilities={['manage stock data', 'authorize expense','generate product order']}>
               <Tooltip title="Update Login Credentials">
                 <button onClick={() => changeTab('NotificationAlerts')} className={` truncate grow w-full md:w-auto md:grow-0  flex items-center  p-2 rounded-md text-xs md:text-sm bg-info-100/30 text-white ${component == 'NotificationAlerts' && ' !bg-info-100/90 !text-info-900 '}`}>
                   <Icon className='hidden md:block mr-1 md:mr-2' fontSize={20} icon="mage:email-notification" />

@@ -31,7 +31,7 @@ console_command = 'php /var/www/html/artisan tinker'
   LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
   QUEUE_CONNECTION = 'sync'
   SANCTUM_STATEFUL_DOMAINS = 'https://inventorylite.fly.dev'
-  SESSION_DRIVER = 'cookie'
+  SESSION_DRIVER = 'file'
   SESSION_LIFETIME = '300'
   SESSION_SECURE_COOKIE = 'true'
   VITE_APP_BASE_URL = 'https://inventorylite.fly.dev'
@@ -54,6 +54,14 @@ console_command = 'php /var/www/html/artisan tinker'
   min_machines_running = 0
   processes = ['app']
 
+  [[http_service.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[http_service.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
 [[vm]]
   memory = '2gb'
   cpu_kind = 'shared'
@@ -62,3 +70,15 @@ console_command = 'php /var/www/html/artisan tinker'
 [processes]
   app = ""
   worker = "php artisan queue:listen --tries=3"
+
+[machines]
+  [machines.worker]
+  name = "worker-machine" 
+  size = "shared-cpu-1x"  
+  count = 1
+  auto_stop = false   
+  auto_start = true
+
+
+[deploy]
+  release_command = "sh -c 'php artisan migrate --force && php artisan config:cache && php artisan route:cache'"

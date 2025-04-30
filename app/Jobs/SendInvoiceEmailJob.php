@@ -15,6 +15,7 @@ class SendInvoiceEmailJob implements ShouldQueue
 
     protected $email;
     protected Sale $sale;
+    protected User $user;
 
     /**
      * Create a new job instance.
@@ -27,10 +28,11 @@ class SendInvoiceEmailJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(Sale $sale)
+    public function __construct(Sale $sale, User $user)
     {
 
         $this->sale = $sale;
+        $this->user = $user;
     }
 
     /**
@@ -39,16 +41,23 @@ class SendInvoiceEmailJob implements ShouldQueue
     public function handle(): void
     {
         $stock_managers = User::getUsersWhoCan('manage stock data')
-        ->with(['settings','stores'])
-        ->where('stores',function ($query) {
-            $query->where('stores.id', $this->sale->store_id);
-        })
-        ->whereHas('settings', function ($query) {
-            $query->whereJsonContains('settings->mail_setting->new_invoice', true);
-        })
-        ->get()->pluck('email');
-        foreach ($stock_managers as $manager) {
-            Mail::to($manager)->send(new NewInvoiceEmail($this->sale));
+            ->with(['settings', 'stores'])
+            ->whereHas('stores', function ($query) {
+                $query->where('stores.id', $this->sale->store_id);
+            })
+            ->whereHas('settings', function ($query) {
+                $query->whereJsonContains('settings->mail_setting->new_invoice', true);
+            })
+            ->get();
+
+        if (!$stock_managers->contains('id', $this->user->id)) {
+            $stock_managers->push($this->user);
+        }
+
+        $emails = $stock_managers->pluck('email')->unique();
+
+        foreach ($emails as $email) {
+            Mail::to($email)->send(new NewInvoiceEmail($this->sale));
         }
     }
 }

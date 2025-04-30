@@ -64,7 +64,11 @@ class Sale extends Model
 
     public function scopeFilter($query, array $filters){
         $query->when($filters['search'] ?? false, function($query, $search){
-            $query->where('customer_name', 'Like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('customer_name', 'like', '%' . $search . '%')
+                  ->orWhere('sale_invoice', 'like', '%' . $search . '%');
+            });
+            
         })->when($filters['day'] ?? false, function($query,$day){
                 $day = date('Y-m-d', strtotime($day));
                 $query->whereDate('created_at',$day);
