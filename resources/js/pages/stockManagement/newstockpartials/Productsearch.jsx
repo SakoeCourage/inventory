@@ -29,7 +29,7 @@ function Searchresultitem({ product, handleSelected, isFocused, isSelected = fal
 
   return (
     <li
-      className={`flex group relative select-none items-center m-sr-item gap-2 my-1 hover:ring-2 hover:ring-green-600 hover:ring-offset-1 focus:ring-2 focus:ring-green-600 focus:ring-offset-1 focus:outline-none focus:border-none ${isFocused ? 'ring-2 ring-green-600 ring-offset-1' : ''} ${isSelected && 'bg-green-600 text-white'}`}
+      className={`flex group relative !py-2 select-none items-center m-sr-item gap-2 my-1 hover:ring-2 hover:ring-green-600 hover:ring-offset-1 focus:ring-2 focus:ring-green-600 focus:ring-offset-1 focus:outline-none focus:border-none ${isFocused ? 'ring-2 ring-green-600 ring-offset-1' : ''} ${isSelected && 'bg-green-600 text-white'}`}
       onDoubleClick={() => {
         handleSelected({ product_id: product.product_id, model_id: product?.model_id, multiSelectMode: true });
       }}
@@ -41,28 +41,29 @@ function Searchresultitem({ product, handleSelected, isFocused, isSelected = fal
           <Icon className='text-gray-400' icon="mdi:tag-outline" fontSize={'1.45rem'} />
         </nav>
       ) : (
-        <nav className='p-2 border grid place-items-center rounded-md border-gray-200'>
-          <Icon className='text-gray-400' icon="mdi:tag-multiple-outline" fontSize={'1.5rem'} />
-        </nav>
+        <>
+          {multiSelectMode && <nav onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className={`self-start transition-all duration-500 right-2 inset-y-0 flex items-center justify-center ${isSelected ? 'opacity-100' : 'opacity-50'}`}>
+            <CustomCheckBox
+              onClick={() => { handleSelected({ product_id: product.product_id, model_id: product?.model_id, multiSelectMode: true }) }}
+              checked={isSelected} />
+          </nav>}
+        </>
       )}
-      <nav>
+      <nav className=''>
         {product.key === 'in_product' ? (
           <span className='text-gray-500 font-semibold'>
             {product.product_name}
-            <span className='font-normal text-sm ml-1'>in </span> <span className='text-sm font-normal'>{product?.category}</span>
+            <span className='font-normal text-xs md:text-sm ml-1'>in </span> <span className='text-xs md:text-sm font-normal'>{product?.category}</span>
           </span>
         ) : (
           <span className='text-gray-500 font-medium'>
-            <span className='font-normal text-sm'>{product.product_name} <Icon icon="ion:chevron-forward-sharp" /></span>
-            <span className="font-semibold">{product.model_name}</span> <span className='font-normal text-sm'>in</span> <span className='text-sm font-normal'>{product?.category}</span>
+            <span className='font-normal text-xs md:text-sm'>{product.product_name} <Icon icon="ion:chevron-forward-sharp" />
+            </span>
+            <span className="font-semibold text-xs md:text-sm">{product.model_name}</span> <span className='font-normal text-xs md:text-sm '>in</span> <span className='text-xs md:text-sm font-normal'>{product?.category}</span>
           </span>
         )}
       </nav>
-    {multiSelectMode &&  <nav onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className={`absolute  group-hover:opacity-100 transition-all duration-500 right-2 inset-y-0 flex items-center justify-center ${isSelected ? 'opacity-100' : 'opacity-0'}`}>
-        <CustomCheckBox
-          onClick={() => { handleSelected({ product_id: product.product_id, model_id: product?.model_id, multiSelectMode: true }) }}
-          checked={isSelected} />
-      </nav>}
+
     </li>
   );
 }

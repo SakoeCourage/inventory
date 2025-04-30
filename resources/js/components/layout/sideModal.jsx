@@ -31,7 +31,7 @@ const SideModal = (props) => {
 
                   {
                     title &&
-                    <h5 className=''>{title}</h5>
+                    <h5 className=' text-sm md:text-base'>{title}</h5>
                   }
                 </div>
                 {showClose &&

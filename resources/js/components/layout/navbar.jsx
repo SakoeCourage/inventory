@@ -22,21 +22,21 @@ import { useSnackbar } from 'notistack';
 
 
 const StoreListItem = ({ isChecked, store_name, onClick, index, loading }) => {
-  return <li onClick={onClick} className={`px-3 border border-gray-400 ps-list-item flex items-center relative isolate hover:bg-green-800/10 overflow-hidden cursor-pointer py-5 gap-5 bg-green-800/5 rounded-md ${isChecked && ' !text-white inactive'} ${loading && '!pointer-events-none '}`}>
+  return <li onClick={onClick} className={`px-3 border border-gray-400 ps-list-item flex items-center relative isolate hover:bg-green-800/10 overflow-hidden cursor-pointer py-3 md:py-5 gap-5 bg-green-800/5 rounded-md ${isChecked && ' !text-white inactive'} ${loading && '!pointer-events-none '}`}>
     <div className={`bg-green-900/70 z-[-1] ps-indicator  inset-0 h-full absolute transition-[width] ease-in-out duration-500  ${isChecked ? 'w-full' : 'w-[1.5px]'}`}>
     </div>
-    <div className='text-white h-6 w-6 flex items-center justify-center aspect-square my-auto p-2 text-sm bg-green-950/60 rounded'>
+    <div className='text-white h-5  md:h-6 md:w-6 flex items-center justify-center aspect-square my-auto p-2 text-xs md:text-sm bg-green-950/60 rounded'>
       {index}
     </div>
-    <nav className=' font-semibold'>{store_name}</nav>
+    <nav className=' font-semibold text-xs md:text-base'>{store_name}</nav>
     {isChecked ? <nav className='ml-auto flex items-center gap-2 text-xs'>
       <nav className=' ml-auto text-white flex items-center gap-1 uppercase'>
-        <span>Current Store</span>
+        <span className='hidden md:block'>Current Store</span>
         <IconifyIcon className="!p-0 !h-5 !w-5" icon="mdi:checkbox-marked-circle" />
       </nav>
 
     </nav> : <nav className='ml-auto flex items-center gap-2 text-xs'>
-      <nav className=' ml-auto text-black flex items-center gap-1 uppercase'>
+      <nav className=' ml-auto hidden md:flex text-black items-center gap-1 uppercase'>
         switch to store
       </nav>
     </nav>
@@ -89,7 +89,7 @@ const AvailableStoresList = () => {
 
   return <div>
     {Array.isArray(auth?.stores) ? <>
-      <nav>
+      <nav className='text-xs md:text-base'>
         Please select from the list of available stores
       </nav>
       <div className='flex flex-col py-2 divide-y space-y-2'>
@@ -181,7 +181,7 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
             </nav>
           }
           <div className='flex px-2 items-center gap-1 '>
-            <button onClick={handleClick} className=' bg-info-100/70 flex items-center pr-5 rounded-full'>
+            <button onClick={handleClick} className=' md:bg-info-100/70 flex items-center md:pr-5 rounded-full'>
               <IconButton
                 size="small"
                 sx={{ ml: 2 }}
@@ -193,7 +193,7 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
                   <span className=' uppercase'>{auth?.roles[0].charAt(0)}</span>
                 </Avatar>
               </IconButton>
-              <nav className=' text-sm text-info-900 capitalize'>
+              <nav className=' text-sm text-info-900 capitalize hidden md:block'>
                 {auth?.roles[0]}
               </nav>
             </button>
@@ -239,7 +239,7 @@ const Navbar = ({ fullSideBar, setFullSideBar }) => {
                       <span className=' uppercase'>{auth?.roles[0].charAt(0)}</span>
                     </Avatar>
                   </nav>
-                  <nav>
+                  <nav className=''>
                     <nav className='  w-full text-center'> {auth?.user?.name}</nav>
                     <nav className=' text-sm text-gray-500  w-full text-center capitalize'> {auth?.roles[0]}</nav>
                   </nav>

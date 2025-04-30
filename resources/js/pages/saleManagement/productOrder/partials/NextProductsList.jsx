@@ -11,14 +11,14 @@ const NProductListItem = ({ totalAmount, product, model, list }) => {
             
                 <nav className=' items-center text-base text-gray-500 font-bold flex pb-2 min-w-full border-gray-300'>
                     <nav className='flex '>
-                        <span className=' font-semibold text-gray-500 pr-2'> {product}  </span>
-                        <span className='font-medium pl-2'>
+                        <span className=' font-semibold text-gray-500 pr-2 text-xs md:text-sm'> {product}  </span>
+                        <span className='font-medium pl-2 text-xs md:text-sm'>
                             {model}
                         </span>
                     </nav>
                     <nav className='flex ml-auto items-center justify-end text-xs text-blue-950/65  bg-red-50/20 py-2'>
                         <nav className='flex items-center gap-3'>
-                            <span>Amount :</span>
+                            <span className='hidden md:inline-block'>Amount :</span>
                             <span>{formatcurrency(totalAmount ?? 0)}</span>
                         </nav>
                     </nav>

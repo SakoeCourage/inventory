@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Icon } from '@iconify/react'
 function ProductListItem({ product }) {
     const navigate = useNavigate()
-    return <div className=' border-2 rounded-md p-2 grid grid-cols-1 gap-3 text-sm u-listitem model-item '>
+    return <div className=' border-2 rounded-md p-2 grid grid-cols-1 gap-3 text-sm u-listitem '>
         <nav className=' flex items-center justify-between py-1'>
             <nav>Product</nav>
             <nav className=' flex items-center gap-2'>

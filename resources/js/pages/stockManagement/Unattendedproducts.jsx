@@ -68,7 +68,7 @@ function Unattendedproducts() {
         <div className='mx-auto relative isolate p-0'>
             {isLoading && <Loadingwheel />
             }
-            <nav className=' bg-orange-100/70 p-5 sticky top-0 z-[-1] mb-2'>
+            <nav className='  p-5 sticky top-0 z-[-1] mb-2'>
                 <nav className='  max-w-7xl mx-auto flex items-center gap-2 '>
                     <Icon className=' text-red-600/70' icon="solar:danger-triangle-bold" fontSize={40} />
                     <nav>
@@ -76,32 +76,34 @@ function Unattendedproducts() {
                     </nav>
                 </nav>
             </nav>
-            <nav className='bg-gray-200/80'>
-                <nav className='max-w-7xl mx-auto bg-white rounded-md p-2 flex gap-2 items-center '>
-                    <FormInputSelect className="w-56 " type="text" value={filters?.category} label="Filter by Category" options={categoriesFromDb ? [...categoriesFromDb.map(entry => { return ({ name: entry.category, value: entry.id }) })] : []} name="Basic selling unit"
-                        onChange={(e) => { fullUrl && fetchData(addOrUpdateUrlParam(fullUrl, 'category', e.target.value)) }}
-                    />
-                    {(filters?.search || filters?.category) != null && <Button
-                        onClick={() => { setSearchKey(''); fetchData() }}
-                        text="reset"
-                    />}
+            <nav className='flex flex-col bg-white max-w-7xl mx-auto border rounded-md h-max p-2'>
+                <nav className=''>
+                    <nav className=' rounded-md p-2 flex gap-2 items-center '>
+                        <FormInputSelect className="w-56 " type="text" value={filters?.category} label="Filter by Category" options={categoriesFromDb ? [...categoriesFromDb.map(entry => { return ({ name: entry.category, value: entry.id }) })] : []} name="Basic selling unit"
+                            onChange={(e) => { fullUrl && fetchData(addOrUpdateUrlParam(fullUrl, 'category', e.target.value)) }}
+                        />
+                        {(filters?.search || filters?.category) != null && <Button
+                            onClick={() => { setSearchKey(''); fetchData() }}
+                            text="reset"
+                        />}
+                    </nav>
                 </nav>
-            </nav>
-            <div className=' min-h-screen backdrop-blur-sm bg-gray-200/80  z-10'>
-                <div className=" max-w-7xl mx-auto  rounded-md flex flex-col gap-2 ">
-                    {productsData?.data && Object.entries(productsData?.data).map((cateogry, i) => {
-                        return (<CategoryListItem key={i} categoryname={cateogry[0]} products={cateogry[1]} />)
-                    })
+                <div className='h-max  backdrop-blur-sm z-10'>
+                    <div className=" max-w-7xl mx-auto  rounded-md flex flex-col gap-2 ">
+                        {productsData?.data && Object.entries(productsData?.data).map((cateogry, i) => {
+                            return (<CategoryListItem key={i} categoryname={cateogry[0]} products={cateogry[1]} />)
+                        })
 
-                    }
-                    {(!productsData?.data || productsData?.data?.length == 0) && <div className=' min-h-[70vh] bg-white  flex items-center justify-center'>
-                        <Emptydata caption="No Record found" />
-                    </div>}
+                        }
+                        {(!productsData?.data || productsData?.data?.length == 0) && <div className=' min-h-[70vh] bg-white  flex items-center justify-center'>
+                            <Emptydata caption="No Record found" />
+                        </div>}
+                    </div>
+                    {productsData?.next_page_url && <nav className=' flex items-center justify-center'>
+                        <Button processing={isLoading} onClick={() => fetchMoreData()} text="Load More Data" />
+                    </nav>}
                 </div>
-                {productsData?.next_page_url && <nav className=' flex items-center justify-center'>
-                    <Button processing={isLoading} onClick={() => fetchMoreData()} text="Load More Data" />
-                </nav>}
-            </div>
+            </nav>
         </div>
     )
 }

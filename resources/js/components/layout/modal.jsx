@@ -43,7 +43,7 @@ function Modal(props) {
                 </div>
               )}
               <span
-                className={`mt-2 text-lg font-semibold text-gray-800 capitalize ${labelStyle}`}
+                className={`mt-2 text-sm md:text-base font-semibold text-gray-800 capitalize ${labelStyle}`}
               >
                 {label}
               </span>

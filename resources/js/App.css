@@ -36,13 +36,6 @@
     display: block;
 }
 
-.model-item:nth-child(odd) {
-    @apply bg-gray-200/40
-}
-
-.model-item:nth-child(even) {
-    @apply bg-gray-100/40
-}
 
 .decoration-none {
     text-decoration: none;

@@ -15,12 +15,14 @@ use App\Models\Stockhistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\PaginationHelper;
 
 class DashboardController extends Controller
 {
     private $date = null;
 
-    public function __construct(){
+    public function __construct()
+    {
 
         $this->date = Request()?->date ?? Carbon::today();
 
@@ -47,7 +49,7 @@ class DashboardController extends Controller
         ])->whereDate('created_at', $yesterday = Carbon::parse($this->date)->subDay())->get()->sum('total_amount');
 
         $relative_percentage_difference = $yesterdays_sale_total ? (($todays_sale_total - $yesterdays_sale_total) / $yesterdays_sale_total) * 100 : 0;
-        
+
         return [
             'daily_sale' => $todays_sale_total,
             'relative_percentage' => ($relative_percentage_difference > 0 && $relative_percentage_difference <= 100) ? floor($relative_percentage_difference) : null
@@ -151,22 +153,22 @@ class DashboardController extends Controller
     public function generateExpenseSummary()
     {
         $store_id = Auth::user()->storePreference->store_id;
-    
+
         $baseQuery = Expenses::with('author')->where('store_id', $store_id)
         ;
-    
+
         $todaysExpense = (clone $baseQuery)->whereDate('updated_at', '=', $this->date)
             ->where('status', '=', 1)
             ->get()->sum('total_amount');
-    
+
         $pendingExpense = (clone $baseQuery)->where('status', '=', 0)->count();
-    
+
         $mySubmission = (clone $baseQuery)->where('user_id', '=', Auth::user()->id)
             ->whereDate('created_at', '=', Carbon::now())
             ->count();
-    
-        $recentExpense = (clone $baseQuery)->orderBy("created_at",'desc')->limit(5)->get();
-    
+
+        $recentExpense = (clone $baseQuery)->orderBy("created_at", 'desc')->limit(5)->get();
+
         return [
             'todays' => $todaysExpense,
             'pending_count' => $pendingExpense,
@@ -174,7 +176,7 @@ class DashboardController extends Controller
             'recent' => $recentExpense,
         ];
     }
-    
+
 
     public function generateLineChart()
     {
@@ -227,7 +229,7 @@ class DashboardController extends Controller
                 'name' => 'Revenue',
                 'type' => 'area',
                 'data' => $revenue->flatten()
-            ] : [      
+            ] : [
             ]
         ];
     }
@@ -235,22 +237,23 @@ class DashboardController extends Controller
 
     public function getUnattendedProducts()
     {
-        //To-do later
-        // $storeProduct = StoreProduct::withCount()
-        // ->where()
-        // ->get()
-        // ;
-
-        // dd($storeProduct);
-        $data = Product::withCount([
-            'models' => function ($query) {
-                $query->where('quantity_in_stock', 0);
-            }
-        ])->get();
-
+        $products = Product::join('productsmodels', 'products.id', '=', 'productsmodels.product_id')
+            ->join('store_products', 'productsmodels.id', '=', 'store_products.productsmodel_id')
+            ->where('store_products.store_id', '=', request()->user()->storePreference->store_id)
+            ->where('store_products.quantity_in_stock', 0)
+            ->selectRaw(
+                '
+            products.product_name,
+            products.id as product_id,
+            productsmodels.id as model_id,
+            productsmodels.model_name,
+            store_products.quantity_in_stock
+            '
+            )
+            ->get();
+            
         return [
-            'products' => $data->count(),
-            'models' => $data->sum('models_count')
+            'products' => $products->count(),
         ];
     }
 }
