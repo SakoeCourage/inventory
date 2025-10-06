@@ -73,9 +73,15 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         });
 
         Route::get("/all-quantity-to-stock-template", function (Request $request) {
-            return Excel::download(new ProductCategoryExport(null), 'products_by_category.xlsx');
+            if(isset($request->category_id)){
+                $product_category_id = $request->category_id;
+                $request["product_ids"] = \App\Models\Product::where('category_id', $product_category_id)->pluck('id')->toArray();
+            }
+            return Excel::download(new ProductCategoryExport($request->product_ids), 'products_by_category.xlsx');
         });
+        
         Route::post("/all-quantity-to-stock-template", function (Request $request) {
+         
             return Excel::download(new ProductCategoryExport($request->product_ids), 'products_by_category.xlsx');
         });
     });

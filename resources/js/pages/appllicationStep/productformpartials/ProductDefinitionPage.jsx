@@ -130,7 +130,7 @@ const ProductDefinitionPage = () => {
     const handleDonwloadQuantityToStockProductsTemplate = () => {
         setShowDownloadOptions(false);
         enqueueSnackbar("Downloading Template Please Wait...", { variant: "default" })
-        Api.get("/product/all-quantity-to-stock-template", {
+        Api.get("/product/all-quantity-to-stock-template?category_id="+ filters?.category ?? '', {
             responseType: "blob"
         }).then(res => {
             const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
