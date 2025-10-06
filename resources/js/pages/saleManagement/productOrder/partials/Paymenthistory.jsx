@@ -32,15 +32,13 @@ function Paymenthistory({ paymentMethods }) {
     }
 
     const handleChangePage = (event, newPage) => {
+        console.log(paymentHistory,"payment history")
         if ((newPage + 1) > paymentHistory?.current_page) {
-            fetchSalesData(paymentHistory?.next_page_url)
+            fetchPaymentHistory(paymentHistory?.next_page_url)
         } else {
-            fetchSalesData(paymentHistory?.prev_page_url)
+            fetchPaymentHistory(paymentHistory?.prev_page_url)
         }
     };
-
-
-
 
     useEffect(() => {
         fetchPaymentHistory()

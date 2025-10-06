@@ -129,13 +129,13 @@ class ProductstockhistoryController extends Controller
             $product_model = Productsmodels::where('id',request()->productsmodel_id)->with(['product' => ['basicQuantity','category'], 'collectionType'])->firstOrFail();
             $store= Store::where('id',request()->user()->storePreference->store->id)->with('branch')->firstOrFail();
            
-            dispatch(new StockAdjustedJob(
-                Auth::user(),
-                request()->quantity,
-                request()->description,
-                $store,
-                $product_model
-            ));
+            // dispatch(new StockAdjustedJob(
+            //     Auth::user(),
+            //     request()->quantity,
+            //     request()->description,
+            //     $store,
+            //     $product_model
+            // ));
         });
 
         return response('stock adjusted successfully',200);

@@ -1,7 +1,6 @@
 import 'simplebar-react/dist/simplebar.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// import './app.css'
 import './index.scss';
 import App from './App'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';

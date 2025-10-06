@@ -98,7 +98,7 @@ class ExpensesController extends Controller
             });
             $expense = Expenses::with(['author', 'store', 'expenseitems' => ['expensedefinition']])->where('id', $newexpense->id)->firstOrFail();
             
-            dispatch(new SendNewExpenseEmail($expense));
+            // dispatch(new SendNewExpenseEmail($expense));
         });
 
         return response('new store expense submitted', 200);

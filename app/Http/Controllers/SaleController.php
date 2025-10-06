@@ -196,10 +196,10 @@ class SaleController extends Controller
             
             if ($request->sale_type == \App\Enums\SaleEnum::Regular->value || $request->sale_type == \App\Enums\SaleEnum::UnCollected->value) {
                 PaymenthistoryController::Newpayament((object) array_merge($request->toArray(), ['sale_id' => $newSale->id]));
-                dispatch(new SendInvoiceEmailJob($newdata,$request->user()));
+                // dispatch(new SendInvoiceEmailJob($newdata,$request->user()));
             }
         });
-        dispatch(new StockAlertJob($newdata));
+        // dispatch(new StockAlertJob($newdata));
         return [
             ...$productController->productAndModelsJoin($request),
             'newsale' => [...$newdata?->toArray(), 'business_profile' => Businessprofile::get()->first(),
