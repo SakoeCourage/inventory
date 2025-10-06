@@ -195,7 +195,6 @@ route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/toggle-product', [\App\Http\Controllers\StoreController::class, "toggleProductToStore"]);
         Route::post('/product-quantity', [\App\Http\Controllers\StoreController::class, "setInitialStoreProductQuantity"]);
         Route::post('/product-quantity/to-store', [\App\Http\Controllers\StoreController::class, "productQuantityToStore"]);
-
     });
 
     Route::group(['prefix' => 'packaging-unit'], function () {
